@@ -1,0 +1,45 @@
+<div class="d-flex flex-column justify-content-center dashboard-content">
+    <div class="col-12 pt-4 pb-4 scroll-item">
+        <div class="card card-item">
+            <div class="card-header p-1" (click)="collapseDashboard()">
+                <span class="pull-right fa fa-bars"></span>
+            </div>
+            <div class="card-body p-2">
+                <app-directory-dashboard-menu [dashboardCollapsed]="dashboardCollapsed"></app-directory-dashboard-menu>
+                <ng-container *ngIf="!dashboardCollapsed">
+                    <hr class="my-1">
+                    <app-directory-contact-info></app-directory-contact-info>
+                    <hr class="my-1">
+                    <app-directory-summary></app-directory-summary>
+                </ng-container>
+            </div>
+        </div>
+        <div [ngClass]="{'row': dashboardView == 'grid', 'list-view': dashboardView == 'list'}">
+            <div *ngIf="displayAddPreAssessment && (filterDashboardBy.showPreAssessments == true || filterDashboardBy.showAll == true)"
+                [ngClass]="{'col-12 col-lg-4 col-md-6 summary-card': dashboardView == 'grid', 'list-item': dashboardView == 'list'}">
+                <app-add-pre-assessment-item></app-add-pre-assessment-item>
+            </div>
+
+            <div *ngFor="let directoryItem of directoryItems | directoryDashboardFilter:sortBy:filterDashboardBy"
+                class="directory-item" [ngClass]="
+                {
+                    'col-12 col-lg-4 col-md-6 summary-card': (dashboardView == 'grid'), 
+                    'list-item': (dashboardView == 'list'),
+                    'hidden': (directoryItem.isShown == false)
+            }">
+                <app-pre-assessment-item *ngIf="directory.calculators.length > 0 && directoryItem.type == 'calculator' && directoryItem.calculator.preAssessments"
+                    [calculator]="directoryItem.calculator" [index]="directoryItem.calculatorIndex">
+                </app-pre-assessment-item>
+                <app-assessment-item *ngIf="directoryItem.type == 'assessment'" [assessment]="directoryItem.assessment">
+                </app-assessment-item>
+                <app-directory-item *ngIf="directoryItem.type == 'directory'" [directory]="directoryItem.subDirectory">
+                </app-directory-item>
+                <app-inventory-item *ngIf="directoryItem.type == 'inventory'" [inventoryItem]="directoryItem.inventoryItem"></app-inventory-item>
+                <app-diagram-item *ngIf="directoryItem.type == 'diagram'" [diagram]="directoryItem.diagram"></app-diagram-item>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-delete-items-modal *ngIf="showDeleteItemsModal"></app-delete-items-modal>
+<app-pre-assessment-modal *ngIf="showPreAssessmentModalIndex != undefined"></app-pre-assessment-modal>

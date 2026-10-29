@@ -1,0 +1,49 @@
+<div class="my-2">
+  <h6>
+    General
+    <br>
+    <small class="text-muted">
+      General method is used when the user needs to order a receiver tank to meet the compressed air requirements.
+      <hr>
+    </small>
+  </h6>
+</div>
+
+<div class="my-2" *ngIf="currentField == 'airDemand'">
+  <h6>
+    Air Demand
+    <br>
+    <small class="text-muted">
+      Amount of air needed, which comes out of the receiver tank.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'allowablePressureDrop'">
+  <h6>
+    Allowable Pressure Drop
+    <br>
+    <small class="text-muted">
+      The pressure drop inside the receiver tank within the tolerable limits.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'atmosphericPressure'">
+  <h6>
+    Atmospheric Pressure
+    <br>
+    <small class="text-muted">
+      General value is 14.7 psi. In case the receiver tank is at higher altitude location, the respective atmospheric pressure
+      at that location can be given.
+      <hr>
+    </small>
+  </h6>
+</div>
+
+<div class="my-2">
+  <a class="click-link" [href]="docsLink + 'group__receiver__tank__calculator'" target="_blank">
+    <span class="fa fa-external-link"></span>
+    <span class="pl-1">How is Receiver Tank Sizing calculated?</span>
+  </a>
+</div>

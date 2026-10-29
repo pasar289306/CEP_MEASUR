@@ -1,0 +1,46 @@
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
+import * as _ from 'lodash';
+@Component({
+    selector: 'app-exportable-results-table',
+    templateUrl: './exportable-results-table.component.html',
+    styleUrls: ['./exportable-results-table.component.css'],
+    standalone: false
+})
+export class ExportableResultsTableComponent implements OnInit {
+  @Input()
+  columnTitles: Array<string>;
+  @Input()
+  rowData: Array<Array<string>>;
+  @Input()
+  tableString: any;
+  @Output('updateTableString')
+  updateTableString = new EventEmitter<boolean>();
+
+  @Input()
+  horizontalAnchor: 'left' |'center'| 'right' = 'center';
+
+  @ViewChild('copyTable', { static: false }) copyTable: ElementRef;
+  showNotification: boolean = false;
+  activateCheckmark: boolean = false;
+
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+
+  copySuccess() {
+    this.showNotification = true;
+    this.activateCheckmark = true;
+
+    setTimeout(() => {
+      this.showNotification = false;
+      this.activateCheckmark = false;
+    }, 5000);
+  }
+
+  emitUpdateTableString() {
+    this.updateTableString.emit();
+  }
+
+}

@@ -1,0 +1,37 @@
+.report-banner {
+	padding: 8px;
+	background-color: #145A32;
+}
+
+	.report-banner:after {
+        display: table;
+        content: "";
+        clear: both;
+    }
+
+    .report-banner h1 {
+    	font-size: 22px;
+    	margin-top: 2px;
+    	margin-bottom: 0;
+    }
+    .report-banner .btn {
+		font-size: 12px;
+		line-height: 14px;
+		padding: 6px 10px;
+    }
+
+
+		.efficiency-title{
+			font-size: 24px;
+			margin-bottom: 0px;
+			color: white;
+			font-family: 'Muli', sans-serif;
+		}
+@media print {
+
+}
+
+
+.modal-open{
+    z-index: initial !important;
+}

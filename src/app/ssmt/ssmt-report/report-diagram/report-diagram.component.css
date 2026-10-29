@@ -1,0 +1,11 @@
+.report-diagram-container{
+    font-size: small;
+}
+
+hr{
+    border: solid 1px grey;
+    width: 100%;
+} 
+*{
+    font-size: 13px;
+}

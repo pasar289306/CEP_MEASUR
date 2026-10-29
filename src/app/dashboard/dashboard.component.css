@@ -1,0 +1,65 @@
+
+.dashboard-scroll{
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.dashboard-content::-webkit-scrollbar{
+    display: none;
+}
+.landing-screen::-webkit-scrollbar,
+.sidebar-bg::-webkit-scrollbar {
+  width: .5em;
+}
+
+.scroll-item::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.4);
+}
+
+.landing-screen::-webkit-scrollbar-track,
+.sidebar-bg::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, .4);
+}
+
+.scroll-item::-webkit-scrollbar-thumb {
+  background-color: #156739;
+}
+
+.landing-screen::-webkit-scrollbar-thumb,
+.sidebar-bg::-webkit-scrollbar-thumb {
+  background-color: #156739;
+}
+
+.skyline {
+  background-image: url('../../assets/images/industrial-skyline.svg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: bottom center;
+  background-size: 100%;
+}
+.sidebar-bg {
+  min-height: 100%;
+  background-color: #fff;
+  box-shadow: 0px 0px 69px -1px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  min-width: 40px;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.spinner-overlay {
+  height: 100%;
+  z-index: 999;
+  position: absolute;
+  background: white;
+}
+
+.spinner > div {
+  width: 25px;
+  height: 25px;
+  background-color: #117A65;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}

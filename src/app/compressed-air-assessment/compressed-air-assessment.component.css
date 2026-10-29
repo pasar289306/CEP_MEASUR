@@ -1,0 +1,14 @@
+.compressed-air-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* or 100% if parent is already sized */
+}
+
+.tab-content {
+  flex: 1 1 auto;
+  min-height: 0; /* allows children to fill and scroll */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+}

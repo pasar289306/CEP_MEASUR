@@ -1,0 +1,149 @@
+<div class="output-summary w-75 mx-auto">
+    <h4 class="show-print print-section-header">System Annual Water Use and Cost Summary</h4>
+
+    @if(plantSystemSummaryResults$ | async; as plantSummaryResults) {
+    <table #copyTable class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr class="text-center header-highlight">
+                <th rowspan="2">
+                    System
+                </th>
+                <th colspan="1">
+                    Source Water Intake
+                </th>
+                <th colspan="2">
+                    Direct Costs
+                </th>
+                <th colspan="2">
+                    True Cost of Water
+                </th>
+                <th rowspan="2" colspan="2">
+                    True Cost/Direct Cost of Water
+                </th>
+            </tr>
+            <tr class="text-center header-highlight remove-border">
+                <th>
+                    <ng-container *ngIf="settings.unitsOfMeasure == 'Imperial'; else metricUnit">Mgal/yr</ng-container>
+                    <ng-template #metricUnit>m<sup>3</sup>/yr</ng-template>
+                </th>
+                <th>
+                    $/yr
+                </th>
+                <th>
+                    {{ settings.unitsOfMeasure == 'Imperial' ? '$/kGal' : '$/L' }}
+                </th>
+                <th>
+                    $/yr
+                </th>
+                <th>
+                    {{ settings.unitsOfMeasure == 'Imperial' ? '$/kGal' : '$/L' }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="item-row text-center" *ngFor="let systemResult of plantSummaryResults.allSystemResults"
+                [ngClass]="{'selected-highlight': selectedSystemId === systemResult.id}">
+                <td>
+                    <span *ngIf="selectedSystemId === systemResult.id" class="fa fa-chevron-right"></span>
+                    {{systemResult.name}}
+                </td>
+                <td>
+                    <span *ngIf="systemResult.sourceWaterIntake">{{systemResult.sourceWaterIntake |
+                        number:'1.0-2'}}</span>
+                    <span *ngIf="!systemResult.sourceWaterIntake">0</span>
+                </td>
+                <td>
+                    <span *ngIf="systemResult.directCostPerYear">${{systemResult.directCostPerYear |
+                        number:'1.0-2'}}</span>
+                    <span *ngIf="!systemResult.directCostPerYear">0</span>
+                </td>
+                <td>
+                    <span *ngIf="systemResult.directCostPerUnit">${{systemResult.directCostPerUnit |
+                        number:'1.0-4'}}</span>
+                    <span *ngIf="!systemResult.directCostPerUnit">0</span>
+                </td>
+                <td>
+                    <span *ngIf="systemResult.trueCostPerYear">${{systemResult.trueCostPerYear | number:'1.0-2'}}</span>
+                    <span *ngIf="!systemResult.trueCostPerYear">0</span>
+                </td>
+                <td>
+                    <span *ngIf="systemResult.trueCostPerUnit">${{systemResult.trueCostPerUnit | number:'1.0-4'}}</span>
+                    <span *ngIf="!systemResult.trueCostPerUnit">0</span>
+                </td>
+                <td>
+                    <span *ngIf="systemResult.trueOverDirectResult">{{systemResult.trueOverDirectResult |
+                        number:'1.0-2'}}</span>
+                    <span *ngIf="!systemResult.trueOverDirectResult">0</span>
+                </td>
+
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr class="bold text-center footer-row">
+                <td>
+                    Plant
+                </td>
+                <td>
+                    <span *ngIf="plantSummaryResults.sourceWaterIntake">{{plantSummaryResults.sourceWaterIntake |
+                        number:'1.0-2'}}</span>
+                    <span *ngIf="!plantSummaryResults.sourceWaterIntake">0</span>
+                </td>
+                <td>
+                    <span *ngIf="plantSummaryResults.directCostPerYear">${{plantSummaryResults.directCostPerYear |
+                        number:'1.0-2'}}</span>
+                    <span *ngIf="!plantSummaryResults.directCostPerYear">0</span>
+                </td>
+                <td>
+                    <span *ngIf="plantSummaryResults.directCostPerUnit">${{plantSummaryResults.directCostPerUnit |
+                        number:'1.0-4'}}</span>
+                    <span *ngIf="!plantSummaryResults.directCostPerUnit">0</span>
+                </td>
+                <td>
+                    <span *ngIf="plantSummaryResults.trueCostPerYear">${{plantSummaryResults.trueCostPerYear |
+                        number:'1.0-2'}}</span>
+                    <span *ngIf="!plantSummaryResults.trueCostPerYear">0</span>
+                </td>
+                <td>
+                    <span *ngIf="plantSummaryResults.trueCostPerUnit">${{plantSummaryResults.trueCostPerUnit |
+                        number:'1.0-4'}}</span>
+                    <span *ngIf="!plantSummaryResults.trueCostPerUnit">0</span>
+                </td>
+                <td>
+                    <span *ngIf="plantSummaryResults.trueOverDirectResult">{{plantSummaryResults.trueOverDirectResult |
+                        number:'1.0-2'}}</span>
+                    <span *ngIf="!plantSummaryResults.trueOverDirectResult">0</span>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <hr class="mt-5 mb-3">
+    <div class="d-flex w-100 align-items-center justify-content-center mb-3">
+        <div class="btn-group btn-group-toggle mr-3 flex-shrink-0" ngbRadioGroup name="percentView"
+            (change)="togglePercentView()">
+            <label class="btn btn-outline-secondary mb-0" [class.active]="!percentView">
+                <input type="radio" [checked]="!percentView" value="false">View Units/Cost
+            </label>
+            <label class="btn btn-outline-secondary mb-0" [class.active]="percentView">
+                <input type="radio" [checked]="percentView" value="true">View Percent
+            </label>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap mb-3 w-100">
+        <div class="flex-shrink-0 intake-flow-bar-container">
+            <app-stacked-bar-intake-flow></app-stacked-bar-intake-flow>
+        </div>
+        <div class="flex-grow-1 ml-3 intake-cost-bar-container">
+            <app-stacked-bar-intake-costs></app-stacked-bar-intake-costs>
+        </div>
+    </div>
+
+    <app-exportable-results-table [tableString]="copyTableString"
+        (updateTableString)="updateCopyTableString()"></app-exportable-results-table>
+
+    } @else {
+    <app-alert-info-container class="m-3 w-50" [header]="'Diagram flow data contains errors'"
+        [content]="'Visit the diagram to fix issues and ensure entered flow values are valid'" [showIcon]="false"
+        [bootstrapLevel]="'alert-danger'"></app-alert-info-container>
+    }
+
+</div>

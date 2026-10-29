@@ -1,0 +1,320 @@
+<div class="d-flex flex-column output-summary">
+  <h4 class="show-print">Executive Summary</h4>
+
+  <table #copyTable class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <td [ngStyle]="{ 'width.%': 15 }" class="border-0"></td>
+        <td [ngClass]="{
+                  'selected-modification': selectedModificationIndex == -1
+                }" [ngStyle]="{ 'width.%': tableCellWidth }" class="border-0">
+        </td>
+        <td [ngStyle]="{ 'width.%': tableCellWidth }"
+          *ngFor="let modification of modificationOutputs; let index = index" [ngClass]="{
+                  'selected-modification': index == selectedModificationIndex
+                }" class="bold text-center border-0">
+          <div class="alert-danger" *ngIf="!modification.valid.isValid">
+            Invalid Modification<br>
+            <span *ngIf="!modification.valid.boilerValid">Errors found in Boiler<br></span>
+            <span *ngIf="!modification.valid.headerValid">Errors found in Header<br></span>
+            <span *ngIf="!modification.valid.turbineValid">Errors found in Turbine<br></span>
+            <span *ngIf="!modification.valid.operationsValid">Errors found in Operations<br></span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td [ngStyle]="{ 'width.%': 15 }"></td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}"
+          [ngStyle]="{ 'width.%': tableCellWidth }" class="bold text-center">
+          Baseline
+        </td>
+        <td [ngStyle]="{ 'width.%': tableCellWidth }"
+          *ngFor="let modification of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}" class="bold text-center">
+          {{ modification.name }}
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="bold">Percent Savings (%)</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          &mdash;
+        </td>
+        <td class="percent-graph" *ngFor="let modResults of modificationOutputs; let index = index" [ngClass]="{
+                    'selected-modification': index == selectedModificationIndex
+                  }">
+          <div class="hide-print" *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput &&
+                                getSavingsPercentage(
+                                  baselineOutput.operationsOutput.totalOperatingCost,
+                                  modResults.outputData.operationsOutput.totalOperatingCost
+                                )">
+            <app-percent-graph *ngIf="modResults.valid.isValid" [value]="
+                                  getSavingsPercentage(
+                                    baselineOutput.operationsOutput.totalOperatingCost,
+                                    modResults.outputData.operationsOutput.totalOperatingCost
+                                  )
+                                ">
+            </app-percent-graph>
+          </div>
+          <div class="show-print text-center" *ngIf="modResults.valid.isValid &&
+                      getSavingsPercentage(
+                        baselineOutput.operationsOutput.totalOperatingCost,
+                        modResults.outputData.operationsOutput.totalOperatingCost
+                      )
+                    ">
+            {{
+                      getSavingsPercentage(baselineResults, modification)
+                        | number: "1.0"
+                    }}
+            %
+          </div>
+          <div *ngIf="!modResults.valid.isValid || (
+                      !modResults.outputData.boilerOutput ||
+                      !getSavingsPercentage(
+                        baselineOutput.operationsOutput.totalOperatingCost,
+                        modResults.outputData.operationsOutput.totalOperatingCost
+                      ))
+                    " class="mx-auto">
+            &mdash;
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="bold" [ngStyle]="{ 'width.%': 15 }">Power Cost ({{settings.currency}}/yr)</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          <span *ngIf="baselineOutput.boilerOutput">
+            {{ baselineOutput.operationsOutput.powerGenerationCost | number: "1.0-0" }}
+          </span>
+          <span *ngIf="!baselineOutput.boilerOutput">&mdash;</span>
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{ modResults.outputData.operationsOutput.powerGenerationCost | number: "1.0-0" }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="pl-4">Savings</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          &mdash;
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{
+              (baselineOutput.operationsOutput.powerGenerationCost - modResults.outputData.operationsOutput.powerGenerationCost) | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="bold" [ngStyle]="{ 'width.%': 15 }">Fuel Cost ({{settings.currency}}/yr)</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          <span *ngIf="baselineOutput.operationsOutput.boilerFuelCost">
+            {{
+              baselineOutput.operationsOutput.boilerFuelCost | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!baselineOutput.operationsOutput.boilerFuelCost">&mdash;</span>
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{
+              modResults.outputData.operationsOutput.boilerFuelCost | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="pl-4">Savings</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          &mdash;
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{
+              (baselineOutput.operationsOutput.boilerFuelCost - modResults.outputData.operationsOutput.boilerFuelCost) | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="bold" [ngStyle]="{ 'width.%': 15 }">Make-up Water Cost ({{settings.currency}}/yr)</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          <span *ngIf="baselineOutput.operationsOutput.makeupWaterCost">
+            {{
+              baselineOutput.operationsOutput.makeupWaterCost | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!baselineOutput.operationsOutput.makeupWaterCost">&mdash;</span>
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{
+              modResults.outputData.operationsOutput.makeupWaterCost | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="pl-4">Savings</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          &mdash;
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{
+              (baselineOutput.operationsOutput.makeupWaterCost - modResults.outputData.operationsOutput.makeupWaterCost) | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr class="bold">
+        <td>Annual Cost ({{settings.currency}})</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          <span *ngIf="baselineOutput.operationsOutput.totalOperatingCost">
+            {{
+              baselineOutput.operationsOutput.totalOperatingCost | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!baselineOutput.operationsOutput.totalOperatingCost">&mdash;</span>
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index" [ngClass]="{
+            'selected-modification': index == selectedModificationIndex,
+            'positive-savings': modResults.valid.isValid &&
+              getSavingsPercentage(
+                baselineOutput.operationsOutput.totalOperatingCost,
+                modResults.outputData.operationsOutput.totalOperatingCost
+              ) > 10
+          }">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{
+              modResults.outputData.operationsOutput.totalOperatingCost | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr class="bold">
+        <td>Annual Savings ({{settings.currency}})</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          &mdash;
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index" [ngClass]="{
+            'selected-modification': index == selectedModificationIndex,
+            'positive-savings': modResults.valid.isValid &&
+              getSavingsPercentage(
+                baselineOutput.operationsOutput.totalOperatingCost,
+                modResults.outputData.operationsOutput.totalOperatingCost
+              ) > 10
+          }">
+          <span *ngIf="modResults.valid.isValid && modResults.outputData.boilerOutput">
+            {{
+              (baselineOutput.operationsOutput.totalOperatingCost - modResults.outputData.operationsOutput.totalOperatingCost) | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modResults.valid.isValid || !modResults.outputData.boilerOutput">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Implementation Cost</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          &mdash;
+        </td>
+        <td *ngFor="let modification of ssmt.modifications; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modification.ssmt.operatingCosts.implementationCosts">
+            {{
+              modification.ssmt.operatingCosts.implementationCosts | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modification.ssmt.operatingCosts.implementationCosts">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Payback Period (months)</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          &mdash;
+        </td>
+        <td *ngFor="let modification of ssmt.modifications; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span *ngIf="modification.ssmt.operatingCosts.implementationCosts">
+            {{
+              modificationOutputs[index].outputData.paybackPeriod | number: "1.0-0"
+            }}
+          </span>
+          <span *ngIf="!modification.ssmt.operatingCosts.implementationCosts">&mdash;</span>
+        </td>
+      </tr>
+      <tr class="bold">
+        <td>Selected Energy Projects</td>
+        <td class="text-muted" [ngClass]="{'selected-modification': selectedModificationIndex == -1}">&mdash;</td>
+        <td *ngFor="let modification of ssmt.modifications; let index = index;"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowOperationsData && modification.exploreOppsShowOperationsData.hasOpportunity">{{ modification.exploreOppsShowOperationsData.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowUnitCosts && modification.exploreOppsShowUnitCosts.hasOpportunity">{{ modification.exploreOppsShowUnitCosts.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowBoilerData && modification.exploreOppsShowBoilerData.hasOpportunity">{{ modification.exploreOppsShowBoilerData.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowCondensateHandling && modification.exploreOppsShowCondensateHandling.hasOpportunity">{{ modification.exploreOppsShowCondensateHandling.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowHeatLoss && modification.exploreOppsShowHeatLoss.hasOpportunity">{{ modification.exploreOppsShowHeatLoss.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowSteamUsage && modification.exploreOppsShowSteamUsage.hasOpportunity">{{ modification.exploreOppsShowSteamUsage.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowCondensingTurbine && modification.exploreOppsShowCondensingTurbine.hasOpportunity">{{ modification.exploreOppsShowCondensingTurbine.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowHighToLowPressureTurbine && modification.exploreOppsShowHighToLowPressureTurbine.hasOpportunity">{{ modification.exploreOppsShowHighToLowPressureTurbine.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowHighToMediumPressureTurbine && modification.exploreOppsShowHighToMediumPressureTurbine.hasOpportunity">{{ modification.exploreOppsShowHighToMediumPressureTurbine.display }}</span>
+          <span class="d-block"
+            *ngIf="modification.exploreOppsShowMediumToLowPressureTurbine && modification.exploreOppsShowMediumToLowPressureTurbine.hasOpportunity">{{ modification.exploreOppsShowMediumToLowPressureTurbine.display }}</span>
+        </td>
+      </tr>
+      <tr class="bold">
+        <td>Modifications</td>
+        <td class="text-muted" [ngClass]="{'selected-modification': selectedModificationIndex == -1}">&mdash;</td>
+        <td *ngFor="let modification of ssmt.modifications; let index = index;"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <div *ngFor="let modificationMade of getModificationsMadeList(modification.ssmt)">
+            {{modificationMade}}<br>
+          </div>
+        </td>
+      </tr>
+      <tr class="hide-print" *ngIf="inRollup">
+        <td>Use for Summary</td>
+        <td [ngClass]="{'selected-modification': selectedModificationIndex == -1}">
+          <input *ngIf="baselineOutput.boilerOutput" name="{{ 'summarySelect_' + assessment.id }}" type="radio"
+            (change)="useModification()" [value]="-1" [(ngModel)]="selectedModificationIndex" />
+          <span *ngIf="!baselineOutput.boilerOutput" class="alert-danger small">
+            Invalid Data
+          </span>
+        </td>
+        <td *ngFor="let modResults of modificationOutputs; let index = index"
+          [ngClass]="{'selected-modification': index == selectedModificationIndex}">
+          <input *ngIf="modResults.outputData.boilerOutput" name="{{ 'summarySelect_' + assessment.id }}" type="radio"
+            (change)="useModification()" [value]="index" [(ngModel)]="selectedModificationIndex" />
+          <span *ngIf="!modResults.outputData.boilerOutput" class="alert-danger small">
+            Invalid Data
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <app-exportable-results-table [tableString]="copyTableString"
+    (updateTableString)="updateCopyTableString()"></app-exportable-results-table>
+</div>

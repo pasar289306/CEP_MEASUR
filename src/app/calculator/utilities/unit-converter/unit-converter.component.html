@@ -1,0 +1,83 @@
+<div class="calculator-container modify-conditions general standalone-calculator">
+  <div class="row h-100" [ngClass]="{'general': !inAssessment}">
+    <div class="col-12">
+      <div class="modification col-auto reset-size p-3 mx-auto" [ngClass]="{'converter-content': !inAssessment}">
+        <div class="d-flex header mr-2 ml-2 pb-1 pt-1 align-items-center">
+          <div class="calc-icon-header icon-utilities">
+            <img src="assets/images/calculator-icons/utilities-icons/unit-converter.png">
+          </div>
+          <div class="pl-2">
+            <h3>Unit Converter</h3>
+          </div>
+        </div>
+        <div class="row measure-row">
+          <div class="col-12">
+            <select class="form-control" id="type" [(ngModel)]="measure" (change)="getMeasures()">
+              <option *ngFor="let option of options | sortBy : 'display' : 'asc' " [ngValue]="option.measure">{{option.display}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row value-row">
+          <div class="col-5">
+            <input type="number" step="any" class="form-control text-center input-field" id="value1" [(ngModel)]="value1"
+              (input)="getValue2()">
+            <select class="form-control" id="from" [(ngModel)]="from" (change)="getValue2()">
+              @if (possibilities.length >= 10) {
+                @for (group of groupedPossibilities | keyvalue; track group.key) {
+                  <optgroup [label]="group.key">
+                    @for (possibility of group.value; track possibility.unit) {
+                      <option [value]="possibility.unit">
+                        {{possibility.display}}
+                        <span [innerHTML]="possibility.displayUnit"></span>
+                      </option>
+                    }
+                  </optgroup>
+                }
+              } @else {
+                  @for (possibility of possibilities; track possibility.unit) {
+                    <option [value]="possibility.unit">
+                      {{possibility.display}}
+                      <span [innerHTML]="possibility.displayUnit"></span>
+                    </option>
+                  }
+              }
+            </select>
+          </div>
+
+          <div class="col-2 text-center">
+            <button type="button" class="btn btn-outline-primary btn-sm p-1 input-swap-btn" (click)="swapUnits()">
+              <i class="fa fa-exchange input-swap-img"></i>
+            </button>
+          </div>
+
+          <div class="col-5 text-center">
+            <small>
+              <strong>{{value2 | number:'.0-6'}}</strong>
+            </small>
+            <select class="form-control" id="to" [(ngModel)]="to" (change)="getValue2()">
+              @if (possibilities.length >= 10) {
+                @for (group of groupedPossibilities | keyvalue; track group.key) {
+                  <optgroup [label]="group.key">
+                    @for (possibility of group.value; track possibility.unit) {
+                      <option [value]="possibility.unit">
+                        {{possibility.display}}
+                        <span [innerHTML]="possibility.displayUnit"></span>
+                      </option>
+                    }
+                  </optgroup>
+                }
+              } @else {
+                  @for (possibility of possibilities; track possibility.unit) {
+                    <option [value]="possibility.unit">
+                      {{possibility.display}}
+                      <span [innerHTML]="possibility.displayUnit"></span>
+                    </option>
+                  }
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

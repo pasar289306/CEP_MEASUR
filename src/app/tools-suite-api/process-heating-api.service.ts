@@ -1,0 +1,860 @@
+import { Injectable } from '@angular/core';
+import { AirHeatingInput, AirHeatingOutput } from '../shared/models/phast/airHeating';
+import { EnergyEquivalencyElectric, EnergyEquivalencyElectricOutput, EnergyEquivalencyFuel, EnergyEquivalencyFuelOutput } from '../shared/models/phast/energyEquivalency';
+import { FlowCalculations, FlowCalculationsOutput } from '../shared/models/phast/flowCalculations';
+import { HeatCascadingInput, HeatCascadingOutput } from '../shared/models/phast/heatCascading';
+import { AtmosphereLoss } from '../shared/models/phast/losses/atmosphereLoss';
+import { AuxiliaryPowerLoss } from '../shared/models/phast/losses/auxiliaryPowerLoss';
+import { GasChargeMaterial, LiquidChargeMaterial, SolidChargeMaterial } from '../shared/models/phast/losses/chargeMaterial';
+import { GasCoolingLoss, LiquidCoolingLoss } from '../shared/models/phast/losses/coolingLoss';
+import { EnergyInputEAF } from '../shared/models/phast/losses/energyInputEAF';
+import { ExhaustGasEAF } from '../shared/models/phast/losses/exhaustGasEAF';
+import { FixtureLoss } from '../shared/models/phast/losses/fixtureLoss';
+import { FlueGasByMass, FlueGasByVolume, FlueGasByVolumeSuiteResults, MaterialInputProperties } from '../shared/models/phast/losses/flueGas';
+import { LeakageLoss } from '../shared/models/phast/losses/leakageLoss';
+import { CircularOpeningLoss, QuadOpeningLoss, ViewFactorInput } from '../shared/models/phast/losses/openingLoss';
+import { Slag } from '../shared/models/phast/losses/slag';
+import { WallLoss } from '../shared/models/phast/losses/wallLoss';
+import { O2Enrichment, RawO2Output } from '../shared/models/phast/o2Enrichment';
+import { WasteHeatInput, WasteHeatOutput } from '../shared/models/phast/wasteHeat';
+import { CondensingEconomizerOutput, CondensingEconomizerSuiteInput } from '../shared/models/steam/condensingEconomizer';
+import { FeedwaterEconomizerOutput, FeedwaterEconomizerSuiteInput } from '../shared/models/steam/feedwaterEconomizer';
+import { WaterHeatingInput, WaterHeatingOutput } from '../shared/models/steam/waterHeating';
+import { SuiteApiHelperService } from './suite-api-helper.service';
+import { ToolsSuiteApiService } from './tools-suite-api.service';
+import {
+  type AirHeatingUsingExhaustResults,
+  type AirWaterCoolingUsingFlueOutput,
+  type CascadeHeatHighToLowOutput,
+  type FlowCalculationsEnergyUseResults,
+  type GasCompositions,
+  type O2EnrichmentResults,
+  type ProcessHeatProperties,
+  type SaturatedTemperature,
+  type SolidLiquidFlueGasMaterial as SuiteSolidLiquidFlueGasMaterial,
+  type SteamConditionType,
+  type ThermicReactionType,
+  type WaterHeatingUsingExhaustOutput,
+  type WaterHeatingUsingFlueOutput,
+  type WaterHeatingUsingSteamOutput,
+} from 'measur-tools-suite';
+
+@Injectable()
+export class ProcessHeatingApiService {
+
+  constructor(private suiteApiHelperService: SuiteApiHelperService,
+    private toolsSuiteApiService: ToolsSuiteApiService
+  ) { }
+
+  atmosphere(input: AtmosphereLoss): number {
+    input.inletTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.inletTemperature);
+    input.outletTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.outletTemperature);
+    input.flowRate = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.flowRate);
+    input.correctionFactor = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.correctionFactor);
+    input.specificHeat = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.specificHeat);
+    //flow_rate specific_heat inlet_temperature outlet_temperature correction_factor
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.atmosphereTotalHeatLoss(input.flowRate, input.specificHeat, input.inletTemperature, input.outletTemperature, input.correctionFactor);
+    return output;
+  }
+
+  fixtureLosses(input: FixtureLoss): number {
+    // TODO don't need to convert all
+    input.specificHeat = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.specificHeat);
+    input.feedRate = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.feedRate);
+    input.initialTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.initialTemperature);
+    input.finalTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.finalTemperature);
+    input.correctionFactor = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.correctionFactor);
+
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.fixtureTotalHeatLoss(input.specificHeat, input.feedRate, input.initialTemperature, input.finalTemperature, input.correctionFactor);
+    return output;
+  }
+
+  gasCoolingLosses(input: GasCoolingLoss): number {
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.gasCoolingTotalHeatLoss(
+      input.flowRate, input.initialTemperature,
+      input.finalTemperature, input.specificHeat,
+      input.correctionFactor, input.gasDensity
+    );
+    return output;
+  }
+
+  liquidCoolingLosses(input: LiquidCoolingLoss): number {
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.liquidCoolingTotalHeatLoss(
+      input.flowRate, input.density,
+      input.initialTemperature, input.outletTemperature,
+      input.specificHeat, input.correctionFactor,
+    );
+    return output;
+  }
+
+  gasLoadChargeMaterial(input: GasChargeMaterial): number {
+    let thermicReactionType: ThermicReactionType = this.suiteApiHelperService.getMaterialThermicReactionType(input.thermicReactionType);
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.gasLoadChargeMaterialTotalHeatRequired(
+      thermicReactionType,
+      input.specificHeatGas,
+      input.feedRate,
+      input.percentVapor,
+      input.initialTemperature,
+      input.dischargeTemperature,
+      input.specificHeatVapor,
+      input.percentReacted,
+      input.reactionHeat,
+      input.additionalHeat
+    );
+    return output;
+  }
+
+  liquidLoadChargeMaterial(input: LiquidChargeMaterial): number {
+    let thermicReactionType: ThermicReactionType = this.suiteApiHelperService.getMaterialThermicReactionType(input.thermicReactionType);
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.liquidLoadChargeMaterialTotalHeatRequired(
+      thermicReactionType,
+      input.specificHeatLiquid,
+      input.vaporizingTemperature,
+      input.latentHeat,
+      input.specificHeatVapor,
+      input.chargeFeedRate,
+      input.initialTemperature,
+      input.dischargeTemperature,
+      input.percentVaporized,
+      input.percentReacted,
+      input.reactionHeat,
+      input.additionalHeat
+    );
+    return output;
+  }
+
+  solidLoadChargeMaterial(input: SolidChargeMaterial): number {
+    let thermicReactionType: ThermicReactionType = this.suiteApiHelperService.getMaterialThermicReactionType(input.thermicReactionType);
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.solidLoadChargeMaterialTotalHeatRequired(
+      thermicReactionType,
+      input.specificHeatSolid,
+      input.latentHeat,
+      input.specificHeatLiquid,
+      input.meltingPoint,
+      input.chargeFeedRate,
+      input.waterContentCharged,
+      input.waterContentDischarged,
+      input.initialTemperature,
+      input.dischargeTemperature,
+      input.waterVaporDischargeTemperature,
+      input.chargeMelted,
+      input.chargeReacted,
+      input.reactionHeat,
+      input.additionalHeat
+    );
+    return output;
+  }
+
+  viewFactorCalculation(input: ViewFactorInput): number {
+    let output: number;
+    if (input.openingShape == 0) {
+      // circular
+      if (input.thickness != 0 && input.diameter != 0) {
+        input.thickness = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.thickness);
+        input.diameter = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.diameter);
+        output = this.toolsSuiteApiService.ToolsSuiteModule.calculateViewFactorCircular(input.thickness, input.diameter);
+      }
+    } else {
+      // quad
+      if (input.thickness != 0 && input.length != 0 && input.width != 0) {
+        input.thickness = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.thickness);
+        input.width = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.width);
+        input.length = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.length);
+        output = this.toolsSuiteApiService.ToolsSuiteModule.calculateViewFactorQuad(input.thickness, input.length, input.width);
+      }
+    }
+    return output;
+  }
+
+  openingLossesQuad(input: QuadOpeningLoss): number {
+    input.ratio = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.ratio);
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.openingTotalHeatLossQuad(
+      input.emissivity, input.length, input.width, input.ambientTemperature,
+      input.insideTemperature, input.percentTimeOpen, input.viewFactor);
+    return output;
+  }
+
+  openingLossesCircular(input: CircularOpeningLoss): number {
+    input.ratio = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.ratio);
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.openingTotalHeatLossCircular(
+      input.emissivity, input.diameter, input.ambientTemperature,
+      input.insideTemperature, input.percentTimeOpen, input.viewFactor);
+    return output;
+  }
+
+  wallLosses(input: WallLoss): number {
+    input.surfaceArea = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.surfaceArea);
+    input.ambientTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.ambientTemperature);
+    input.surfaceTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.surfaceTemperature);
+    input.windVelocity = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.windVelocity);
+    input.surfaceEmissivity = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.surfaceEmissivity);
+    input.conditionFactor = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.conditionFactor);
+    input.correctionFactor = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.correctionFactor);
+
+    //surfaceArea, ambientTemperature, surfaceTemperature, windSpeed, surfaceEmissivity, shapeFactor, correctionFactor
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.wallTotalHeatLoss(
+      input.surfaceArea, input.ambientTemperature, input.surfaceTemperature,
+      input.windVelocity, input.surfaceEmissivity, input.conditionFactor,
+      input.correctionFactor
+    );
+    return output;
+  }
+
+  leakageLosses(input: LeakageLoss): number {
+    // TODO don't need all
+    input.draftPressure = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.draftPressure);
+    input.openingArea = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.openingArea);
+    input.leakageGasTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.leakageGasTemperature);
+    input.ambientTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.ambientTemperature);
+    input.coefficient = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.coefficient);
+    input.specificGravity = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.specificGravity);
+    input.correctionFactor = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.correctionFactor);
+
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.leakageTotalHeatLoss(
+      input.draftPressure, input.openingArea, input.leakageGasTemperature,
+      input.ambientTemperature, input.coefficient,
+      input.specificGravity, input.correctionFactor
+    );
+    return output;
+  }
+
+  flueGasLossesByVolume(input: FlueGasByVolume): FlueGasByVolumeSuiteResults {
+    let GasCompositionsInstance: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+      "",
+      input.CH4,
+      input.C2H6,
+      input.N2,
+      input.H2,
+      input.C3H8,
+      input.C4H10_CnH2n,
+      input.H2O,
+      input.CO,
+      input.CO2,
+      input.SO2,
+      input.O2
+    );
+
+    // done on suite side in NAN
+    let flueO2: number = input.flueGasO2Percentage / 100;
+    let excessAir: number = input.excessAirPercentage / 100;
+
+    let output: ProcessHeatProperties = this.toolsSuiteApiService.ToolsSuiteModule.gasFlueGasMaterialProcessHeatProperties(
+      GasCompositionsInstance,
+      input.flueGasTemperature,
+      flueO2,
+      input.combustionAirTemperature,
+      input.fuelTemperature,
+      input.ambientAirTempF,
+      input.combAirMoisturePerc,
+      excessAir,
+    );
+    let results: FlueGasByVolumeSuiteResults = {
+      flueGasO2: output.flueGasO2,
+      excessAir: output.excessAir,
+      availableHeat: output.availableHeat,
+    }
+    GasCompositionsInstance.delete();
+    return results;
+  }
+
+  flueGasLossesByMass(input: FlueGasByMass): number {
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.solidLiquidFlueGasMaterialTotalHeatLoss(
+      input.flueGasTemperature,
+      input.excessAirPercentage,
+      input.combustionAirTemperature,
+      input.fuelTemperature,
+      input.moistureInAirCombustion,
+      input.ashDischargeTemperature,
+      input.unburnedCarbonInAsh,
+      input.carbon,
+      input.hydrogen,
+      input.sulphur,
+      input.inertAsh,
+      input.o2,
+      input.moisture,
+      input.nitrogen,
+      input.ambientAirTempF
+    );
+    return output;
+  }
+
+  flueGasCalculateExcessAir(input: MaterialInputProperties): number {
+    let GasCompositions: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+      "",
+      input.CH4,
+      input.C2H6,
+      input.N2,
+      input.H2,
+      input.C3H8,
+      input.C4H10_CnH2n,
+      input.H2O,
+      input.CO,
+      input.CO2,
+      input.SO2,
+      input.O2
+    );
+
+    input.o2InFlueGas = input.o2InFlueGas / 100;
+    let output: number = GasCompositions.calculateExcessAir(input.o2InFlueGas);
+    output = output * 100;
+    GasCompositions.delete();
+    return output;
+  }
+
+  flueGasCalculateO2(input: MaterialInputProperties): number {
+    let GasCompositions: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+      "",
+      input.CH4,
+      input.C2H6,
+      input.N2,
+      input.H2,
+      input.C3H8,
+      input.C4H10_CnH2n,
+      input.H2O,
+      input.CO,
+      input.CO2,
+      input.SO2,
+      input.O2
+    );
+
+    input.excessAir = input.excessAir / 100;
+    let output: number = GasCompositions.calculateO2(input.excessAir);
+    output = output * 100;
+
+    GasCompositions.delete();
+    return output;
+  }
+
+  flueGasByMassCalculateExcessAir(input: MaterialInputProperties): number {
+    input.o2InFlueGas = input.o2InFlueGas / 100;
+    input.carbon = input.carbon / 100;
+    input.hydrogen = input.hydrogen / 100;
+    input.sulphur = input.sulphur / 100;
+    input.inertAsh = input.inertAsh / 100;
+    input.o2 = input.o2 / 100;
+    input.moisture = input.moisture / 100;
+    input.nitrogen = input.nitrogen / 100;
+    input.moistureInAirCombustion = input.moistureInAirCombustion / 100;
+
+    // todo fix phast 4855
+    input.moistureInAirCombustion = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.moistureInAirCombustion)
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.calculateExcessAirFromFlueGasO2(input.o2InFlueGas, input.carbon, input.hydrogen, input.sulphur, input.inertAsh, input.o2, input.moisture, input.nitrogen, input.moistureInAirCombustion);
+    output = output * 100;
+    return output;
+  }
+
+  flueGasByMassCalculateO2(input: MaterialInputProperties): number {
+    input.excessAir = input.excessAir / 100;
+    input.carbon = input.carbon / 100;
+    input.hydrogen = input.hydrogen / 100;
+    input.sulphur = input.sulphur / 100;
+    input.inertAsh = input.inertAsh / 100;
+    input.o2 = input.o2 / 100;
+    input.moisture = input.moisture / 100;
+    input.nitrogen = input.nitrogen / 100;
+
+    // todo fix phast 4855
+    input.moistureInAirCombustion = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.moistureInAirCombustion)
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.calculateFlueGasO2(
+      input.excessAir,
+      input.carbon,
+      input.hydrogen,
+      input.sulphur,
+      input.inertAsh,
+      input.o2,
+      input.moisture,
+      input.nitrogen,
+      input.moistureInAirCombustion);
+    output = output * 100;
+
+    return output;
+  }
+
+  flueGasByVolumeCalculateHeatingValue(input: MaterialInputProperties): HeatingValueByVolumeOutput {
+    let GasCompositions: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+      "",
+      input.CH4,
+      input.C2H6,
+      input.N2,
+      input.H2,
+      input.C3H8,
+      input.C4H10_CnH2n,
+      input.H2O,
+      input.CO,
+      input.CO2,
+      input.SO2,
+      input.O2
+    );
+
+    let output: HeatingValueByVolumeOutput = {
+      heatingValue: GasCompositions.heatingValue,
+      heatingValueVolume: GasCompositions.heatingValueVolume,
+      specificGravity: GasCompositions.specificGravity,
+    }
+
+    GasCompositions.delete();
+    return output;
+  }
+
+  flueGasByMassCalculateHeatingValue(input: MaterialInputProperties): number {
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.calculateHeatingValueFuel(
+      input.carbon,
+      input.hydrogen,
+      input.sulphur,
+      input.inertAsh,
+      input.o2,
+      input.moisture,
+      input.nitrogen);
+    return output;
+  }
+
+  slagOtherMaterialTotalHeatLoss(input: Slag): number {
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.slagOtherMaterialTotalHeatLoss(
+      input.weight, input.inletTemperature,
+      input.outletTemperature, input.specificHeat,
+      input.correctionFactor,
+    );
+
+    return output;
+  }
+
+  auxiliaryPowerLoss(input: AuxiliaryPowerLoss): number {
+    let output: number = this.toolsSuiteApiService.ToolsSuiteModule.auxiliaryCalculatePowerUsed(
+      input.motorPhase, input.supplyVoltage,
+      input.avgCurrent, input.powerFactor,
+      input.operatingTime
+    );
+    return output;
+  }
+
+  energyInputEAF(input: EnergyInputEAF): EnergyEAFOutput {
+    input.naturalGasHeatInput = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.naturalGasHeatInput);
+    input.coalCarbonInjection = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.coalCarbonInjection);
+    input.coalHeatingValue = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.coalHeatingValue);
+    input.electrodeUse = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.electrodeUse);
+    input.electrodeHeatingValue = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.electrodeHeatingValue);
+    input.otherFuels = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.otherFuels);
+    input.electricityInput = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.electricityInput);
+
+    const totalChemicalEnergyInput: number = this.toolsSuiteApiService.ToolsSuiteModule.energyInputEAFTotalChemicalEnergyInput(
+      input.naturalGasHeatInput, input.coalCarbonInjection,
+      input.coalHeatingValue, input.electrodeUse,
+      input.electrodeHeatingValue, input.otherFuels
+    );
+    const heatDelivered: number = this.toolsSuiteApiService.ToolsSuiteModule.energyInputEAFTotalHeatDelivered(totalChemicalEnergyInput, input.electricityInput);
+
+    let output: EnergyEAFOutput = {
+      heatDelivered: heatDelivered,
+      totalChemicalEnergyInput: totalChemicalEnergyInput
+    }
+
+    return output;
+  }
+
+  exhaustGasEAF(input: ExhaustGasEAF): number {
+    const totalHeatLoss: number = this.toolsSuiteApiService.ToolsSuiteModule.exhaustGasEAFTotalHeatLoss(
+      input.offGasTemp, input.CO,
+      input.H2, input.combustibleGases, input.vfr,
+      input.dustLoading,
+    );
+
+    return totalHeatLoss;
+  }
+
+  energyEquivalencyElectric(input: EnergyEquivalencyElectric): EnergyEquivalencyElectricOutput {
+    input.fuelFiredEfficiency = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.fuelFiredEfficiency);
+    input.electricallyHeatedEfficiency = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.electricallyHeatedEfficiency);
+    input.fuelFiredHeatInput = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.fuelFiredHeatInput);
+
+    let results: number = this.toolsSuiteApiService.ToolsSuiteModule.calculateElectricalEquivalentHeatInput(
+      input.fuelFiredHeatInput,
+      input.fuelFiredEfficiency,
+      input.electricallyHeatedEfficiency
+    );
+
+    let output: EnergyEquivalencyElectricOutput = {
+      electricalHeatInput: results
+    };
+
+    return output;
+  }
+
+  energyEquivalencyFuel(input: EnergyEquivalencyFuel): EnergyEquivalencyFuelOutput {
+    input.electricallyHeatedEfficiency = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.electricallyHeatedEfficiency);
+    input.fuelFiredEfficiency = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.fuelFiredEfficiency);
+    input.electricalHeatInput = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.electricalHeatInput);
+
+    let results: number = this.toolsSuiteApiService.ToolsSuiteModule.calculateFuelFiredEquivalentHeatInput(
+      input.electricalHeatInput,
+      input.electricallyHeatedEfficiency,
+      input.fuelFiredEfficiency
+    );
+
+    let output: EnergyEquivalencyFuelOutput = {
+      fuelFiredHeatInput: results
+    };
+    return output;
+  }
+
+  flowCalculations(input: FlowCalculations): FlowCalculationsOutput {
+
+    input.operatingTime = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.operatingTime)
+    input.specificGravity = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.specificGravity)
+    input.orificeDiameter = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.orificeDiameter)
+    input.insidePipeDiameter = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.insidePipeDiameter)
+    input.dischargeCoefficient = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.dischargeCoefficient)
+    input.gasHeatingValue = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.gasHeatingValue)
+    input.gasTemperature = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.gasTemperature)
+    input.gasPressure = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.gasPressure)
+    input.orificePressureDrop = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.orificePressureDrop)
+
+    let flowCalculationsEnergyUseResults: FlowCalculationsEnergyUseResults = this.toolsSuiteApiService.ToolsSuiteModule.flowCalculationsEnergyUse(
+      input.specificGravity,
+      input.orificeDiameter,
+      input.insidePipeDiameter,
+      input.dischargeCoefficient,
+      input.gasHeatingValue,
+      input.gasTemperature,
+      input.gasPressure,
+      input.orificePressureDrop,
+      input.operatingTime
+    );
+
+    let output: FlowCalculationsOutput = {
+      flow: flowCalculationsEnergyUseResults.flowPerHour,
+      heatInput: flowCalculationsEnergyUseResults.heatInput,
+      totalFlow: flowCalculationsEnergyUseResults.totalFlow,
+    }
+
+    return output;
+  }
+
+  o2Enrichment(input: O2Enrichment): RawO2Output {
+    input.o2CombAir = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.o2CombAir);
+    input.o2CombAirEnriched = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.o2CombAirEnriched);
+    input.flueGasTemp = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.flueGasTemp);
+    input.flueGasTempEnriched = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.flueGasTempEnriched);
+    input.o2FlueGas = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.o2FlueGas);
+    input.o2FlueGasEnriched = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.o2FlueGasEnriched);
+    input.combAirTemp = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.combAirTemp);
+    input.combAirTempEnriched = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.combAirTempEnriched);
+    input.fuelConsumption = this.suiteApiHelperService.convertNullInputValueForObjectConstructor(input.fuelConsumption);
+
+    let O2EnrichmentInstance: O2EnrichmentResults = this.toolsSuiteApiService.ToolsSuiteModule.calculateO2Enrichment(
+      input.o2CombAir, input.o2CombAirEnriched,
+      input.flueGasTemp, input.flueGasTempEnriched,
+      input.o2FlueGas, input.o2FlueGasEnriched,
+      input.combAirTemp, input.combAirTempEnriched,
+      input.fuelConsumption
+    );
+    let output: RawO2Output = this.getO2EnrichmentOutput(O2EnrichmentInstance);
+    return output;
+  }
+
+  getO2EnrichmentOutput(instance: O2EnrichmentResults): RawO2Output {
+    return {
+      availableHeatInput: instance.availableHeat,
+      availableHeatEnriched: instance.availableHeatEnriched,
+      fuelSavingsEnriched: instance.fuelSavingsEnriched,
+      fuelConsumptionEnriched: instance.fuelConsumptionEnriched,
+    }
+  }
+
+  waterHeatingUsingSteam(input: WaterHeatingInput): WaterHeatingOutput {
+    let output: WaterHeatingUsingSteamOutput = this.toolsSuiteApiService.ToolsSuiteModule.waterHeatingUsingSteam(
+      input.pressureSteamIn, input.flowSteamRate,
+      input.temperatureWaterIn, input.pressureWaterOut,
+      input.flowWaterRate, input.tempMakeupWater,
+      input.presMakeupWater, input.effWaterHeater,
+      input.effBoiler, input.operatingHours
+    );
+    let results: WaterHeatingOutput = {
+      enthalpySteamIn: output.enthalpySteamIn,
+      bpTempWaterOut: output.bpTempWaterOut,
+      tempWaterOut: output.tempWaterOut,
+      enthalpySteamOut: output.enthalpySteamOut,
+      enthalpyMakeupWater: output.enthalpyMakeUpWater,
+      flowByPassSteam: output.flowByPassSteam,
+      bpTempWarningFlag: output.bpTempWarningFlag,
+
+      heatGainRate: output.heatGainRate,
+      energySavedDWH: output.energySavedDWH,
+      energySavedBoiler: output.energySavedBoiler,
+      energySavedTotal: output.energySavedDWH + output.energySavedBoiler,
+      waterSaved: output.waterSaved,
+
+      costSavingsTotal: undefined,
+      costSavingsBoiler: undefined,
+      costSavingsWNT: undefined,
+      costSavingsDWH: undefined,
+    }
+    return results;
+  }
+
+  airHeatingUsingExhaust(input: AirHeatingInput): AirHeatingOutput {
+    let output: AirHeatingUsingExhaustResults;
+    if (input.gasFuelType) {
+      let GasCompositions: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+        input.substance,
+        input.CH4,
+        input.C2H6,
+        input.N2,
+        input.H2,
+        input.C3H8,
+        input.C4H10_CnH2n,
+        input.H2O,
+        input.CO,
+        input.CO2,
+        input.SO2,
+        input.O2
+      );
+      output = this.toolsSuiteApiService.ToolsSuiteModule.airHeatingUsingExhaustWithGasComposition(GasCompositions,
+        input.flueTemperature,
+        input.excessAir,
+        input.fireRate,
+        input.airflow,
+        input.inletTemperature,
+        input.heaterEfficiency,
+        input.hxEfficiency,
+        input.operatingHours);
+      GasCompositions.delete();
+    } else {
+      let SolidLiquidFlueGasMaterial: SuiteSolidLiquidFlueGasMaterial = {
+        "substance": input.substance,
+        "carbon": input.carbon,
+        "hydrogen": input.hydrogen,
+        "sulphur": input.sulphur,
+        "inertAsh": input.inertAsh,
+        "oxygen": input.o2,
+        "moisture": input.moisture,
+        "nitrogen": input.nitrogen
+      };
+      output = this.toolsSuiteApiService.ToolsSuiteModule.airHeatingUsingExhaustWithSolidLiquidFlueGasMaterial(SolidLiquidFlueGasMaterial,
+        input.flueTemperature,
+        input.excessAir,
+        input.fireRate,
+        input.airflow,
+        input.inletTemperature,
+        input.heaterEfficiency,
+        input.hxEfficiency,
+        input.operatingHours);
+    }
+
+    let results: AirHeatingOutput = {
+      hxColdAir: output.hxColdAir,
+      hxOutletExhaust: output.hxOutletExhaust,
+      energySavings: output.energySavings,
+      costSavings: undefined,
+      heatCapacityFlue: output.heatCapacityFlue,
+      heatCapacityAir: output.heatCapacityAir,
+      baselineEnergy: undefined,
+      modificationEnergy: undefined,
+    }
+    return results;
+  }
+
+  airWaterCoolingUsingFlue(input: CondensingEconomizerSuiteInput): CondensingEconomizerOutput {
+    let GasCompositionsInstance: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+      input.substance,
+      input.CH4,
+      input.C2H6,
+      input.N2,
+      input.H2,
+      input.C3H8,
+      input.C4H10_CnH2n,
+      input.H2O,
+      input.CO,
+      input.CO2,
+      input.SO2,
+      input.O2
+    );
+
+    let output: AirWaterCoolingUsingFlueOutput = this.toolsSuiteApiService.ToolsSuiteModule.airWaterCoolingUsingFlue(GasCompositionsInstance,
+      input.heatInput,
+      input.tempFlueGasInF,
+      input.tempFlueGasOutF,
+      input.tempCombAirF,
+      input.fuelTempF,
+      input.percO2,
+      input.ambientAirTempF,
+      input.moistCombAir
+    );
+    let results: CondensingEconomizerOutput = {
+      costSavings: undefined,
+      energySavings: undefined,
+
+      excessAir: output.excessAir,
+      flowFlueGas: output.flowFlueGas,
+      specHeat: output.specHeat,
+      fracCondensed: output.fracCondensed,
+      effThermal: output.effThermal,
+      effThermalLH: output.effThermalLH,
+      effLH: output.effLH,
+      heatRecovery: output.heatRecovery,
+      heatRecoveryAnnual: undefined,
+      sensibleHeatRecovery: output.sensibleHeatRecovery,
+      sensibleHeatRecoveryAnnual: undefined,
+      totalHeatRecovery: output.heatRecovery + output.sensibleHeatRecovery,
+      annualHeatRecovery: undefined,
+    }
+    GasCompositionsInstance.delete();
+    return results;
+  }
+
+  waterHeatingUsingFlue(input: FeedwaterEconomizerSuiteInput): FeedwaterEconomizerOutput {
+    let GasCompositionsInstance: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+      input.substance,
+      input.CH4,
+      input.C2H6,
+      input.N2,
+      input.H2,
+      input.C3H8,
+      input.C4H10_CnH2n,
+      input.H2O,
+      input.CO,
+      input.CO2,
+      input.SO2,
+      input.O2
+    );
+
+    let steamCondition: SteamConditionType = this.suiteApiHelperService.getSteamCondition(input.condSteam);
+
+    let output: WaterHeatingUsingFlueOutput = this.toolsSuiteApiService.ToolsSuiteModule.waterHeatingUsingFlue(GasCompositionsInstance,
+      input.tempFlueGas,
+      input.percO2,
+      input.tempCombAir,
+      input.moistCombAir,
+      input.ratingBoiler,
+      input.prSteam,
+      input.tempAmbientAir,
+      input.tempSteam,
+      input.tempFW,
+      input.percBlowDown,
+      input.effHX,
+      input.opHours,
+      input.costFuel,
+      input.hhvFuel,
+      steamCondition,
+      input.fuelTempF
+    );
+    let SaturatedTemperature: SaturatedTemperature = new this.toolsSuiteApiService.ToolsSuiteModule.SaturatedTemperature(input.prSteam);
+    let tempSteamSat: number = SaturatedTemperature.calculate();
+    SaturatedTemperature.delete();
+
+    let results: FeedwaterEconomizerOutput = {
+      effBoiler: output.effBoiler,
+      tempSteamSat: tempSteamSat,
+      enthalpySteam: output.enthalpySteam,
+      enthalpyFW: output.enthalpyFW,
+      flowSteam: output.flowSteam,
+      flowFW: output.flowFW,
+      flowFlueGas: output.flowFlueGas,
+      heatCapacityFG: output.heatCapacityFG,
+      specHeatFG: output.specheatFG,
+      heatCapacityFW: output.heatCapacityFW,
+      specHeatFW: output.specheatFW,
+      ratingHeatRecFW: output.ratingHeatRecFW,
+      tempFlueGasOut: output.tempFlueGasOut,
+      tempFWOut: output.tempFWOut,
+      energySavingsBoiler: output.energySavingsBoiler,
+      costSavingsBoiler: output.costSavingsBoiler,
+      energySavedTotal: output.energySavingsBoiler,
+    }
+    GasCompositionsInstance.delete();
+    return results;
+  }
+
+
+  cascadeHeatHighToLow(input: HeatCascadingInput): HeatCascadingOutput {
+    let GasCompositionsInstance: GasCompositions = new this.toolsSuiteApiService.ToolsSuiteModule.GasCompositions(
+      'Gas',
+      input.CH4,
+      input.C2H6,
+      input.N2,
+      input.H2,
+      input.C3H8,
+      input.C4H10_CnH2n,
+      input.H2O,
+      input.CO,
+      input.CO2,
+      input.SO2,
+      input.O2
+    );
+
+    let output: CascadeHeatHighToLowOutput = this.toolsSuiteApiService.ToolsSuiteModule.calculateCascadeHeatHighToLow(
+      GasCompositionsInstance,
+      input.fuelHV,
+      input.fuelCost,
+      input.priFiringRate,
+      input.priExhaustTemperature,
+      input.priExhaustO2,
+      input.priCombAirTemperature,
+      input.priOpHours,
+      input.secFiringRate,
+      input.secExhaustTemperature,
+      input.secExhaustO2,
+      input.secCombAirTemperature,
+      input.secOpHours,
+      input.fuelTempF,
+      input.ambientAirTempF,
+      input.combAirMoisturePerc
+    );
+    let results: HeatCascadingOutput = {
+      priFlueVolume: output.priFlueVolume,
+      hxEnergyRate: output.hxEnergyRate,
+      eqEnergySupply: output.eqEnergySupply,
+      effOppHours: output.effOpHours,
+      priExcessAir: output.priExcessAir,
+      priAvailableHeat: output.priAvailableHeat,
+      secExcessAir: output.secExcessAir,
+      secAvailableHeat: output.secAvailableHeat,
+      energySavings: output.energySavings,
+      hourlySavings: output.hourlySavings,
+      costSavings: output.costSavings,
+      baselineEnergy: undefined,
+      modificationEnergy: undefined
+    }
+    GasCompositionsInstance.delete();
+    return results;
+  }
+
+  waterHeatingUsingExhaust(input: WasteHeatInput): WasteHeatOutput {
+    let output: WaterHeatingUsingExhaustOutput = this.toolsSuiteApiService.ToolsSuiteModule.waterHeatingUsingExhaust(input.availableHeat, input.heatInput,
+      input.hxEfficiency, input.chillerInTemperature,
+      input.chillerOutTemperature, input.copChiller,
+      input.chillerEfficiency, input.copCompressor);
+    let results: WasteHeatOutput = {
+      recoveredHeat: output.recoveredHeat,
+      hotWaterFlow: output.hotWaterFlow,
+      tonsRefrigeration: output.tonsRefrigeration,
+      capacityChiller: output.capacityChiller,
+      electricalEnergy: output.electricalEnergy,
+      annualEnergy: undefined,
+      annualCost: undefined
+    }
+    return results;
+  }
+
+}
+
+
+export interface EnergyEAFOutput {
+  heatDelivered: number,
+  totalChemicalEnergyInput: number
+}
+
+export interface EnergyExhaustGasOutput {
+  fuelHeatDelivered: number,
+  exhaustGasLosses: number,
+  availableHeat: number,
+  electricalEfficiency: number,
+  electricalHeaterLosses?: number,
+  phastElectricalHeatDelivered?: number,
+  phastEnergyInputTotal?: number
+}
+
+export interface HeatingValueByVolumeOutput {
+  heatingValue: number,
+  heatingValueVolume: number,
+  specificGravity: number,
+}

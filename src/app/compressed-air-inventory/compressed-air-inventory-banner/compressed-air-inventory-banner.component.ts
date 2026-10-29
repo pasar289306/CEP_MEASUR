@@ -1,0 +1,218 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { InventoryItem } from '../../shared/models/inventory/inventory';
+import { Subscription } from 'rxjs';
+import { CompressedAirInventoryData } from '../compressed-air-inventory';
+import { CompressedAirInventoryService } from '../compressed-air-inventory.service';
+import { ModalDialogService } from '../../shared/modal-dialog.service';
+import { SecurityAndPrivacyItemComponent } from '../../shared/security-and-privacy/security-and-privacy-item/security-and-privacy-item.component';
+import { EmailMeasurDataService } from '../../shared/email-measur-data/email-measur-data.service';
+import { DashboardService } from '../../dashboard/dashboard.service';
+import { IntegrationStateService } from '../../shared/connected-inventory/integration-state.service';
+import { CompressedAirCatalogService } from '../compressed-air-inventory-setup/compressed-air-catalog/compressed-air-catalog.service';
+import _ from 'lodash';
+import { COMPRESSED_AIR_INVENTORY_SETUP_GATED_VIEWS, CompressedAirInventoryMainView, CompressedAirInventorySetupView, CompressedAirInventorySummaryView } from '../compressed-air-inventory.routing';
+import { isMainTabAllowed } from '../../shared/main-tab-routing/main-tab-routing';
+
+@Component({
+  selector: 'app-compressed-air-inventory-banner',
+  templateUrl: './compressed-air-inventory-banner.component.html',
+  styleUrl: './compressed-air-inventory-banner.component.css',
+  standalone: false
+})
+export class CompressedAirInventoryBannerComponent implements OnInit {
+
+  @Input()
+  compressedAirInventoryItem: InventoryItem;
+
+  setupTab: string;
+  setupTabSub: Subscription;
+  summaryTab: string;
+  summaryTabSub: Subscription;
+  mainTab: string;
+  mainTabSub: Subscription;
+  compressedAirInventoryData: CompressedAirInventoryData;
+  compressedAirInventoryDataSub: Subscription;
+  selectedTab: string;
+  selectedSystemIdSub: Subscription;
+  connectedInventoryDataSub: Subscription;
+  showConnectedItemBadge: boolean;
+  catalogClassStatus: string[];
+  bannerCollapsed: boolean = true;
+  isSelected: boolean = false;
+
+  constructor(private compressedAirInventoryService: CompressedAirInventoryService,
+    private modalDialogService: ModalDialogService,
+    private emailMeasurDataService: EmailMeasurDataService,
+    private dashboardService: DashboardService, 
+    private compressedAirCatalogService: CompressedAirCatalogService,
+    private integrationStateService: IntegrationStateService) { }
+
+
+  ngOnInit(): void {
+    this.mainTabSub = this.compressedAirInventoryService.mainTab.subscribe(val => {
+      this.mainTab = val;
+    });
+
+    this.setupTabSub = this.compressedAirInventoryService.setupTab.subscribe(val => {
+      this.setupTab = val;
+    });
+
+    this.compressedAirInventoryDataSub = this.compressedAirInventoryService.compressedAirInventoryData.subscribe(val => {
+      this.compressedAirInventoryData = val;
+    });
+
+    this.selectedSystemIdSub = this.compressedAirCatalogService.selectedSystemId.subscribe(val => {
+      if (val && val !== 'compressor-properties') {
+        this.selectedTab = val;
+      } else if (val === 'compressor-properties') {
+        this.selectedTab = 'compressor-properties';
+      }
+    });
+
+    this.summaryTabSub = this.compressedAirInventoryService.summaryTab.subscribe(val => {
+      this.summaryTab = val;
+    });
+
+    this.connectedInventoryDataSub = this.integrationStateService.connectedInventoryData.subscribe(connectedInventoryData => {
+      this.showConnectedItemBadge = connectedInventoryData.connectedItem !== undefined;
+    });
+  }
+
+
+  selectTab(tabId: string) {
+    this.selectedTab = tabId;
+    if (tabId === 'compressor-properties') {
+      this.isSelected = true;
+      this.compressedAirCatalogService.showCompressorProperties.next(true);
+      this.compressedAirCatalogService.selectedSystemId.next('');
+    } else {
+      this.isSelected = false;
+      this.compressedAirCatalogService.showCompressorProperties.next(false);
+      this.compressedAirCatalogService.selectedSystemId.next(tabId);
+    }
+  }
+
+  ngOnDestroy() {
+    this.setupTabSub.unsubscribe();
+    this.compressedAirInventoryDataSub.unsubscribe();
+    this.selectedSystemIdSub.unsubscribe();
+    this.mainTabSub.unsubscribe();
+    this.summaryTabSub.unsubscribe();
+    this.connectedInventoryDataSub.unsubscribe();
+  }
+
+  setSetupTab(str: CompressedAirInventorySetupView) {
+    this.compressedAirInventoryService.goToSetupTab(str);
+  }
+
+
+  canOpenMainTab(view: CompressedAirInventoryMainView): boolean {
+    return isMainTabAllowed(COMPRESSED_AIR_INVENTORY_SETUP_GATED_VIEWS, view, this.compressedAirInventoryData.isValid);
+  }
+
+  setMainTab(str: CompressedAirInventoryMainView) {
+    if (this.canOpenMainTab(str)) {
+      this.compressedAirInventoryService.goToMainTab(str);
+    }
+    this.collapseBanner();
+  }
+
+  setSummaryTab(str: CompressedAirInventorySummaryView) {
+    this.compressedAirInventoryService.goToSummaryTab(str);
+  }
+
+  showSecurityAndPrivacyModal() {
+    // Collapse banner to prevent it from reopening the modal on mobile when dismissed
+    this.bannerCollapsed = true;
+    this.modalDialogService.openModal(
+      SecurityAndPrivacyItemComponent,
+      SecurityAndPrivacyItemComponent.getDialogConfig()
+    );
+  }
+
+  collapseBanner() {
+    this.bannerCollapsed = !this.bannerCollapsed;
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  back() {
+    this.compressedAirInventoryService.backMainTab();
+  }
+
+  continue() {
+    this.compressedAirInventoryService.continueMainTab();
+  }
+
+  backSetupTabs() {
+    this.compressedAirInventoryService.backSetupTab();
+  }
+
+  continueSetupTabs() {
+    this.compressedAirInventoryService.continueSetupTab();
+  }
+
+  continueCompressedAirCatalogTabs() {
+    if (!this.compressedAirInventoryData?.systems || this.compressedAirInventoryData.systems.length === 0) {
+      return;
+    }
+    let currentIndex: number = _.findIndex(this.compressedAirInventoryData.systems, (system) => { return system.id == this.selectedTab });
+    if (currentIndex != this.compressedAirInventoryData.systems.length - 1) {
+      let nextID: string = this.compressedAirInventoryData.systems[currentIndex + 1].id;
+      this.compressedAirCatalogService.selectedSystemId.next(nextID);
+    }
+  }
+
+  backCompressedAirCatalogTabs() {
+    if (!this.compressedAirInventoryData?.systems || this.compressedAirInventoryData.systems.length === 0) {
+      return;
+    }
+    let currentIndex: number = _.findIndex(this.compressedAirInventoryData.systems, (system) => { return system.id == this.selectedTab });
+    if (currentIndex != 0) {
+      let nextID: string = this.compressedAirInventoryData.systems[currentIndex - 1].id;
+      this.compressedAirCatalogService.selectedSystemId.next(nextID);
+    }
+  }
+  mobileBackCompressedAirCatalogTabs() {
+    if (this.selectedTab === this.compressedAirInventoryData.systems[0]?.id) {
+      this.selectTab('compressor-properties');
+    } else if (this.selectedTab !== 'compressor-properties') {
+      this.backCompressedAirCatalogTabs();
+    }
+  }
+
+  mobileContinueCompressedAirCatalogTabs() {
+    if (this.selectedTab === 'compressor-properties' && this.compressedAirInventoryData.systems.length > 0) {
+      this.selectTab(this.compressedAirInventoryData.systems[0].id);
+    } else if (this.selectedTab !== 'compressor-properties') {
+      this.continueCompressedAirCatalogTabs();
+    }
+  }
+
+  continueSummaryTabs() {
+    this.compressedAirInventoryService.continueSummaryTab();
+  }
+
+  backSummaryTabs() {
+    this.compressedAirInventoryService.backSummaryTab();
+  }
+
+  openExportModal() {
+    this.compressedAirInventoryService.showExportModal.next(true);
+  }
+
+  navigateHome() {
+    this.dashboardService.navigateWithSidebarOptions('/landing-screen', { shouldCollapse: false });
+  }
+
+  emailTreasureHuntData() {
+    this.emailMeasurDataService.measurItemAttachment = {
+      itemType: 'inventory',
+      itemName: this.compressedAirInventoryItem.name,
+      itemData: this.compressedAirInventoryItem
+    }
+    this.emailMeasurDataService.emailItemType.next('compresses-air-inventory');
+    this.emailMeasurDataService.showEmailMeasurDataModal.next(true);
+  }
+
+
+}

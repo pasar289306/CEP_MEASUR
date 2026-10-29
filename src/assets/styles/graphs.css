@@ -1,0 +1,17 @@
+@import "variables.css";
+
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: black;
+}
+
+.tick text {
+  font-size: 12px;
+}
+
+.tick line {
+  opacity: 0.3;
+}

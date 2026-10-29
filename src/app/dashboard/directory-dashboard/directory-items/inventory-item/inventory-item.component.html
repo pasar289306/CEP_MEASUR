@@ -1,0 +1,170 @@
+<!--grid view-->
+<div *ngIf="dashboardView == 'grid'" class="card card-item"
+    [ngClass]="{'motor-inventory': inventoryItem.motorInventoryData,
+                'pump-inventory': inventoryItem.pumpInventoryData,
+                'compressed-air-inventory': inventoryItem.compressedAirInventoryData}">
+    <div class="summary-card-header d-flex justify-content-between align-items-center"
+    [ngClass]="{'motor-header': inventoryItem.motorInventoryData,
+                'pump-header': inventoryItem.pumpInventoryData,
+                'compressed-air-header': inventoryItem.compressedAirInventoryData}">
+        <input type="checkbox" [(ngModel)]="inventoryItem.selected" (change)="updateSelectedStatus()">
+        <div class="d-flex align-items-center">
+            <img class="icon-image pl-1 pr-1" *ngIf="inventoryItem.motorInventoryData" src="assets/images/motor-inventory-icon.png">
+            <img class="icon-image pl-1 pr-1" *ngIf="inventoryItem.pumpInventoryData" src="assets/images/pump-inventory-icon.png">
+            <a (click)="goToInventoryItem()">{{inventoryItem.name}}</a>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" (click)="showDropdown()" 
+            [ngClass]="{'motor-primary': inventoryItem.motorInventoryData,
+            'pump-primary': inventoryItem.pumpInventoryData,
+            'compressed-air-primary': inventoryItem.compressedAirInventoryData}">
+            </button>
+            <div class="dropdown-menu" [ngClass]="{'shown': dropdownOpen}">
+                <span class="dropdown-item" (click)="showEditModal()">Rename / Move</span>
+                <span class="dropdown-item" (click)="showDeleteModal()">Delete</span>
+                <span class="dropdown-item" (click)="showCopyModal()">Create Copy</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body scroll-item summary-card-body">
+        <app-motor-inventory-card *ngIf="inventoryItem.motorInventoryData" [inventoryItem]="inventoryItem"></app-motor-inventory-card>
+        <app-pump-inventory-card *ngIf="inventoryItem.pumpInventoryData" [inventoryItem]="inventoryItem"></app-pump-inventory-card>        
+        <app-compressed-air-inventory-card *ngIf="inventoryItem.compressedAirInventoryData" [inventoryItem]="inventoryItem"></app-compressed-air-inventory-card>
+    </div>
+    <div class="card-footer summary-card-footer">
+        <div class="last-updated pull-right">Last updated {{inventoryItem.modifiedDate | date }}</div>
+    </div>
+</div>
+
+<!--list view-->
+<div *ngIf="dashboardView == 'list'" class="list-row d-flex w-100"
+[ngClass]="{'motor-row': inventoryItem.motorInventoryData,
+            'pump-row': inventoryItem.pumpInventoryData,
+            'compressed-air-row': inventoryItem.compressedAirInventoryData}">
+    <div class="d-flex">
+        <div class="p-1">
+            <input type="checkbox" [(ngModel)]="inventoryItem.selected" (change)="updateSelectedStatus()"/>
+        </div>
+        <div class="d-flex flex-column">
+            <div class="d-flex">
+                <img class="icon-image pl-1 pr-1" *ngIf="inventoryItem.motorInventoryData" src="assets/images/motor-inventory-icon.png">
+                <img class="icon-image pl-1 pr-1" *ngIf="inventoryItem.pumpInventoryData" src="assets/images/pump-inventory-icon.png">
+                <img class="icon-image pl-1 pr-1" *ngIf="inventoryItem.compressedAirInventoryData" src="assets/images/ca-icon.png">
+                <a (click)="goToInventoryItem()">{{inventoryItem.name}}</a>
+            </div>
+            <div class="last-updated">Last updated {{inventoryItem.modifiedDate | date }}</div>
+        </div>
+    </div>
+    <div class="d-flex flex-column flex-fill">
+        <div class="actions justify-content-end">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" (click)="showDropdown()" 
+                [ngClass]="{'motor-primary': inventoryItem.motorInventoryData,
+                'pump-primary': inventoryItem.pumpInventoryData,
+                'compressed-air-primary': inventoryItem.compressedAirInventoryData}">
+                </button>
+                <div class="dropdown-menu" [ngClass]="{'shown': dropdownOpen}">
+                    <span class="dropdown-item" (click)="showEditModal()">Rename / Move</span>
+                    <span class="dropdown-item" (click)="showDeleteModal()">Delete</span>
+                    <span class="dropdown-item" (click)="showCopyModal()">Create Copy</span>
+                </div>
+            </div>
+        </div>
+        <div class="actions pt-1 justify-content-end">
+            <a (click)="goToInventoryItem('setup')">Inventory Setup</a>
+            <a (click)="goToInventoryItem('summary')">Summary</a>
+            <a *ngIf="inventoryItem.motorInventoryData" (click)="goToInventoryItem('analysis')">Analysis</a>
+        </div>
+    </div>
+</div>
+
+<!--edit modal-->
+<div bsModal #editModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content" *ngIf="editForm">
+            <div class="modal-header">
+                Edit {{inventoryItem.name}} Properties
+                <button class="close" (click)="hideEditModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="editForm">
+                    <div class="form-group">
+                        <label>Edit Inventory Name</label>
+                        <input type="text" class="form-control w-100" formControlName="name" class="form-control w-100">
+                    </div>
+                    <div class="form-group" *ngIf="allDirectories">
+                        <label>Move Inventory to Different Folder</label>
+                        <select class="form-control w-100" formControlName="directoryId">
+                            <option *ngFor="let dir of allDirectories" [ngValue]="dir.id">
+                                <span *ngIf="dir.parentDirectoryId">{{getParentDirStr(dir.parentDirectoryId)}}</span>
+                                <span class="bold">{{dir.name}}/</span>
+                            </option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" (click)="save()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--copy modal-->
+<div bsModal #copyModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="copyModalLabel"
+    aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content" *ngIf="copyForm">
+            <div class="modal-header">
+                Create {{inventoryItem.name}} Copy
+                <button class="close" (click)="hideCopyModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="copyForm">
+                    <div class="form-group">
+                        <label>Copy Inventory Name</label>
+                        <input type="text" class="form-control w-100" formControlName="name">
+                    </div>
+                    <div class="form-group" *ngIf="allDirectories">
+                        <label>Move Assessment to Different Folder</label>
+                        <select class="form-control w-100" formControlName="directoryId">
+                            <option *ngFor="let dir of allDirectories" [ngValue]="dir.id">
+                                <span *ngIf="dir.parentDirectoryId">{{getParentDirStr(dir.parentDirectoryId)}}</span>
+                                <span class="bold">{{dir.name}}/</span>
+                            </option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" (click)="createCopy()">Create Copy</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--delete modal-->
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+    aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                Delete {{inventoryItem.name}}
+                <button class="close" (click)="hideDeleteModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center small">Are you sure you want to delete this inventory? This
+                    <span class="danger">cannot</span> be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" (click)="deleteInventory()">Delete Inventory</button>
+            </div>
+        </div>
+    </div>
+</div>

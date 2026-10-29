@@ -1,0 +1,116 @@
+<div class="data-setup d-flex flex-column justify-content-center scroll-item">
+    <div *ngIf="explorerData.datasets" class="w-100 px-5 mt-3">
+        <div class="text-left alert alert-info small my-2 mx-auto p-0">
+            <div class="p-1">
+                <ul class="m-2 pl-3">
+                    <li>Timestamps are required for Day Type Analysis and time series data visualizations.
+                        Advance ahead if you won't be working with time data.
+                    </li>
+                    <ul class="pl-3">
+                        <li>Mark "Includes Date" if the column contains a date and time <span class="bold">or</span> a date only</li>
+                        <li>Mark "Includes Time Only" if the column contains a time only</li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+        <app-date-format-help></app-date-format-help>
+
+        <div class="py-2 px-0 mx-auto" *ngIf="selectedDataSet">
+            <div *ngIf="explorerData.datasets.length > 1" class="d-flex flex-row mb-2">
+                <input class="mb-0 mt-1" type="checkbox" id="applyToAll" [(ngModel)]="applyToAll" (change)="updateExplorerData()">
+                <label for="applyToAll">Apply my selections for all datasets</label>
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item" *ngFor="let dataset of explorerData.datasets; let index=index;">
+                    <a class="nav-link" [ngClass]="{'active': selectedDataSetIndex == index}"
+                        (click)="setSelectedDataSet(index)">
+                        <span class="p-2">
+                            {{dataset.csvName}}
+                        </span>
+                    </a>
+                </li>
+            </ul>
+
+
+            <div class="m-3 preview-data scroll-item">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td class="bold">Column Name
+                                
+                            </td>
+                            <td class="bold">Includes Date</td>
+                            <td><span class="bold mr-1">Includes Time Only</span>
+                            <span class="ml-3 tooltip-container">
+                                <span class="tooltip-icon fa fa-question-circle" id = "question_circle" (mouseenter)="displayTooltipHover()" 
+                                (mouseleave)="hideTooltipHover()" (click)="toggleClickTooltip()">
+                                    <span class = "detail-tooltip-arrow tooltip-arrow-up" *ngIf="showTooltipHover || showTooltipClick" ></span>
+                                </span>
+                            <span class="detail-tooltip-box" *ngIf="showTooltipHover || showTooltipClick" (mouseenter)="displayTooltipHover(true)" (mouseleave)="hideTooltipHover()">
+                                <div class="detail-tooltip" [ngClass]="{'regular-tooltip' : normalTooltipDimensions}">
+                                    <div class="p-2">
+                                        <ul class="pl-2">
+                                            <li>
+                                                <span class="bold">Includes Date</span> - Column contains a date and time <span class="bold">or</span> a date only.
+                                             </li>
+                                             <li>
+                                                <span class="bold">Includes Time Only</span> - Column contains a time only.
+                                             </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </span>
+                        </span>
+
+                        </td>
+                        </tr>
+                        <ng-container *ngFor="let field of selectedDataSet.fields; let i = index;">
+                            <tr *ngIf="field.useField">
+                                <td>
+                                    <span *ngIf="field.alias">{{field.alias}}</span>
+                                    <span *ngIf="!field.alias">{{field.fieldName}}</span>
+
+                                </td>
+                                <td>
+                                    <input type="checkbox" id="{{'isDateField'+i}}" [(ngModel)]="field.isDateField"
+                                        [disabled]="dataExists == true || (selectedDataSet.hasDateField && !field.isDateField) || field.isTimeField"
+                                        (change)="updateDateField()">
+                                </td>
+                                <td>
+                                    <input type="checkbox" id="{{'isTimeField'+i}}" [(ngModel)]="field.isTimeField"
+                                        [disabled]="dataExists == true || (selectedDataSet.hasTimeField && !field.isTimeField) || field.isDateField"
+                                        (change)="updateTimeField()">
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="d-block">
+                <hr>
+            </div>
+            <div *ngIf="!explorerData.isExample" class="form-group mt-1 mb-3">
+                <div class="text-left alert alert-info small my-2 mx-auto p-0">
+                    <div class="p-1">
+                        <ul class="m-2 pl-3">
+                            <li>MEASUR will try to detect your data collection interval. Please ensure the detected interval is correct.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mx-2">
+                    <label>Data Collection Interval</label>
+                    <select class="form-control" name="dataCollectionInterval" 
+
+                    [disabled]="!selectedDataSet.hasDateField && !selectedDataSet.hasTimeField"
+                    (change)="setDataCollectionInterval(option)" 
+                    [(ngModel)]="selectedDataSet.dataCollectionInterval">
+                    <option  *ngFor="let option of dataCollectionIntervalOptions" [ngValue]="option.value">
+                        {{option.display}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

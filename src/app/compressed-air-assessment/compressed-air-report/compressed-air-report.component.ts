@@ -1,0 +1,144 @@
+import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
+import { DirectoryDbService } from '../../indexedDb/directory-db.service';
+import { SettingsDbService } from '../../indexedDb/settings-db.service';
+import { Assessment } from '../../shared/models/assessment';
+import { CompressedAirDayType, Modification, ProfileSummary, ProfileSummaryTotal } from '../../shared/models/compressed-air-assessment';
+import { Directory } from '../../shared/models/directory';
+import { Settings } from '../../shared/models/settings';
+import { CompressedAirAssessmentService } from '../compressed-air-assessment.service';
+import { CompressedAirAssessmentBaselineResults } from '../calculations/CompressedAirAssessmentBaselineResults';
+import { CompressedAirCalculationService } from '../compressed-air-calculation.service';
+import { AssessmentCo2SavingsService } from '../../shared/assessment-co2-savings/assessment-co2-savings.service';
+import { BaselineResults, DayTypeModificationResult } from '../calculations/caCalculationModels';
+import { CompressedAirAssessmentModificationResults } from '../calculations/modifications/CompressedAirAssessmentModificationResults';
+import { CompressedAirCombinedDayTypeResults } from '../calculations/modifications/CompressedAirCombinedDayTypeResults';
+import { ExploreOpportunitiesValidationService } from '../compressed-air-assessment-validation/explore-opportunities-validation.service';
+import { CompressedAirModificationValid } from '../compressed-air-assessment-validation/CompressedAirAssessmentValidation';
+import { ActivatedRoute } from '@angular/router';
+import { AssessmentDbService } from '../../indexedDb/assessment-db.service';
+import { ReportDocument, ReportSectionGroup } from '../../shared/report-builder/models/report-document.model';
+import { CompressedAirReportAdapter, COMPRESSED_AIR_SECTION_GROUPS } from './compressed-air-report.adapter';
+
+@Component({
+  selector: 'app-compressed-air-report',
+  templateUrl: './compressed-air-report.component.html',
+  styleUrls: ['./compressed-air-report.component.css'],
+  standalone: false
+})
+export class CompressedAirReportComponent implements OnInit {
+  @Input()
+  assessment: Assessment;
+  @Input()
+  inAssessment: boolean;
+  @Input()
+  containerHeight: number;
+  @Input()
+  inRollup: boolean;
+  @Input()
+  quickReport: boolean;
+
+  @ViewChild('reportBtns', { static: false }) reportBtns: ElementRef;
+  @ViewChild('reportHeader', { static: false }) reportHeader: ElementRef;
+
+  createdDate: Date;
+  assessmentDirectories: Directory[];
+  currentTab: "executiveSummary" | "systemProfiles" | "reportGraphs" | "reportSankey" | "inputData" | "facilityInfo" | "paybackPeriod" | "performanceProfile" = 'executiveSummary';
+  reportContainerHeight: number;
+  settings: Settings;
+
+  baselineResults: BaselineResults;
+  assessmentResults: Array<CompressedAirAssessmentModificationResults>;
+  combinedDayTypeResults: Array<{ modification: Modification, combinedResults: DayTypeModificationResult, validation: CompressedAirModificationValid }>;
+  baselineProfileSummaries: Array<{ profileSummary: Array<ProfileSummary>, dayType: CompressedAirDayType, profileSummaryTotals: Array<ProfileSummaryTotal> }>;
+  tabsCollapsed: boolean = true;
+  reportDocument$: Observable<ReportDocument>;
+  readonly sectionGroups: ReportSectionGroup[] = COMPRESSED_AIR_SECTION_GROUPS;
+
+  compressedAirAssessmentBaselineResults: CompressedAirAssessmentBaselineResults;
+  constructor(private settingsDbService: SettingsDbService, private directoryDbService: DirectoryDbService,
+    private exploreOpportunitiesValidationService: ExploreOpportunitiesValidationService,
+    private compressedAirAssessmentService: CompressedAirAssessmentService,
+    private compressedAirCalculationService: CompressedAirCalculationService,
+    private assessmentCo2SavingsService: AssessmentCo2SavingsService,
+    private activatedRoute: ActivatedRoute,
+    private assessmentDbService: AssessmentDbService,
+    private reportAdapter: CompressedAirReportAdapter) { }
+
+  ngOnInit(): void {
+    if (!this.assessment) {
+      let id = this.activatedRoute.parent.snapshot.params['id'];
+      this.assessment = this.assessmentDbService.findById(parseInt(id));
+      this.inAssessment = true;
+    }
+
+    this.settings = this.settingsDbService.getByAssessmentId(this.assessment, true);
+    this.createdDate = new Date();
+    this.assessmentDirectories = new Array();
+    this.getDirectoryList(this.assessment.directoryId);
+    this.compressedAirAssessmentBaselineResults = new CompressedAirAssessmentBaselineResults(this.assessment.compressedAirAssessment, this.settings, this.compressedAirCalculationService, this.assessmentCo2SavingsService);
+    this.baselineResults = this.compressedAirAssessmentBaselineResults.baselineResults;
+    this.assessmentResults = new Array();
+    this.combinedDayTypeResults = new Array();
+    this.baselineProfileSummaries = this.compressedAirAssessmentBaselineResults.baselineDayTypeProfileSummaries;
+
+    this.assessment.compressedAirAssessment.modifications.forEach(modification => {
+      let compressedAirAssessmentModificationResults: CompressedAirAssessmentModificationResults = new CompressedAirAssessmentModificationResults(this.assessment.compressedAirAssessment, modification, this.settings, this.compressedAirCalculationService, this.assessmentCo2SavingsService, this.compressedAirAssessmentBaselineResults);
+      this.assessmentResults.push(compressedAirAssessmentModificationResults);
+      let validation: CompressedAirModificationValid = this.exploreOpportunitiesValidationService.setModificationValid(modification, this.baselineResults, this.baselineProfileSummaries, this.assessment.compressedAirAssessment, this.settings, compressedAirAssessmentModificationResults)
+      let combinedDayTypeResults: DayTypeModificationResult = new CompressedAirCombinedDayTypeResults(compressedAirAssessmentModificationResults).getDayTypeModificationResult();
+
+      this.combinedDayTypeResults.push({
+        modification: modification,
+        combinedResults: combinedDayTypeResults,
+        validation: validation
+      });
+    });
+
+    if (this.inRollup || this.quickReport) {
+      this.compressedAirAssessmentService.compressedAirAssessment.next(this.assessment.compressedAirAssessment);
+      this.compressedAirAssessmentService.settings.next(this.settings);
+    }
+
+    this.reportDocument$ = this.reportAdapter.buildDocument(this.assessment);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.containerHeight && !changes.containerHeight.firstChange) {
+      this.getContainerHeight();
+    }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.getContainerHeight();
+    }, 100);
+  }
+
+  getDirectoryList(id: number) {
+    if (id && id !== 1) {
+      let results = this.directoryDbService.getById(id);
+      this.assessmentDirectories.push(results);
+      if (results.parentDirectoryId !== 1) {
+        this.getDirectoryList(results.parentDirectoryId);
+      }
+    }
+  }
+
+  setTab(str: "executiveSummary" | "systemProfiles" | "reportGraphs" | "reportSankey" | "inputData" | "facilityInfo" | "paybackPeriod" | "performanceProfile") {
+    this.currentTab = str;
+    this.collapseTabs();
+  }
+
+  getContainerHeight() {
+    if (this.reportBtns) {
+      let btnHeight: number = this.reportBtns.nativeElement.clientHeight;
+      let headerHeight: number = this.reportHeader.nativeElement.clientHeight;
+      this.reportContainerHeight = this.containerHeight - btnHeight - headerHeight - 2;
+    }
+  }
+
+  collapseTabs() {
+    this.tabsCollapsed = !this.tabsCollapsed;
+  }
+}

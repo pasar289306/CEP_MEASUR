@@ -1,0 +1,90 @@
+<div class="col-10 mx-auto motors">
+    <div class="content-container calculator-list">
+        <h2 class="mb-1">Motors Calculators</h2>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img class="calc-img" src="assets/images/calculator-icons/motor-icons/nema.png"
+                        [routerLink]="['/calculators/nema-energy-efficiency']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/nema-energy-efficiency']">NEMA Energy Efficiency</a>
+                <p>
+                    Shows the predicted efficiency of an induction motor, based on size, rotating speed and efficiency
+                    class
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img class="calc-img" src="assets/images/calculator-icons/motor-icons/performance.png"
+                        [routerLink]="['/calculators/motor-performance']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/motor-performance']">Motor Performance</a>
+                <p>
+                    Plots current, efficiency, power factor vs motor shaft load for a given motor description </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img class="calc-img" src="assets/images/calculator-icons/motor-icons/load-est.png"
+                        [routerLink]="['/calculators/percent-load-estimation']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/percent-load-estimation']"> Percent Load Estimation</a>
+                <p>
+                    Calculate percent load via field measurements </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img class="calc-img" src="assets/images/calculator-icons/motor-icons/motor-drive.png"
+                        [routerLink]="['/calculators/motor-drive']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/motor-drive']"> Motor Drive Comparison</a>
+                <p>
+                    Compares the annual energy cost of different motor drives
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img class="calc-img" src="assets/images/calculator-icons/motor-icons/replace.png"
+                        [routerLink]="['/calculators/replace-existing']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/replace-existing']"> Replace vs Rewind</a>
+                <p>
+                    Compares the cost and energy of rewinding a failed motor versus replacing it with a new
+                    energy-efficient
+                    model
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img class="calc-img" src="assets/images/calculator-icons/motor-icons/full-load-amps.png"
+                        [routerLink]="['/calculators/full-load-amps']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/full-load-amps']"> Full-Load Amps</a>
+                <p>
+                   Calculate the full-load amps of a motor
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

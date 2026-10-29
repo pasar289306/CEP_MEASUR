@@ -1,0 +1,25 @@
+form{
+    padding-top: 0px;
+}
+
+li{
+    list-style: none;
+}
+
+ul{
+    padding-left: 15px;
+}
+
+
+.group-label{
+	font-size: 16px;
+    text-transform: none;
+	letter-spacing: 1px;
+	padding-top: 6.5px;
+	padding-bottom: 6.5px;
+}
+
+.input-group-addon.units.op-hour-addon{
+    border-left: solid 1px;
+    border-right: none;
+  }

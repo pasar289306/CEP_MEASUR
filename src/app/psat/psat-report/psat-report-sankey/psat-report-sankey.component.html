@@ -1,0 +1,10 @@
+<div class="output-summary">
+  <div class="d-flex flex-column">
+    @for (sankeyScenario of sankeyScenarios; track sankeyScenario) {
+      <app-sankey-scenario-picker [options]="psatOptions" [selected]="sankeyScenario.scenario"
+        (selectedChange)="setPsat(sankeyScenario, $event)" [costSavings]="sankeyScenario.costSavings">
+        <app-psat-sankey [psat]="sankeyScenario.scenario" [settings]="settings" [isBaseline]="sankeyScenario.isBaseline"></app-psat-sankey>
+      </app-sankey-scenario-picker>
+    }
+  </div>
+</div>

@@ -1,0 +1,57 @@
+import { Injectable } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, ValidatorFn } from '@angular/forms';
+import { PsatInputs } from '../../shared/models/psat';
+import { isPositiveDisplacementPump } from '../psatConstants';
+
+@Injectable()
+export class FieldDataService {
+
+  constructor(private formBuilder: UntypedFormBuilder) { }
+
+  getFormFromObj(psatInputs: PsatInputs, isBaseline: boolean, isWhatIfScenario?: boolean): UntypedFormGroup {
+    let loadEstimationMethodValidators: Array<ValidatorFn> = [];
+    let motorKwValidators: Array<ValidatorFn> = [];
+    let motorAmpsValidators: Array<ValidatorFn> = [];
+    let measuredVoltageValidators: Array<ValidatorFn> = [];
+    if (isBaseline || !psatInputs.whatIfScenario) {
+      loadEstimationMethodValidators = [Validators.required];
+      measuredVoltageValidators = [Validators.required];
+      if (psatInputs.load_estimation_method == 0) {
+        motorKwValidators = [Validators.required]
+      } else if (psatInputs.load_estimation_method == 1) {
+        motorAmpsValidators = [Validators.required]
+      }
+    }
+    let headValidators: Array<ValidatorFn> = isPositiveDisplacementPump(psatInputs.pump_style)
+      ? [Validators.min(0.1)]
+      : [Validators.required, Validators.min(0.1)];
+    let form: UntypedFormGroup = this.formBuilder.group({
+      flowRate: [psatInputs.flow_rate, [Validators.required, Validators.min(0)]],
+      head: [psatInputs.head, headValidators],
+      loadEstimatedMethod: [psatInputs.load_estimation_method, loadEstimationMethodValidators],
+      motorKW: [psatInputs.motor_field_power, motorKwValidators],
+      motorAmps: [psatInputs.motor_field_current, motorAmpsValidators],
+      measuredVoltage: [psatInputs.motor_field_voltage, measuredVoltageValidators],
+      implementationCosts: [psatInputs.implementationCosts]
+    });
+    for (let key in form.controls) {
+      if (form.controls[key].value) {
+        form.controls[key].markAsDirty();
+      }
+    }
+    return form;
+  }
+
+
+  getPsatInputsFromForm(form: UntypedFormGroup, psatInputs: PsatInputs): PsatInputs {
+    psatInputs.flow_rate = form.controls.flowRate.value;
+    psatInputs.head = form.controls.head.value;
+    psatInputs.load_estimation_method = form.controls.loadEstimatedMethod.value;
+    psatInputs.motor_field_power = form.controls.motorKW.value;
+    psatInputs.motor_field_current = form.controls.motorAmps.value;
+    psatInputs.motor_field_voltage = form.controls.measuredVoltage.value;
+    psatInputs.implementationCosts = form.controls.implementationCosts.value;
+    return psatInputs;
+
+  }
+}

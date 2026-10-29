@@ -1,0 +1,47 @@
+<div class="d-flex w-100 justify-content-center pt-3" *ngIf="results">
+  <table class="table table-hover table-striped">
+    <tbody>
+      <tr>
+        <td>{{label}}</td>
+        <td class="bold pr-2 pl-2">Metered Energy Use</td>
+        <td class="bold pr-2 pl-2">Calculated By PHA</td>
+      </tr>
+      <tr>
+        <td>Hourly Fuel Energy Used</td>
+        <td *ngIf="results.metered.hourlyEnergy">{{results.metered.hourlyEnergy | number:'2.2-2'}}
+          {{resultUnits.energyPerTimeUnit}}/hr</td>
+        <td *ngIf="!results.metered.hourlyEnergy">&mdash;</td>
+        <td *ngIf="results.byPhast.hourlyEnergy">{{results.byPhast.hourlyEnergy | number:'2.2-2'}}
+          {{resultUnits.energyPerTimeUnit}}/hr</td>
+        <td *ngIf="!results.byPhast.hourlyEnergy">&mdash;</td>
+      </tr>
+      <tr>
+        <td>Annual Fuel Energy Used</td>
+        <td *ngIf="results.metered.annualEnergy">{{results.metered.annualEnergy | number:'2.2-2'}}
+          {{resultUnits.energyPerTimeUnit}}</td>
+        <td *ngIf="!results.metered.annualEnergy">&mdash;</td>
+        <td *ngIf="results.byPhast.annualEnergy">{{results.byPhast.annualEnergy | number:'2.2-2'}}
+          {{resultUnits.energyPerTimeUnit}}</td>
+        <td *ngIf="!results.byPhast.annualEnergy">&mdash;</td>
+      </tr>
+      <tr>
+        <td>Energy Intensity for Charge Materials</td>
+        <td *ngIf="results.metered.energyIntensity">{{results.metered.energyIntensity | number:'2.2-2'}}
+          {{resultUnits.energyPerMassUnit}}</td>
+        <td *ngIf="!results.metered.energyIntensity">&mdash;</td>
+        <td *ngIf="results.byPhast.hourlyEnergy">{{results.byPhast.energyIntensity | number:'2.2-2'}}
+          {{resultUnits.energyPerMassUnit}}</td>
+        <td *ngIf="!results.byPhast.hourlyEnergy">&mdash;</td>
+      </tr>
+      <tr>
+        <td>Electricity Used (Auxiliary)</td>
+        <td *ngIf="results.metered.annualElectricity">{{results.metered.annualElectricity | number:'2.2-2'}}
+          {{resultUnits.electricityUsedUnit}}/yr</td>
+        <td *ngIf="!results.metered.annualElectricity">&mdash;</td>
+        <td *ngIf="results.byPhast.annualEnergy">{{results.byPhast.annualElectricity | number:'2.2-2'}}
+          {{resultUnits.electricityUsedUnit}}/yr</td>
+        <td *ngIf="!results.byPhast.annualEnergy">&mdash;</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+
+<head>
+	<base href="/">
+	<meta charset="utf-8">
+	<title>MEASUR - Manufacturing Energy Assessment Software for Utility Reduction</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+
+	<!-- SEO: primary meta -->
+	<meta name="description" content="MEASUR is a free DOE tool for conducting energy assessments on manufacturing equipment and systems, helping identify energy savings opportunities.">
+	<meta name="robots" content="index, follow">
+	<link rel="canonical" href="https://measur.ornl.gov/">
+
+	<!-- SEO: Open Graph -->
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="MEASUR">
+	<meta property="og:title" content="MEASUR - Manufacturing Energy Assessment Software for Utility Reduction">
+	<meta property="og:description" content="MEASUR is a free DOE tool for conducting energy assessments on manufacturing equipment and systems, helping identify energy savings opportunities.">
+	<meta property="og:url" content="https://measur.ornl.gov/">
+	<meta property="og:image" content="https://measur.ornl.gov/assets/icons/png/256x256.png">
+
+	<!-- SEO: Twitter Card -->
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="MEASUR - Manufacturing Energy Assessment Software for Utility Reduction">
+	<meta name="twitter:description" content="MEASUR is a free DOE tool for conducting energy assessments on manufacturing equipment and systems, helping identify energy savings opportunities.">
+
+	<style>
+		.loading-screen {
+			background: #eee;
+		}
+
+		.loading-screen .sidebar-bg {
+			height: 100vh;
+			background-color: #fff;
+			border-width: 1px;
+			border-style: solid;
+			-o-border-image: linear-gradient(to bottom, #949494, rgba(0, 0, 0, 0)) 1 100%;
+			border-image: -webkit-linear-gradient(top, #949494, rgba(0, 0, 0, 0)) 1 100%;
+			border-image: linear-gradient(to bottom, #949494, rgba(0, 0, 0, 0)) 1 100%;
+		}
+
+		.loading-screen .loading-spinner {
+			height: 100vh;
+			width: 400px;
+			margin: 200px auto 0;
+			text-align: center;
+		}
+
+		
+		.loading-screen .loading-error  {
+			height: 100vh;
+			width: 100%;
+			margin: auto;
+			text-align: center;
+		}
+		
+		.loading-error {
+			display: none;
+		}
+
+		.loading-screen h1 {
+			margin-top: 20px;
+			font-size: 30px;
+		}
+
+		.loading-screen .doe-logo {
+			width: 100%;
+			max-width: 200px;
+		}
+
+		.loading-screen .spinner {
+			width: 70px;
+			margin: auto;
+			text-align: center;
+		}
+
+		#errorMessage {
+			color: #721c24;
+    		background-color: #f8d7da;
+    		border-color: #f5c6cb;
+		}
+
+		.spinner>div {
+			width: 18px;
+			height: 18px;
+			background-color: #d35400;
+
+			border-radius: 100%;
+			display: inline-block;
+			-webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+			animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+		}
+
+		.spinner .bounce1 {
+			-webkit-animation-delay: -0.32s;
+			animation-delay: -0.32s;
+		}
+
+		.spinner .bounce2 {
+			-webkit-animation-delay: -0.16s;
+			animation-delay: -0.16s;
+		}
+
+		@-webkit-keyframes sk-bouncedelay {
+
+			0%,
+			80%,
+			100% {
+				-webkit-transform: scale(0)
+			}
+
+			40% {
+				-webkit-transform: scale(1.0)
+			}
+		}
+
+		@keyframes sk-bouncedelay {
+
+			0%,
+			80%,
+			100% {
+				-webkit-transform: scale(0);
+				transform: scale(0);
+			}
+
+			40% {
+				-webkit-transform: scale(1.0);
+				transform: scale(1.0);
+			}
+		}
+
+		.app-icon {
+		max-width: 700px;
+		}
+
+	</style>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-EEHE8GEBH4"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-EEHE8GEBH4', { send_page_view: false });
+	</script>
+	<script async src="https://siteimproveanalytics.com/js/siteanalyze_6024880.js"></script>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1976d2">
+</head>
+
+<body>
+	<app-root>
+
+		<div class="loading-screen container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+
+					<div id="loadingSpinner" class="loading-spinner">
+						<div class="spinner">
+							<div class="bounce1"></div>
+							<div class="bounce2"></div>
+							<div class="bounce3"></div>
+						</div>
+						<h1>Gathering Assessments</h1>
+					</div>
+
+					<!-- app.module app initializer error -->
+					<div id="loadingError" class="loading-error">
+						<div class="text-center">
+							<img src="assets/images/MEASUR.png" class="app-icon">
+							<h1 id="errorMessage" class="text-center bold m-0 p-3">Unable to load MEASUR</h1>
+							<div class="mx-auto text-left mt-5 w-50">
+								<h2 class="bold h2">Troubleshooting:</h2>
+								<ul class="ml-5 pl-2">
+									<li>Check your internet connection and try again: <a href="https://measur.ornl.gov">https://measur.ornl.gov</a></li>
+									<li>Perform a hard refresh on the page in your browser or open MEASUR from a private/incognito window</li>
+									<li>If using a VPN or Proxy, try temporarily disabling it or accessing MEASUR from a different network</li>
+								</ul>
+							</div>
+							<div class="mx-auto text-left mt-5 w-50">
+								<h4 class="bold h4">Submit a Bug Report</h4>
+								<h5 class="h6">To submit an issue, please send the information below to
+									<a id="supportEmail" href="mailto:measur-help@ornl.gov?subject=MEASUR Support Request">measur-help&#64;ornl.gov</a></h5>
+								<ul class="ml-5 pl-2">
+									<li>A screenshot of the error message, issue, or unexpected outcome with a detailed description of the
+										behavior. For example: I visited Data Explorer and uploaded a single xlsx. I selected a header row and
+										clicked the “Next” tab which caused an error.</li>
+									<li>The assessment, Treasure Hunt, Data Explorer data or other MEASUR exported data with .json or .gz file
+										extensions that the team may use to reproduce the issue.</li>
+									<li>MEASUR version number (v<span id="indexAppVersion"></span>) and platform used: Web, Desktop, PWA installed from the browser</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</app-root>
+</body>
+<script defer src="assets/process-flow-diagram-component.js"></script>
+
+
+</html>

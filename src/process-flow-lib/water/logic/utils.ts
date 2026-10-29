@@ -1,0 +1,151 @@
+import { Node, Edge } from "@xyflow/react";
+import { FlowMetric } from "../constants";
+import { CustomEdgeData, DiagramCalculatedData, NodeFlowData, ProcessFlowPart } from "../types/diagram";
+import { KnownLoss } from "../types/water-components";
+
+
+export function getNewIdString() {
+  return Math.random().toString(36).substring(2, 9);
+}
+
+export function getContrastTextColor(bgColor: string): string {
+  const hex = bgColor.replace('#', '');
+  let r = 0, g = 0, b = 0;
+  if (hex.length === 3) {
+    r = parseInt(hex[0] + hex[0], 16);
+    g = parseInt(hex[1] + hex[1], 16);
+    b = parseInt(hex[2] + hex[2], 16);
+  } else if (hex.length === 6) {
+    r = parseInt(hex.substring(0, 2), 16);
+    g = parseInt(hex.substring(2, 4), 16);
+    b = parseInt(hex.substring(4, 6), 16);
+  }
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? '#000000' : '#ffffff';
+}
+
+
+// process-flow-lib can't import it directly (separate bundle). Falls back if unset.
+export type ConvertValueFn = (value: number, from: string, to: string) => number;
+
+const defaultConvertFlowValue = (value: number, newUnits: string): number => {
+  if (newUnits === 'Metric') {
+    // * return m3
+    return value * 3785.4118;
+  } else if (newUnits === 'Imperial') {
+    // * return mGal
+    return value / 3785.4118;
+  }
+  return value;
+}
+
+const convertFlowValue = (value: number, newUnits: string, convertValueFn?: ConvertValueFn) => {
+  if (!isValidNumber(value)) {
+    return value;
+  }
+  if (!convertValueFn) {
+    return defaultConvertFlowValue(value, newUnits);
+  }
+  if (newUnits === 'Metric') {
+    return convertValueFn(value, 'Mgal', 'm3');
+  } else if (newUnits === 'Imperial') {
+    return convertValueFn(value, 'm3', 'Mgal');
+  }
+  return value;
+}
+
+const isValidNumber = (num: number): boolean => {
+  return !isNaN(num) && num !== null && num !== undefined;
+}
+
+
+export const convertFlowDiagramData = (flowDiagramData: { nodes: Node[], edges: Edge[], calculatedData: DiagramCalculatedData }, newUnits: string, convertValueFn?: ConvertValueFn) => {
+  flowDiagramData.nodes = flowDiagramData.nodes.map((nd: Node<ProcessFlowPart>) => {
+    const convertedTotalSourceFlow = convertFlowValue(nd.data.userEnteredData.totalSourceFlow, newUnits, convertValueFn);
+    const convertedTotalDischargeFlow = convertFlowValue(nd.data.userEnteredData.totalDischargeFlow, newUnits, convertValueFn);
+    const convertedTotalKnownLosses = convertFlowValue(nd.data.userEnteredData.totalKnownLosses, newUnits, convertValueFn);
+    const convertedWaterInProduct = convertFlowValue(nd.data.userEnteredData.waterInProduct, newUnits, convertValueFn);
+
+    const convertedUserEnteredData: NodeFlowData = {
+      totalKnownLosses: convertedTotalKnownLosses,
+      waterInProduct: convertedWaterInProduct,
+      totalSourceFlow: convertedTotalSourceFlow,
+      totalDischargeFlow: convertedTotalDischargeFlow
+    };
+
+    return {
+      ...nd,
+      data: {
+        ...nd.data,
+        userEnteredData: convertedUserEnteredData
+      }
+    }
+  });
+
+  flowDiagramData.edges = flowDiagramData.edges.map((edge: Edge<CustomEdgeData>) => {
+    const convertedEdgeflowValue = convertFlowValue(edge.data.flowValue, newUnits, convertValueFn);
+    return {
+      ...edge,
+      data: {
+        ...edge.data,
+        flowValue: convertedEdgeflowValue
+      }
+    }
+  });
+
+  flowDiagramData.calculatedData = convertCalculatedData(flowDiagramData.calculatedData, newUnits, convertValueFn);
+}
+
+  export const convertCalculatedData = (diagramCalculatedData: DiagramCalculatedData, newUnits: string, convertValueFn?: ConvertValueFn): DiagramCalculatedData => {
+    if (diagramCalculatedData) {
+      let convertedCalculatedData: DiagramCalculatedData = {
+        nodes: {}
+      };
+      Object.entries(diagramCalculatedData.nodes).forEach(([nodeId, nodeData]) => {
+        let convertedNodeData: NodeFlowData = {
+          name: nodeData.name,
+          totalSourceFlow: convertFlowValue(nodeData.totalSourceFlow, newUnits, convertValueFn),
+          totalDischargeFlow: convertFlowValue(nodeData.totalDischargeFlow, newUnits, convertValueFn),
+          totalKnownLosses: convertFlowValue(nodeData.totalKnownLosses, newUnits, convertValueFn),
+          waterInProduct: convertFlowValue(nodeData.waterInProduct, newUnits, convertValueFn),
+        };
+        convertedCalculatedData.nodes[nodeId] = convertedNodeData;
+      });
+      return convertedCalculatedData;
+    }
+    return diagramCalculatedData;
+  }
+
+
+export const convertNullInputValueForObjectConstructor = (inputValue: number | string): number => {
+  let validInput: number;
+  if (inputValue === null || inputValue === undefined) {
+    validInput = 0;
+  } else if (typeof inputValue === 'string' && inputValue == '') {
+    // There are various number type properties in PHAST that 
+    // get set to '' in places that aren't clear
+    validInput = 0;
+  } else {
+    validInput = Number(inputValue);
+  }
+  return validInput;
+}
+
+export const convertAnnualFlow = (flowInput: number, metric: number, hoursPerYear: number, annualProduction: number, grossWaterUse?: number, incomingWater?: number): number => {
+  if (metric == FlowMetric.ANNUAL) {
+    return flowInput;
+  } else if (metric == FlowMetric.HOURLY) {
+    return flowInput * hoursPerYear;
+  } else if (metric == FlowMetric.INTENSITY) {
+    return flowInput * annualProduction;
+  } else if (metric == FlowMetric.FRACTION_GROSS) {
+    return flowInput * grossWaterUse;
+  } else if (metric == FlowMetric.FRACTION_INCOMING) {
+    return flowInput * incomingWater;
+  }
+}
+
+
+export const getIsKnownLossFlow = (targetId: string, knownLosses: KnownLoss[]) => {
+  return knownLosses.some((knownLoss: KnownLoss) => knownLoss.diagramNodeId === targetId);
+} 

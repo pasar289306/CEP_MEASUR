@@ -1,0 +1,95 @@
+td, a{
+    font-size: small;
+  }
+  
+  td{
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+
+  
+.summary-rollup{
+    padding: 6px;
+  }
+
+  .group-label{
+    border-bottom: #566573 groove 2px;
+  }
+  
+  .modal-dialog{
+      max-width: 750px;
+  }
+
+.btn{
+  padding: 6px;
+}
+
+.help-text{
+  padding-top:4px;
+  text-align: center;
+}
+
+.card{
+  border: none;
+}
+
+.table{
+  margin-bottom: 0px;
+}
+
+.group-label{
+  font-size: 14px;
+  padding-bottom: 0px;
+}
+
+.table.responsive-table{
+  min-width: 545px;
+}
+
+.table-responsive-lg::-webkit-scrollbar-thumb{
+	background-color: #156739;
+}
+
+.table-responsive-lg::-webkit-scrollbar{
+	background-color: #9da19f;
+	width: .3em;
+  height: .3rem;
+}
+
+.selectable-row{
+  cursor: pointer;
+}
+
+.selectable-row:hover{
+  background: #efefef;
+}
+
+.selected-item{
+  border: 2px solid;
+}
+
+.contact-list-scroll{
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.contact-list-scroll table tr:first-child td{
+  position: sticky;
+  top: 0;
+  background-color: white;
+}
+
+.contact-list-scroll::-webkit-scrollbar-thumb{
+	background-color: #156739;
+}
+
+.contact-list-scroll::-webkit-scrollbar{
+	background-color: #9da19f;
+	width: .3em;
+}
+
+.info-icon{
+  font-size: 16px;
+  color: var(--measur-brand);
+  cursor: help;
+}

@@ -1,0 +1,116 @@
+<label class="group-label my-1">Annual Savings</label>
+<table *ngIf="output" #copyTable0 class="table table-hover table-striped">
+  <tbody>
+    <tr>
+      <td class="bold w-50">Baseline Energy</td>
+      <td *ngIf="output.baselineEnergy" class="text-center w-50">
+        {{output.baselineEnergy | number:'1.0-0'}}
+        <span class="input-group-addon">
+          <span>{{settings.phastRollupUnit}}</span>
+        </span>
+      </td>
+      <td *ngIf="!output.baselineEnergy" class="text-center w-50">
+        &mdash; &mdash;
+      </td>
+    </tr>
+    <tr>
+      <td class="bold w-50">Modification Energy</td>
+      <td *ngIf="output.modificationEnergy" class="text-center w-50">
+        {{output.modificationEnergy | number:'1.0-0'}}
+        <span class="input-group-addon">
+          <span>{{settings.phastRollupUnit}}</span>
+        </span>
+      </td>
+      <td *ngIf="!output.modificationEnergy" class="text-center w-50">
+        &mdash; &mdash;
+      </td>
+    </tr>
+    <tr>
+      <td class="bold w-50">Energy Savings</td>
+      <td *ngIf="output.energySavings" class="text-center w-50">
+        {{output.energySavings | number:'1.0-0'}}
+        <span>{{settings.phastRollupUnit}}</span>
+      </td>
+      <td *ngIf="!output.energySavings" class="text-center w-50">
+        &mdash; &mdash;
+      </td>
+    </tr>
+    <tr>
+      <td class="bold w-50">Cost Savings</td>
+      <td *ngIf="output.costSavings" class="text-center w-50">
+          {{output.costSavings | currency: 'USD': 'symbol' : '1.0-0'}}
+      </td>
+      <td *ngIf="!output.costSavings" class="text-center w-50">
+        &mdash; &mdash;
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<app-exportable-results-table [tableString]="table0String" (updateTableString)="updateTable0String()">
+</app-exportable-results-table>
+
+<div>
+  <label class="group-label p-1" (click)="toggleResults()">
+    <span class="fa fa-chevron-down" *ngIf="displayAdditionalResults"></span>
+    <span class="fa fa-chevron-right" *ngIf="!displayAdditionalResults"></span>
+    <span class="pl-1">
+      Additional Results
+    </span>
+  </label>
+  <div class="my-2" *ngIf="displayAdditionalResults">
+    <table *ngIf="output" #copyTable1 class="table table-hover table-striped">
+      <tbody>
+        <tr>
+            <td class="bold w-50">Volume of Flue Gases (Primary Process)</td>
+            <td *ngIf="output.priFlueVolume" class="text-center w-50">
+              {{output.priFlueVolume | number:'1.0-0'}}
+              <span class="input-group-addon">
+                <span *ngIf="settings.unitsOfMeasure == 'Imperial'">scfh</span>
+                <span *ngIf="settings.unitsOfMeasure == 'Metric'">Nm<sup>3</sup>/hr</span>
+            </span>
+            </td>
+            <td *ngIf="!output.priFlueVolume" class="text-center w-50">
+              &mdash; &mdash;
+            </td>
+          </tr>
+          <tr>
+            <td class="bold w-50">Recovered Heat</td>
+            <td *ngIf="output.hxEnergyRate" class="text-center w-50">
+              {{output.hxEnergyRate | number:'1.0-2'}}
+              <span>{{settings.phastRollupUnit}}/hr</span>
+            </td>
+            <td *ngIf="!output.hxEnergyRate" class="text-center w-50">
+              &mdash; &mdash;
+            </td>
+          </tr>
+          <tr>
+            <td class="bold w-50">Gross Heat Required for Secondary Process</td>
+            <td *ngIf="output.eqEnergySupply" class="text-center w-50">
+              {{output.eqEnergySupply | number:'1.0-2'}}
+              <span class="input-group-addon">
+                <span>{{settings.phastRollupUnit}}/hr</span>
+              </span>
+            </td>
+            <td *ngIf="!output.eqEnergySupply" class="text-center w-50">
+              &mdash; &mdash;
+            </td>
+          </tr>
+          <tr>
+            <td class="bold w-50">Heat Recovery Operating Hours</td>
+            <td *ngIf="output.effOppHours" class="text-center w-50">
+              {{output.effOppHours | number:'1.0-0'}} hrs/yr
+            </td>
+            <td *ngIf="!output.effOppHours" class="text-center w-50">
+              &mdash; &mdash;
+            </td>
+          </tr>
+      </tbody>
+    </table>
+    <app-exportable-results-table [tableString]="table1String" (updateTableString)="updateTable1String()">
+    </app-exportable-results-table>
+  </div>
+
+  </div>
+
+  

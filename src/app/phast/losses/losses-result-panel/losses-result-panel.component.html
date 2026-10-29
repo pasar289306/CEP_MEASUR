@@ -1,0 +1,47 @@
+<div class="d-flex flex-column mr-2 ml-2">
+  <div class="d-flex flex-wrap tabs primary" #resultTabs>
+    <div class="flex-fill panel-tab-item" [ngClass]="{'active': tabSelect == 'results'}">
+      <a class="border-left-0" (click)="setTab('results')">Results</a>
+    </div>
+    <div class="flex-fill panel-tab-item" *ngIf="!inSetup && !inModifyConditions" [ngClass]="{'active': tabSelect == 'sankey'}">
+      <a class="border-left-0" (click)="setTab('sankey')">Sankey</a>
+    </div>
+    <div class="flex-fill panel-tab-item" [ngClass]="{'active': tabSelect == 'help'}">
+      <a (click)="setTab('help')">Help</a>
+    </div>
+    <div class="flex-fill panel-tab-item" [ngClass]="{'active': tabSelect == 'notes'}" *ngIf="!inSetup">
+      <a (click)="setTab('notes')">Notes</a>
+    </div>
+  </div>
+  <div class="scroll-item" [ngStyle]="{'height.px': helpHeight}" *ngIf="tabSelect == 'help'">
+    <app-losses-help [lossesTab]="lossesTab" [currentField]="currentField" [settings]="settings"></app-losses-help>
+  </div>
+
+  <div *ngIf="tabSelect == 'results'" [ngStyle]="{'height.px': helpHeight}">
+    <app-results-data [phast]="phast" [inPhast]="true" [settings]="settings" [inSetup]="inSetup"
+      [toggleCalculate]="toggleCalculate" [modification]="modification" [inReport]="false"
+      [modificationIndex]="modificationIndex"></app-results-data>
+  </div>
+  <div [ngStyle]="{'height.px': helpHeight}" *ngIf="tabSelect == 'sankey'">
+    <div *ngIf="modification" class="scroll-item"
+			[ngStyle]="{'height.px': helpHeight}">
+				<div class="d-flex flex-column w-100">
+					<div class="btn-group mt-2 justify-content-center">
+					  <button type="button" class="btn btn-secondary" (click)="sankeyView = 'Baseline'" [ngClass]="{'active': sankeyView == 'Baseline'}">Baseline</button>
+					  <button type="button" class="btn btn-secondary" (click)="sankeyView = 'Modified'" [ngClass]="{'active': sankeyView == 'Modified'}">Modification</button>
+          </div>
+          <app-phast-sankey *ngIf="sankeyView == 'Baseline'" [phast]="baselineSankey" [settings]="settings" [appBackground]="true"></app-phast-sankey>
+          <app-phast-sankey *ngIf="sankeyView == 'Modified'" [phast]="modificationSankey" [settings]="settings" [appBackground]="true"></app-phast-sankey>
+				  </div>
+		</div>
+  </div>
+  <div *ngIf="tabSelect == 'notes'" [ngStyle]="{'height.px': helpHeight}">
+    <app-notes *ngIf="modification" [(notes)]="modification.notes" [currentTab]="lossesTab" (emitSave)="save()">
+    </app-notes>
+    <div class="alert alert-info mx-auto pt-5" *ngIf="!modification">
+      <small class="text-muted">
+        You must add a modification to take notes on it.
+      </small>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,215 @@
+<div class="p-4 pt-2 d-flex flex-column help-info">
+  <h5>
+    Orifice Meter Flow Calculator Help
+    <br>
+    <small class="text-muted"> Calculation of flow rates (at standard temperature and pressure) for commonly used gases
+      using data for an orifice type flow meter and heat input calculations
+      when the gas is a fuel (i.e. natural gas, propane).
+
+    </small>
+  </h5>
+  <hr class="my-1 hr-spacer">
+
+  <div class="my-2" *ngIf="currentField == 'gasType'">
+    <h6>
+      Gas Type
+      <br>
+      <small class="text-muted">
+        A drop down list of several gases used within fuel-fired gases. Changing this automatically changes the field
+        "Specific gravity
+        of gas".
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'orificeDiameter'">
+    <h6>
+      Orifice Diameter
+      <br>
+      <small class="text-muted">
+        Diameter of orifice.
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+  <div class="my-2" *ngIf="currentField == 'insidePipeDiameter'">
+    <h6>
+      Inside Pipe Diameter
+      <br>
+      <small class="text-muted">
+        Inside diameter of pipe.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'orificePressureDrop'">
+    <h6>
+      Orifice Pressure Drop
+      <br>
+      <small class="text-muted">
+        Pressure drop across the orifice.
+
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'operatingTime'">
+    <h6>
+      Operating Time
+      <br>
+      <small class="text-muted">
+        Total time for flow / heating.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'sectionType'">
+    <h6>
+      Orifice Type
+      <br>
+      <small class="text-muted">
+        Type of orifice. Changing this automatically changes the field "Coefficient of Discharge".
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 d-flex justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="w-50 text-center">Type of Orifice</th>
+            <th class="w-50 text-center">Coefficient</th>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">Square Edge</td>
+            <td class="w-50 text-center">0.5</td>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">Sharp Edge</td>
+            <td class="w-50 text-center">0.6</td>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">Venturi</td>
+            <td class="w-50 text-center">0.8</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <figure>
+      <img class="w-100 mx-auto p-2" src="assets/images/furnace-energy-used-calc-discharge.png">
+      <figcaption>
+        <font size="1"> Source: Eclipse Combustion Engineering Guide, 1986, Chapter 1, Page 6</font>
+      </figcaption>
+    </figure>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'gasTemperature'">
+    <h6>
+      Gas Temperature
+      <br>
+      <small class="text-muted">
+        Temperature of the gas entering the orifice.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'gasPressure'">
+    <h6>
+      Gas Pressure
+      <br>
+      <small class="text-muted">
+        Pressure of the gas entering the orifice.
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+  <div class="my-2" *ngIf="currentField == 'dischargeCoefficient'">
+    <h6>
+      Discharge Coefficient
+      <br>
+      <small class="text-muted">
+        Coefficient to take viscosity and turbulence into account when calculating flow rate. Here, this is based on the
+        Type of
+        Orifice used.
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 d-flex justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="w-50 text-center">Orifice Type</th>
+            <th class="w-50 text-center">Coefficient</th>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">Square Edge</td>
+            <td class="w-50 text-center">0.5</td>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">Sharp Edge</td>
+            <td class="w-50 text-center">0.6</td>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">Venturi</td>
+            <td class="w-50 text-center">0.8</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="w-100 d-flex justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="w-50 text-center">Minimum</th>
+            <th class="w-50 text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">0</td>
+            <td class="w-50 text-center">1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <figure>
+      <img class="w-100 mx-auto p-2" src="assets/images/furnace-energy-used-calc-discharge.png">
+      <figcaption>
+        <font size="1"> Source: Eclipse Combustion Engineering Guide, 1986, Chapter 1, Page 6</font>
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="my-2" *ngIf="currentField == 'gasHeatingValue'">
+    <h6>
+      Gas Heating Value - HHV
+      <br>
+      <small class="text-muted">
+        Higher heating value of gas (dependent on type of gas).
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+  <div class="my-2" *ngIf="currentField == 'specificGravity'">
+    <h6>
+      Specific Gravity
+      <br>
+      <small class="text-muted">
+        Specific gravity of the gas relative to air (density of gas / density of air) at standard temperature and
+        pressure.
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+  <div class="my-2">
+    <a class="click-link">
+      <span class="fa fa-external-link"></span>
+      <a class="pl-1" [href]="docsLink + 'group__flow__calculations__energy__use__calculator'" target="_blank">How are
+        flow results calculated?</a>
+    </a>
+  </div>
+
+
+</div>

@@ -1,0 +1,59 @@
+.action-item:hover{
+    cursor: pointer;
+    background: #efefef;
+}
+
+.header .fa.fa-edit{
+    font-size: -webkit-xxx-large;
+}
+
+.fa-save, .fa-times{
+    font-size: xx-large;
+}
+
+.action-item:hover{
+    cursor: pointer;
+    background: #efefef;
+}
+
+.treasure-hunt-help{
+    margin-right: .5rem;
+    margin-bottom: 0px;
+}
+
+.btn.btn-primary{
+    padding: 6px;
+}
+
+
+.energy-label{
+    font-size: larger;
+    font-weight: bold;
+}
+
+.no-data:hover{
+    cursor: pointer;
+    background: #efefef;
+}
+
+.opp-sheet-icon{
+    height: 55px;
+}
+
+@media screen and (max-width: 1024) {
+    .fa-save, .fa-times, .fa-edit {
+        font-size: 18px;
+    }
+    .calculator-container .header h3 {
+        font-size: 14px !important;
+    }
+
+}
+
+.calculator-panel-container.modification {
+    width: 60%;
+}
+
+.calculator-panel-container.help-panel {
+    width: 40%;
+}

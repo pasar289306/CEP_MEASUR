@@ -1,0 +1,187 @@
+.card.treasure-hunt-card{
+  padding: .25rem;
+  padding-bottom: 0px;
+  font-size: small;
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.col-item-br{
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.fa.fa-edit{
+  text-align: right;
+  font-size: 25px;
+  color: #007BFF;
+  margin: auto;
+}
+.fa.fa-trash{
+  text-align: right;
+  font-size: 25px;
+  color: #DC3545;
+  margin: auto;
+}
+.fa.fa-copy{
+  text-align: right;
+  font-size: 25px;
+  color: #007BFF;
+  margin: auto;
+}
+.fa.fa-chevron-up{
+  text-align: right;
+  font-size: 15px;
+  color: #2E4053;
+}
+
+.opportunity-name a, .opportunity-name .fa{
+  font-size: large;
+}
+
+a:not([href]):not([tabindex]):hover {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+a.card-name-link {
+  font-size: medium;
+}
+
+.card.not-selected, .card.not-selected .card-header{
+  background-color: #efefef;
+}
+
+.no-opp-sheet, .click-link.danger{
+  color: red !important;
+}
+
+.opp-sheet-exists{
+  color: green;
+}
+
+.no-opp-sheet .calc-icon{
+  opacity: .5;
+}
+
+.opp-sheet-col .no-opp-sheet:hover, .opp-sheet-col .opp-sheet-exists:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* .graph-col{
+  background-color: #efefef;
+} */
+.calc-icon{
+  width: 45px;
+}
+
+.edit-sheet-icon {
+  width: 35px;
+}
+
+.treasure-hunt-item{
+  padding-left: .25rem;
+  padding-right: .25rem;
+}
+
+.modal-footer .btn.btn-sm{
+  padding: 4px;
+}
+
+
+.modal-dialog{
+  top: 0px;
+  min-width: 200px;
+}
+  
+
+.card-header{
+  font-size: large;
+  background: white;
+  padding: .25rem;
+}
+
+td{
+  font-size: small;
+  padding: 3px;
+}
+
+.table{
+  margin-bottom: 0px;
+}
+
+.no-border-top td{
+  border-top: none;
+}
+
+tr.active{
+  font-weight: bold;
+}
+
+.input-group-prepend{
+  align-items: center;
+  padding-right: 5px;
+}
+
+.steam-calc-icon, .ca-calc-icon, .ph-calc-icon, .lighting-calc-icon, .motor-calc-icon, .process-cooling-calc-icon, .utility-calc-icon {
+  border-radius: 50%;
+  height: 45px;
+  width: 45px;
+  display: flex;
+}
+
+.steam-calc-icon{
+  background-image: linear-gradient(to bottom right, #ffffff, #FC5B00);
+}
+
+.ca-calc-icon{
+  background-image: linear-gradient(to bottom right, #ffffff, #6f42c1);
+}
+
+.ph-calc-icon{
+  background-image: linear-gradient(to bottom right, #ffffff, #BF3D00);
+}
+
+.lighting-calc-icon {
+  background: linear-gradient(to bottom right, #e4dbdb57, #007bff57);
+}
+
+.motor-calc-icon {
+  background: linear-gradient(to bottom right, #e4dbdb57, #6b846aa6);
+}
+
+.process-cooling-calc-icon {
+  background: linear-gradient(to bottom right, #e4dbdb57, #ADC8E2);
+}
+
+.utility-calc-icon {
+  background: linear-gradient(to bottom right, #e4dbdb57, #145A32);
+}
+
+.circle-icon-img{
+  height: auto;
+  width: 30px;
+  margin-top: 7px;
+  margin-bottom: 6px;
+  margin-left: 7px;
+  margin-right: 7px;
+}
+@media screen and (max-width: 1024px) {
+  .col-item-br{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    border-right: none;
+  }
+  .card.treasure-hunt-card{
+    padding: .25rem;
+    padding-bottom: 0px;
+    font-size: small;
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+  /* a.card-name-link {
+    font-size: medium;
+  } */
+  .col-item-br.checkbox-col{
+    border-right: 1px solid rgba(0, 0, 0, 0.125) !important;
+    border-bottom: none !important;
+  }
+}

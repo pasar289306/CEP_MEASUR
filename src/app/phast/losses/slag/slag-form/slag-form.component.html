@@ -1,0 +1,58 @@
+<form [formGroup]="slagLossForm">
+  <div class="form-section">
+    <div class="form-group">
+      <label class="small" for="{{'weight'+idString}}">Weight</label>
+      <div class="input-group" [ngClass]="{'indicate-different': compareWeight(), 'invalid': slagLossForm.controls.weight.invalid}">
+        <input [readonly]="!baselineSelected" name="{{'weight_'+lossIndex}}" type="number" step="10" min="0" class="form-control"
+          formControlName="weight" id="{{'weight'+idString}}" onfocus="this.select();" (input)="save()" (focus)="focusField('weight')"
+          >
+        <span *ngIf="settings.unitsOfMeasure == 'Imperial'" class="input-group-addon units">Lb/hr</span>
+        <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kg/hr</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="small" for="{{'inletTemperature'+idString}}">Inlet Temperature</label>
+      <div class="input-group" [ngClass]="{'indicate-different': compareInletTemperature(), 'invalid': slagLossForm.controls.inletTemperature.invalid}">
+        <input [readonly]="!baselineSelected" name="{{'inletTemperature_'+lossIndex}}" type="number" step="10" class="form-control"
+          formControlName="inletTemperature" id="{{'inletTemperature'+idString}}" onfocus="this.select();" (input)="save()"
+          (focus)="focusField('inletTemperature')" >
+        <span *ngIf="settings.unitsOfMeasure == 'Imperial'" class="input-group-addon units">&#8457;</span>
+        <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">&#8451;</span>
+
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label class="small" for="{{'outletTemperature'+idString}}">Outlet Temperature</label>
+      <div class="input-group" [ngClass]="{'indicate-different': compareOutletTemperature(), 'invalid': slagLossForm.controls.outletTemperature.invalid}">
+        <input [readonly]="!baselineSelected" name="{{'outletTemperature_'+lossIndex}}" type="number" step="10" class="form-control"
+          formControlName="outletTemperature" id="{{'outletTemperature'+idString}}" onfocus="this.select();" (input)="save()"
+          (focus)="focusField('outletTemperature')" >
+        <span *ngIf="settings.unitsOfMeasure == 'Imperial'" class="input-group-addon units">&#8457;</span>
+        <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">&#8451;</span>
+
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="small" for="{{'specificHeat'+idString}}">Specific Heat</label>
+      <div class="input-group" [ngClass]="{'indicate-different': compareSpecificHeat(), 'invalid': slagLossForm.controls.specificHeat.invalid}">
+        <input [readonly]="!baselineSelected" name="{{'specificHeat_'+lossIndex}}" type="number" step="10" min="0"
+          class="form-control" formControlName="specificHeat" id="{{'specificHeat'+idString}}" onfocus="this.select();"
+          (input)="save()" (focus)="focusField('specificHeat')" >
+        <span *ngIf="settings.unitsOfMeasure == 'Imperial'" class="input-group-addon units">Btu/(lb-&#8457;)</span>
+        <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kJ/(kg-&#8451;)</span>
+
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="small" for="{{'correctionFactor'+idString}}">Correction Factor</label>
+      <input [readonly]="!baselineSelected" name="{{'correctionFactor_'+lossIndex}}" type="number" step="any" min="0"
+        class="form-control" formControlName="correctionFactor" id="{{'correctionFactor'+idString}}" onfocus="this.select();"
+        (input)="save()" (focus)="focusField('correctionFactor')"  [ngClass]="{'indicate-different': compareCorrectionFactor(), 'invalid': slagLossForm.controls.correctionFactor.invalid}">
+    </div>
+  </div>
+</form>

@@ -1,0 +1,114 @@
+<div class="p-2">
+    <table class="table table-sm table-striped table-hover" *ngIf="selectedMotorDepartment">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Op. Hours (hrs/yr)
+                </th>
+                <th>
+                    Eff. Class
+                </th>
+                <th>
+                    Est. Efficiency (%)
+                </th>
+                <th>
+                    Rated Power 
+                    (<span *ngIf="settings.unitsOfMeasure == 'Metric'">kW</span>
+                    <span *ngIf="settings.unitsOfMeasure != 'Metric'">hp</span>)
+                </th>
+                <th>
+                    Energy Usage (kWh/yr)
+                </th>
+                <th>
+                    Energy Cost ($)
+                </th>
+                @if (showOperationalImpacts()) {
+                <th>
+                    Emissions Output (tonne CO<sub>2</sub>)
+                </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let tableDataItem of tableDataItems"
+                [ngClass]="{'selected-item':tableDataItem.motorItem.id == selectedMotorItem.id}">
+                <td>
+                    <span *ngIf="tableDataItem.motorItem.id == selectedMotorItem.id" class="fa fa-chevron-right"></span>
+                    <a class="click-link" (click)="selectMotor(tableDataItem.motorItem)">{{tableDataItem.name}}</a>
+                </td>
+                <td>
+                    <span *ngIf="tableDataItem.operatingHours">
+                        {{tableDataItem.operatingHours}}
+                    </span>
+                    <span *ngIf="!tableDataItem.operatingHours">
+                        &mdash; 
+                    </span>
+                </td>
+                <td>
+                    {{tableDataItem.efficiencyClass | motorEfficiencyClass}}
+                </td>
+                <td>
+                    <span *ngIf="tableDataItem.estimatedEfficiency">
+                        {{tableDataItem.estimatedEfficiency}} 
+                    </span>
+                    <span *ngIf="!tableDataItem.estimatedEfficiency">
+                        &mdash; 
+                    </span>
+                </td>
+                <td>
+                    <span *ngIf="tableDataItem.ratedPower">
+                        {{tableDataItem.ratedPower}}
+                    </span>
+                    <span *ngIf="!tableDataItem.ratedPower">
+                        &mdash;
+                    </span>
+                </td>
+                <td>
+                    <span *ngIf="tableDataItem.energyUsage">
+                        {{tableDataItem.energyUsage | number:'1.0-0'}}
+                    </span>
+                    <span *ngIf="!tableDataItem.energyUsage">
+                        &mdash;
+                    </span>
+                </td>
+                <td>
+                    <span *ngIf="tableDataItem.energyCost">
+                        {{tableDataItem.energyCost | number :'2.0-0'}}
+                    </span>
+                    <span *ngIf="!tableDataItem.energyCost">
+                        &mdash;
+                    </span>
+                </td>
+                @if (showOperationalImpacts()) {
+                <td>
+                    <span *ngIf="tableDataItem.co2EmissionOutput">
+                        {{tableDataItem.co2EmissionOutput | number :'1.0-2'}}
+                    </span>
+                    <span *ngIf="!tableDataItem.co2EmissionOutput">
+                        &mdash;
+                    </span>
+                </td>
+                }
+                <td>
+                    <a class="fa fa-trash danger" [ngClass]="{'disabled': tableDataItems.length <= 1}" (click)="openConfirmDeleteModal(tableDataItem.motorItem)"></a>                    
+                </td>
+                <td>
+                    <a class="fa fa-copy" (click)="createCopy(tableDataItem.motorItem)"></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="p-2 w-100 text-center">
+    <a class="click-link" (click)="addNewMotor()">+Add New Motor</a>
+</div>
+
+<div class="p-2 w-100 text-center">
+    <img src="assets/images/energy-use-equation.PNG" class="w-100">
+</div>
+
+<app-confirm-delete-modal *ngIf="showConfirmDeleteModal" [confirmDeleteData]="confirmDeleteMotorInventoryData" (emitShouldDelete)="onConfirmDeleteClose($event)">
+</app-confirm-delete-modal>

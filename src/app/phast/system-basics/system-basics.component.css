@@ -1,0 +1,13 @@
+
+  textarea{
+    width: 100%;
+    font-size: small;
+  }
+
+  form{
+    padding-top: 0px;
+  }
+
+  .alert-warning {
+    width: 90%;
+  }

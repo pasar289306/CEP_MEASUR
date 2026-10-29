@@ -1,0 +1,29 @@
+.tabs-bar-row {
+    background-color: #e5e5e5;
+}
+
+.results {
+    padding-top: 20px;
+    overflow-x: auto;
+    background: #fff;
+}
+
+.assessment-title {
+    font-size: 22px;
+    margin-top: 10px;
+    margin-bottom: -14px;
+}
+
+.date-modified{
+    color: #999;
+    font-size: 12px;
+}
+
+.mt-auto{
+    margin-top: auto !important;
+    margin-bottom: 0;
+}
+
+.report-diagrams {
+    max-height: 600px;
+}

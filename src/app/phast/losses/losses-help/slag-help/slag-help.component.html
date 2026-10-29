@@ -1,0 +1,86 @@
+<div class="p-2 pt-3 d-flex flex-column help-info">
+  <h5>
+    Slag Losses Help
+    <br>
+    <small class="text-muted">
+      Enter measured data to calculate your system's annual savings potential.
+    </small>
+  </h5>
+  <div class="my-2">
+      <h6>
+        Savings Suggestions
+        <br>
+        <small class="text-muted">
+          Improve material handling with the furnace to increase yield and reduce slag.
+        <br> Install combustion gas (air) pre-heater.
+        </small>
+      </h6>
+    </div>
+  <hr class="my-1 hr-spacer">
+
+
+  <div class="my-2" *ngIf="currentField == 'weight'">
+    <h6>
+      Weight
+      <br>
+      <small class="text-muted">
+        Weight of material discharged. Note that the values vary with time during the cycle and this is average over the cycle time.
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'inletTemperature'">
+    <h6>
+      Inlet Temperature
+      <br>
+      <small class="text-muted">
+        Inlet temperature for the material discharged.
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'outletTemperature'">
+    <h6>
+      Outlet Temperature
+      <br>
+      <small class="text-muted">
+        Outlet temperature for the material discharged.
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'specificHeat'">
+    <h6>
+      Specific Heat
+      <br>
+      <small class="text-muted">
+        Specific Heat of the slag material.
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'correctionFactor'">
+    <h6>
+      Correction Factor
+      <br>
+      <small class="text-muted">
+        Engineering correction factor multiplied to the result to account for a known systematic error.
+      </small>
+    </h6>
+  </div>
+
+  <div class="my-2">
+    <a class="click-link">
+      <span class="fa fa-external-link"></span>
+      <a class="pl-1" [href]="docsLink + 'group__slag__other__material__heat__loss__calculator'" target="_blank">How is slag loss
+        calculated?</a>
+    </a>
+  </div>
+
+</div>

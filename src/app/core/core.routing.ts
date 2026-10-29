@@ -1,0 +1,649 @@
+import { Routes } from '@angular/router';
+import { diagramResolver } from '../water-process-diagram/diagram.resolver';
+import { DashboardComponent } from '../dashboard/dashboard.component';
+import { PhastComponent } from '../phast/phast.component';
+import { PsatComponent } from '../psat/psat.component';
+import { psatRoutes } from '../psat/routing/psat.routing';
+import { FsatComponent } from '../fsat/fsat.component';
+import { fsatRoutes } from '../fsat/routing/fsat.routing';
+import { FsatAssessmentResolver } from '../fsat/routing/fsat-assessment.resolver';
+import { SsmtComponent } from '../ssmt/ssmt.component';
+import { ssmtRoutes } from '../ssmt/routing/ssmt.routing';
+import { TreasureHuntComponent } from '../treasure-hunt/treasure-hunt.component';
+import { treasureHuntRoutes } from '../treasure-hunt/routing/treasure-hunt.routing';
+import { LandingScreenComponent } from '../dashboard/landing-screen/landing-screen.component';
+import { TutorialsComponent } from '../tutorials/tutorials.component';
+import { AboutPageComponent } from '../dashboard/about-page/about-page.component';
+import { ContactPageComponent } from '../dashboard/contact-page/contact-page.component';
+import { AcknowledgmentsPageComponent } from '../dashboard/acknowledgments-page/acknowledgments-page.component';
+import { AssessmentSettingsComponent } from '../settings/assessment-settings/assessment-settings.component';
+import { CustomMaterialsComponent } from '../suiteDb/custom-materials/custom-materials.component';
+import { CalculatorComponent } from '../calculator/calculator.component';
+import { DirectoryDashboardComponent } from '../dashboard/directory-dashboard/directory-dashboard.component';
+import { ReportRollupComponent } from '../report-rollup/report-rollup.component';
+import { LogToolComponent } from '../log-tool/log-tool.component';
+import { logToolRoutes } from '../log-tool/log-tool.routings';
+import { CalculatorsListComponent } from '../calculator/calculators-list/calculators-list.component';
+import { CompressedAirListComponent } from '../calculator/compressed-air/compressed-air-list/compressed-air-list.component';
+import { FansListComponent } from '../calculator/fans/fans-list/fans-list.component';
+import { FurnacesListComponent } from '../calculator/furnaces/furnaces-list/furnaces-list.component';
+import { LightingListComponent } from '../calculator/lighting/lighting-list/lighting-list.component';
+import { MotorsListComponent } from '../calculator/motors/motors-list/motors-list.component';
+import { PumpsListComponent } from '../calculator/pumps/pumps-list/pumps-list.component';
+import { SteamListComponent } from '../calculator/steam/steam-list/steam-list.component';
+import { UtilitiesListComponent } from '../calculator/utilities/utilities-list/utilities-list.component';
+import { AirVelocityComponent } from '../calculator/compressed-air/air-velocity/air-velocity.component';
+import { BagMethodComponent } from '../calculator/compressed-air/bag-method/bag-method.component';
+import { OperatingCostComponent } from '../calculator/compressed-air/operating-cost/operating-cost.component';
+import { PipeSizingComponent } from '../calculator/compressed-air/pipe-sizing/pipe-sizing.component';
+import { PneumaticAirComponent } from '../calculator/compressed-air/pneumatic-air/pneumatic-air.component';
+import { ReceiverTankComponent } from '../calculator/compressed-air/receiver-tank/receiver-tank.component';
+import { SystemCapacityComponent } from '../calculator/compressed-air/system-capacity/system-capacity.component';
+import { FanAnalysisComponent } from '../calculator/fans/fan-analysis/fan-analysis.component';
+import { FanEfficiencyComponent } from '../calculator/fans/fan-efficiency/fan-efficiency.component';
+import { SystemAndEquipmentCurveComponent } from '../calculator/system-and-equipment-curve/system-and-equipment-curve.component';
+import { CashFlowComponent } from '../calculator/utilities/cash-flow/cash-flow.component';
+import { Co2SavingsComponent } from '../calculator/utilities/co2-savings/co2-savings.component';
+import { CombinedHeatPowerComponent } from '../calculator/utilities/combined-heat-power/combined-heat-power.component';
+import { ElectricityReductionComponent } from '../calculator/utilities/electricity-reduction/electricity-reduction.component';
+import { NaturalGasReductionComponent } from '../calculator/utilities/natural-gas-reduction/natural-gas-reduction.component';
+import { PipeInsulationReductionComponent } from '../calculator/steam/pipe-insulation-reduction/pipe-insulation-reduction.component';
+import { PowerFactorCorrectionComponent } from '../calculator/utilities/power-factor-correction/power-factor-correction.component';
+import { PreAssessmentComponent } from '../calculator/utilities/pre-assessment/pre-assessment.component';
+import { UnitConverterComponent } from '../calculator/utilities/unit-converter/unit-converter.component';
+import { WaterReductionComponent } from '../calculator/waste-water/water-reduction/water-reduction.component';
+import { LightingReplacementComponent } from '../calculator/lighting/lighting-replacement/lighting-replacement.component';
+import { MotorDriveComponent } from '../calculator/motors/motor-drive/motor-drive.component';
+import { MotorPerformanceComponent } from '../calculator/motors/motor-performance/motor-performance.component';
+import { NemaEnergyEfficiencyComponent } from '../calculator/motors/nema-energy-efficiency/nema-energy-efficiency.component';
+import { PercentLoadEstimationComponent } from '../calculator/motors/percent-load-estimation/percent-load-estimation.component';
+import { ReplaceExistingComponent } from '../calculator/motors/replace-existing/replace-existing.component';
+import { EnergyEquivalencyComponent } from '../calculator/furnaces/energy-equivalency/energy-equivalency.component';
+import { EnergyUseComponent } from '../calculator/furnaces/energy-use/energy-use.component';
+import { O2EnrichmentComponent } from '../calculator/furnaces/o2-enrichment/o2-enrichment.component';
+import { AchievableEfficiencyComponent } from '../calculator/pumps/achievable-efficiency/achievable-efficiency.component';
+import { HeadToolComponent } from '../calculator/pumps/head-tool/head-tool.component';
+import { SpecificSpeedComponent } from '../calculator/pumps/specific-speed/specific-speed.component';
+import { BoilerComponent } from '../calculator/steam/boiler/boiler.component';
+import { BoilerBlowdownRateComponent } from '../calculator/steam/boiler-blowdown-rate/boiler-blowdown-rate.component';
+import { DeaeratorComponent } from '../calculator/steam/deaerator/deaerator.component';
+import { FlashTankComponent } from '../calculator/steam/flash-tank/flash-tank.component';
+import { HeaderComponent } from '../calculator/steam/header/header.component';
+import { HeatLossComponent } from '../calculator/steam/heat-loss/heat-loss.component';
+import { PrvComponent } from '../calculator/steam/prv/prv.component';
+import { SaturatedPropertiesComponent } from '../calculator/steam/saturated-properties/saturated-properties.component';
+import { StackLossComponent } from '../calculator/steam/stack-loss/stack-loss.component';
+import { SteamPropertiesComponent } from '../calculator/steam/steam-properties/steam-properties.component';
+import { TurbineComponent } from '../calculator/steam/turbine/turbine.component';
+import { TankInsulationReductionComponent } from '../calculator/steam/tank-insulation-reduction/tank-insulation-reduction.component';
+import { AssessmentReportsComponent } from '../report-rollup/assessment-reports/assessment-reports.component';
+import { WeatherBinsComponent } from '../calculator/utilities/weather-bins/weather-bins.component';
+import { AirLeakSurveyComponent } from '../calculator/compressed-air/air-leak-survey/air-leak-survey.component';
+import { CompressedAirReductionComponent } from '../calculator/compressed-air/compressed-air-reduction/compressed-air-reduction.component';
+import { CompressedAirPressureReductionComponent } from '../calculator/compressed-air/compressed-air-pressure-reduction/compressed-air-pressure-reduction.component';
+import { SteamReductionComponent } from '../calculator/steam/steam-reduction/steam-reduction.component';
+import { AirFlowConversionComponent } from '../calculator/compressed-air/air-flow-conversion/air-flow-conversion.component';
+import { ProcessCoolingListComponent } from '../calculator/process-cooling/process-cooling-list/process-cooling-list.component';
+import { CoolingTowerComponent } from '../calculator/process-cooling/cooling-tower/cooling-tower.component';
+import { FanPsychrometricComponent } from '../calculator/process-cooling/fan-psychrometric/fan-psychrometric.component';
+import { MotorInventoryComponent } from '../motor-inventory/motor-inventory.component';
+import { motorInventoryRoutes } from '../motor-inventory/motor-inventory.routing';
+import { WallComponent } from '../calculator/furnaces/wall/wall.component';
+import { FlueGasComponent } from '../calculator/furnaces/flue-gas/flue-gas.component';
+import { AtmosphereComponent } from '../calculator/furnaces/atmosphere/atmosphere.component';
+import { ChargeMaterialComponent } from '../calculator/furnaces/charge-material/charge-material.component';
+import { OpeningComponent } from '../calculator/furnaces/opening/opening.component';
+import { AirHeatingComponent } from '../calculator/furnaces/air-heating/air-heating.component';
+import { O2UtilizationRateComponent } from '../calculator/waste-water/o2-utilization-rate/o2-utilization-rate.component';
+import { WasteWaterListComponent } from '../calculator/waste-water/waste-water-list/waste-water-list.component';
+import { StatePointAnalysisComponent } from '../calculator/waste-water/state-point-analysis/state-point-analysis.component';
+import { CoolingComponent } from '../calculator/furnaces/cooling/cooling.component';
+import { LeakageComponent } from '../calculator/furnaces/leakage/leakage.component';
+import { FixtureComponent } from '../calculator/furnaces/fixture/fixture.component';
+import { WasteHeatComponent } from '../calculator/furnaces/waste-heat/waste-heat.component';
+import { HeatCascadingComponent } from '../calculator/furnaces/heat-cascading/heat-cascading.component';
+import { WasteWaterComponent } from '../waste-water/waste-water.component';
+import { wasteWaterRoutes } from '../waste-water/routing/waste-water.routing';
+import { ChillerPerformanceComponent } from '../calculator/process-cooling/chiller-performance/chiller-performance.component';
+import { CoolingTowerFanComponent } from '../calculator/process-cooling/cooling-tower-fan/cooling-tower-fan.component';
+import { CoolingTowerBasinComponent } from '../calculator/process-cooling/cooling-tower-basin/cooling-tower-basin.component';
+import { ChillerStagingComponent } from '../calculator/process-cooling/chiller-staging/chiller-staging.component';
+import { WaterHeatingComponent } from '../calculator/steam/water-heating/water-heating.component';
+import { CompressedAirAssessmentComponent } from '../compressed-air-assessment/compressed-air-assessment.component';
+import { FanSystemChecklistComponent } from '../calculator/fans/fan-system-checklist/fan-system-checklist.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { FullLoadAmpsComponent } from '../calculator/motors/full-load-amps/full-load-amps.component';
+import { AltitudeCorrectionComponent } from '../calculator/utilities/altitude-correction/altitude-correction.component';
+import { FeedwaterEconomizerComponent } from '../calculator/steam/feedwater-economizer/feedwater-economizer.component';
+import { CondensingEconomizerComponent } from '../calculator/steam/condensing-economizer/condensing-economizer.component';
+import { BleedTestComponent } from '../calculator/compressed-air/bleed-test/bleed-test.component';
+import { DisclaimerComponent } from '../dashboard/disclaimer/disclaimer.component';
+import { PumpInventoryComponent } from '../pump-inventory/pump-inventory.component';
+import { pumpInventoryRoutes } from '../pump-inventory/pump-inventory.routing';
+import { WaterProcessDiagramComponent } from '../water-process-diagram/water-process-diagram.component';
+import { WaterAssessmentComponent } from '../water/water-assessment.component';
+import { waterRoutes } from '../water/routing/water.routing';
+import { DataAndBackupComponent } from '../dashboard/data-and-backup/data-and-backup.component';
+import { PowerFactorTriangleComponent } from '../calculator/utilities/power-factor-triangle/power-factor-triangle.component';
+import { ValveEnergyLossComponent } from '../calculator/pumps/valve-energy-loss/valve-energy-loss.component';
+import { compressedAirAssessmentRoutes } from '../compressed-air-assessment/routing/compressed-air.routing';
+import { CompressedAirInventoryComponent } from '../compressed-air-inventory/compressed-air-inventory.component';
+import { compressedAirInventoryRoutes } from '../compressed-air-inventory/compressed-air-inventory.routing';
+import { SteamLeakSurveyComponent } from '../calculator/steam/steam-leak/steam-leak-survey.component';
+export const coreRoutes: Routes = [
+  {
+    path: '',
+    component: DashboardComponent,
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'landing-screen'
+      },
+      {
+        path: 'landing-screen',
+        component: LandingScreenComponent
+      },
+      {
+        component: DirectoryDashboardComponent,
+        path: 'directory-dashboard/:id',
+      },
+      {
+        component: TutorialsComponent,
+        path: 'tutorials'
+      },
+      {
+        component: AboutPageComponent,
+        path: 'about'
+      },
+      {
+        component: DataAndBackupComponent,
+        path: 'data-and-backup'
+      },
+      {
+        component: DisclaimerComponent,
+        path: 'privacy'
+      },
+      {
+        component: ContactPageComponent,
+        path: 'contact'
+      },
+      {
+        component: AcknowledgmentsPageComponent,
+        path: 'acknowledgments'
+      },
+      {
+        component: AssessmentSettingsComponent,
+        path: 'settings'
+      },
+      {
+        component: CustomMaterialsComponent,
+        path: 'custom-materials'
+      },
+      {
+        component: CalculatorComponent,
+        path: 'calculators',
+        children: [
+          {
+            path: 'calculators-list',
+            component: CalculatorsListComponent
+          },
+          {
+            path: 'compressed-air-list',
+            component: CompressedAirListComponent
+          },
+          {
+            path: 'fans-list',
+            component: FansListComponent
+          },
+          {
+            path: 'process-heating-list',
+            component: FurnacesListComponent
+          },
+          {
+            path: 'process-cooling-list',
+            component: ProcessCoolingListComponent
+          },
+          {
+            path: 'lighting-list',
+            component: LightingListComponent
+          },
+          {
+            path: 'motors-list',
+            component: MotorsListComponent
+          },
+          {
+            path: 'pumps-list',
+            component: PumpsListComponent
+          },
+          {
+            path: 'steam-list',
+            component: SteamListComponent
+          },
+          {
+            path: 'general-list',
+            component: UtilitiesListComponent
+          },
+          {
+            path: 'air-velocity',
+            component: AirVelocityComponent
+          },
+          {
+            path: 'air-flow-conversion',
+            component: AirFlowConversionComponent
+          },
+          {
+            path: 'bag-method',
+            component: BagMethodComponent
+          },
+          {
+            path: 'bleed-test',
+            component: BleedTestComponent
+          },
+          {
+            path: 'operating-cost',
+            component: OperatingCostComponent
+          },
+          {
+            path: 'pipe-sizing',
+            component: PipeSizingComponent
+          },
+          {
+            path: 'pneumatic-air',
+            component: PneumaticAirComponent
+          },
+          {
+            path: 'receiver-tank-usable-air',
+            component: ReceiverTankComponent
+          },
+          {
+            path: 'receiver-tank',
+            component: ReceiverTankComponent
+          },
+          {
+            path: 'system-capacity',
+            component: SystemCapacityComponent
+          },
+          {
+            path: 'air-leak',
+            component: AirLeakSurveyComponent
+          },
+          {
+            path: 'steam-leak',
+            component: SteamLeakSurveyComponent
+          },
+          {
+            path: 'fan-psychrometric',
+            component: FanPsychrometricComponent
+          },
+          {
+            path: 'fan-analysis',
+            component: FanAnalysisComponent
+          },
+          {
+            path: 'fan-system-checklist',
+            component: FanSystemChecklistComponent
+          },
+          {
+            path: 'fan-efficiency',
+            component: FanEfficiencyComponent
+          },
+          {
+            path: 'fan-curve',
+            component: SystemAndEquipmentCurveComponent
+          },
+          {
+            path: 'cash-flow',
+            component: CashFlowComponent
+          },
+          {
+            path: 'co2-conversion',
+            component: Co2SavingsComponent
+          },
+          {
+            path: 'combined-heat-power',
+            component: CombinedHeatPowerComponent
+          },
+          {
+            path: 'compressed-air-pressure-reduction',
+            component: CompressedAirPressureReductionComponent
+          },
+          {
+            path: 'compressed-air-reduction',
+            component: CompressedAirReductionComponent
+          },
+          {
+            path: 'altitude-correction',
+            component: AltitudeCorrectionComponent
+          },
+          {
+            path: 'electricity-reduction',
+            component: ElectricityReductionComponent
+          },
+          {
+            path: 'natural-gas-reduction',
+            component: NaturalGasReductionComponent
+          },
+          {
+            path: 'pipe-insulation-reduction',
+            component: PipeInsulationReductionComponent
+          },
+          {
+            path: 'power-factor-correction',
+            component: PowerFactorCorrectionComponent
+          },
+          {
+            path: 'power-factor-triangle',
+            component: PowerFactorTriangleComponent
+          },
+          {
+            path: 'pre-assessment',
+            component: PreAssessmentComponent
+          },
+          {
+            path: 'unit-converter',
+            component: UnitConverterComponent
+          },
+          {
+            path: 'water-reduction',
+            component: WaterReductionComponent
+          },
+          {
+            path: 'water-heating',
+            component: WaterHeatingComponent
+          },
+          {
+            path: 'feedwater-economizer',
+            component: FeedwaterEconomizerComponent
+          },
+          {
+            path: 'steam-reduction',
+            component: SteamReductionComponent
+          },
+          {
+            path: 'lighting-replacement',
+            component: LightingReplacementComponent
+          },
+          {
+            path: 'motor-drive',
+            component: MotorDriveComponent
+          },
+          {
+            path: 'motor-performance',
+            component: MotorPerformanceComponent
+          },
+          {
+            path: 'nema-energy-efficiency',
+            component: NemaEnergyEfficiencyComponent
+          },
+          {
+            path: 'percent-load-estimation',
+            component: PercentLoadEstimationComponent
+          },
+          {
+            path: 'replace-existing',
+            component: ReplaceExistingComponent
+          },
+          {
+            path: 'full-load-amps',
+            component: FullLoadAmpsComponent
+          },
+          {
+            path: 'energy-equivalency',
+            component: EnergyEquivalencyComponent
+          },
+          {
+            path: 'energy-use',
+            component: EnergyUseComponent
+          },
+          {
+            path: 'o2-enrichment',
+            component: O2EnrichmentComponent
+          },
+          {
+            path: 'atmosphere',
+            component: AtmosphereComponent
+          },
+          {
+            path: 'cooling',
+            component: CoolingComponent
+          },
+          {
+            path: 'wall-loss',
+            component: WallComponent
+          },
+          {
+            path: 'opening',
+            component: OpeningComponent
+          },
+          {
+            path: 'heat-cascading',
+            component: HeatCascadingComponent
+          },
+          {
+            path: 'flue-gas',
+            component: FlueGasComponent
+          },
+          {
+            path: 'air-heating',
+            component: AirHeatingComponent
+          },
+          {
+            path: 'waste-heat',
+            component: WasteHeatComponent
+          },
+          {
+            path: 'charge-material',
+            component: ChargeMaterialComponent
+          },
+          {
+            path: 'leakage',
+            component: LeakageComponent
+          },
+          {
+            path: 'fixture',
+            component: FixtureComponent
+          },
+          {
+            path: 'achievable-efficiency',
+            component: AchievableEfficiencyComponent
+          },
+          {
+            path: 'head-tool',
+            component: HeadToolComponent
+          },
+          {
+            path: 'specific-speed',
+            component: SpecificSpeedComponent
+          },
+          {
+            path: 'pump-curve',
+            component: SystemAndEquipmentCurveComponent
+          },
+          {
+            path: 'boiler',
+            component: BoilerComponent
+          },
+          {
+            path: 'boiler-blowdown-rate',
+            component: BoilerBlowdownRateComponent
+          },
+          {
+            path: 'deaerator',
+            component: DeaeratorComponent
+          },
+          {
+            path: 'flash-tank',
+            component: FlashTankComponent
+          },
+          {
+            path: 'header',
+            component: HeaderComponent
+          },
+          {
+            path: 'heat-loss',
+            component: HeatLossComponent
+          },
+          {
+            path: 'prv',
+            component: PrvComponent
+          },
+          {
+            path: 'saturated-properties',
+            component: SaturatedPropertiesComponent
+          },
+          {
+            path: 'stack-loss',
+            component: StackLossComponent
+          },
+          {
+            path: 'steam-properties',
+            component: SteamPropertiesComponent
+          },
+          {
+            path: 'condensing-economizer',
+            component: CondensingEconomizerComponent
+          },
+          {
+            path: 'turbine',
+            component: TurbineComponent
+          },
+          {
+            path: 'tank-insulation-reduction',
+            component: TankInsulationReductionComponent
+          },
+          {
+            path: 'cooling-tower-fan',
+            component: CoolingTowerFanComponent
+          },
+          {
+            path: 'weather-bins',
+            component: WeatherBinsComponent
+          },
+          {
+            path: 'cooling-tower',
+            component: CoolingTowerComponent
+          },
+          {
+            path: 'chiller-performance',
+            component: ChillerPerformanceComponent
+          },
+          {
+            path: 'cooling-tower-basin',
+            component: CoolingTowerBasinComponent
+          },
+          {
+            path: 'chiller-staging',
+            component: ChillerStagingComponent
+          },
+          {
+            path: 'waste-water-list',
+            component: WasteWaterListComponent
+          },
+          {
+            path: 'o2-utilization-rate',
+            component: O2UtilizationRateComponent
+          },
+          {
+            path: 'state-point-analysis',
+            component: StatePointAnalysisComponent
+          },
+          {
+            path: 'valve-energy-loss',
+            component: ValveEnergyLossComponent
+          }
+        ]
+      }
+    ]
+  },
+  {
+    path: 'dashboard',
+    pathMatch: 'full',
+    redirectTo: ''
+  },
+  {
+    path: 'phast/:id',
+    component: PhastComponent
+  },
+  {
+    path: 'psat/:id',
+    component: PsatComponent,
+    children: psatRoutes
+  },
+  {
+    path: 'fsat/:id',
+    component: FsatComponent,
+    resolve: { data: FsatAssessmentResolver },
+    children: fsatRoutes
+  },
+  {
+    path: 'ssmt/:id',
+    component: SsmtComponent,
+    children: ssmtRoutes
+  },
+  {
+    path: 'treasure-hunt/:id',
+    component: TreasureHuntComponent,
+    children: treasureHuntRoutes
+  },
+  {
+    path: 'compressed-air/:id',
+    component: CompressedAirAssessmentComponent,
+    children: compressedAirAssessmentRoutes
+  },
+  {
+    path: 'report-rollup',
+    component: ReportRollupComponent,
+    children: [
+      {
+        path: '',
+        component: AssessmentReportsComponent
+      },
+    ]
+  },
+  {
+    path: 'log-tool',
+    component: LogToolComponent,
+    children: logToolRoutes
+  },
+  {
+    component: MotorInventoryComponent,
+    path: 'motor-inventory/:id',
+    children: motorInventoryRoutes
+  },
+  {
+    component: PumpInventoryComponent,
+    path: 'pump-inventory/:id',
+    children: pumpInventoryRoutes
+  },
+  {
+    component: WasteWaterComponent,
+    path: 'waste-water/:id',
+    children: wasteWaterRoutes
+  },
+  {
+    component: CompressedAirInventoryComponent,
+    path: 'compressed-air-inventory/:id',
+    children: compressedAirInventoryRoutes
+  },
+  {
+    path: 'water/:id',
+    component: WaterAssessmentComponent,
+    children: waterRoutes
+  },
+  {
+    path: 'process-flow-diagram/:id',
+    component: WaterProcessDiagramComponent,
+    resolve: { diagram: diagramResolver },
+  },
+  {
+    path: 'process-cooling/:assessmentId',
+    loadChildren: () => import('../process-cooling-assessment/process-cooling-assessment.module').then(m => m.ProcessCoolingAssessmentModule),
+    runGuardsAndResolvers: 'always',
+  },
+  { 
+    path: '**', 
+    component: NotFoundComponent 
+  },  
+
+];

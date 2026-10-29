@@ -1,0 +1,17 @@
+.fa-times-circle:hover{
+    cursor: pointer;
+}
+
+.add-link{
+    color: blue;
+}
+
+.add-link:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* offset BS cols for remove button */
+.padding-offset {
+    padding-right: 40px;
+}

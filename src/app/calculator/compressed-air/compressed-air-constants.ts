@@ -1,0 +1,370 @@
+import { AirLeakSurveyData } from "../../shared/models/standalone";
+
+export const standardSizesConstant: Array<{ size: string, display: string }> = [
+    {
+        size: 'CUSTOM',
+        display: 'Use Custom Size'
+    },
+    {
+        size: 'oneHalf',
+        display: '1/2'
+    },
+    {
+        size: 'threeFourths',
+        display: '3/4'
+    },
+    {
+        size: 'one',
+        display: '1'
+    },
+    {
+        size: 'oneAndOneFourth',
+        display: '1 1/4'
+    },
+    {
+        size: 'oneAndOneHalf',
+        display: '1 1/2'
+    },
+    {
+        size: 'two',
+        display: '2'
+    },
+    {
+        size: 'twoAndOneHalf',
+        display: '2 1/2'
+    },
+    {
+        size: 'three',
+        display: '3'
+    },
+    {
+        size: 'threeAndOneHalf',
+        display: '3 1/2'
+    },
+    {
+        size: 'four',
+        display: '4'
+    },
+    {
+        size: 'five',
+        display: '5'
+    },
+    {
+        size: 'six',
+        display: '6'
+    },
+    {
+        size: 'eight',
+        display: '8'
+    },
+    {
+        size: 'ten',
+        display: '10'
+    },
+    {
+        size: 'twelve',
+        display: '12'
+    },
+    {
+        size: 'fourteen',
+        display: '14'
+    },
+    {
+        size: 'sixteen',
+        display: '16'
+    },
+    {
+        size: 'eighteen',
+        display: '18'
+    },
+    {
+        size: 'twenty',
+        display: '20'
+    },
+    {
+        size: 'twentyFour',
+        display: '24'
+    },
+];
+
+export const metricSizesConstant: Array<{ size: string, display: string }> = [
+    {
+        size: 'CUSTOM',
+        display: 'Use Custom Size'
+    },
+    {
+        size: 'oneHalf',
+        display: '15'
+    },
+    {
+        size: 'threeFourths',
+        display: '20'
+    },
+    {
+        size: 'one',
+        display: '25'
+    },
+    {
+        size: 'oneAndOneFourth',
+        display: '32'
+    },
+    {
+        size: 'oneAndOneHalf',
+        display: '40'
+    },
+    {
+        size: 'two',
+        display: '50'
+    },
+    {
+        size: 'twoAndOneHalf',
+        display: '65'
+    },
+    {
+        size: 'three',
+        display: '80'
+    },
+    {
+        size: 'threeAndOneHalf',
+        display: '90'
+    },
+    {
+        size: 'four',
+        display: '100'
+    },
+    {
+        size: 'five',
+        display: '125'
+    },
+    {
+        size: 'six',
+        display: '150'
+    },
+    {
+        size: 'eight',
+        display: '200'
+    },
+    {
+        size: 'ten',
+        display: '250'
+    },
+    {
+        size: 'twelve',
+        display: '300'
+    },
+    {
+        size: 'fourteen',
+        display: '350'
+    },
+    {
+        size: 'sixteen',
+        display: '400'
+    },
+    {
+        size: 'eighteen',
+        display: '450'
+    },
+    {
+        size: 'twenty',
+        display: '500'
+    },
+    {
+        size: 'twentyFour',
+        display: '600'
+    },
+];
+
+export const cagiConditionsImperial  = {
+    standardAtmosphericPressure: 14.5,
+    standardAmbientTemperature: 68,
+    standardRelativeHumidity: 0
+}
+export const cagiConditionsMetric = {
+    standardAtmosphericPressure: 99.97,
+    standardAmbientTemperature: 20,
+    standardRelativeHumidity: 0
+}
+
+export const exampleLeakInputs: Array<AirLeakSurveyData> = [
+  {
+    name: 'Bag Leak',
+    leakDescription: "Enter notes about the leak here.",
+    selected: true,
+    measurementMethod: 2,
+    estimateMethodData: {
+      leakRateEstimate: 0
+    },
+    bagMethodData: {
+      operatingTime: 8760,
+      bagVolume: .6817,
+      bagFillTime: 12,
+    },
+    decibelsMethodData: {
+      linePressure: 0,
+      decibels: 0,
+      decibelRatingA: 0,
+      pressureA: 0,
+      firstFlowA: 0,
+      secondFlowA: 0,
+      decibelRatingB: 0,
+      pressureB: 0,
+      firstFlowB: 0,
+      secondFlowB: 0
+    },
+    orificeMethodData: {
+      compressorAirTemp: 0,
+      atmosphericPressure: 0,
+      dischargeCoefficient: 0,
+      orificeDiameter: 0,
+      supplyPressure: 0,
+      numberOfOrifices: 0,
+    },
+    units: 1
+  },
+ {
+    name: 'Estimate Leak',
+    leakDescription: "Enter notes about the leak here.",
+    selected: true,
+    measurementMethod: 0,
+    estimateMethodData: {
+      leakRateEstimate: .1
+    },
+   bagMethodData: {
+      operatingTime: 0,
+      bagVolume: 0,
+      bagFillTime: 0
+    },
+    decibelsMethodData: {
+      linePressure: 0,
+      decibels: 0,
+      decibelRatingA: 0,
+      pressureA: 0,
+      firstFlowA: 0,
+      secondFlowA: 0,
+      decibelRatingB: 0,
+      pressureB: 0,
+      firstFlowB: 0,
+      secondFlowB: 0
+    },
+    orificeMethodData: {
+      compressorAirTemp: 0,
+      atmosphericPressure: 0,
+      dischargeCoefficient: 0,
+      orificeDiameter: 0,
+      supplyPressure: 0,
+      numberOfOrifices: 0,
+    },
+    units: 1
+  },
+ {
+    name: 'Orifice Leak',
+    leakDescription: "Enter notes about the leak here.",
+    selected: true,
+    measurementMethod: 3,
+    bagMethodData: {
+      operatingTime: 0,
+      bagVolume: 0,
+      bagFillTime: 0,
+    },
+    estimateMethodData: {
+      leakRateEstimate: 0
+    },
+    decibelsMethodData: {
+      linePressure: 0,
+      decibels: 0,
+      decibelRatingA: 0,
+      pressureA: 0,
+      firstFlowA: 0,
+      secondFlowA: 0,
+      decibelRatingB: 0,
+      pressureB: 0,
+      firstFlowB: 0,
+      secondFlowB: 0
+    },
+    orificeMethodData: {
+      compressorAirTemp: 250,
+      atmosphericPressure: 14.7,
+      dischargeCoefficient: 0.97,
+      orificeDiameter: 0.375,
+      supplyPressure: 115,
+      numberOfOrifices: 4,
+    },
+    units: 1
+  }, {
+    name: 'Decibel leak',
+    leakDescription: "Enter notes about the leak here.",
+    selected: true,
+    measurementMethod: 1,
+    estimateMethodData: {
+      leakRateEstimate: 0
+    },
+    bagMethodData: {
+      operatingTime: 0,
+      bagVolume: 0,
+      bagFillTime: 0
+    },
+    decibelsMethodData: {
+      linePressure: 130,
+      decibels: 25,
+      decibelRatingA: 20,
+      pressureA: 150,
+      firstFlowA: 1.4,
+      secondFlowA: 1.2,
+      decibelRatingB: 30,
+      pressureB: 125,
+      firstFlowB: 1.85,
+      secondFlowB: 1.65
+    },
+    orificeMethodData: {
+      compressorAirTemp: 0,
+      atmosphericPressure: 0,
+      dischargeCoefficient: 0,
+      orificeDiameter: 0,
+      supplyPressure: 0,
+      numberOfOrifices: 0,
+    },
+    units: 1
+  }
+];
+
+export enum LeakMeasurementMethod {
+    Estimate,
+    Decibel,
+    Bag,
+    Orifice
+}
+
+export enum FacilityUtilityType {
+    CompressedAir = 0,
+    Electric = 1
+}
+
+export enum CompressorControlType {
+    ScrewInletModulation = 100,
+    ScrewVariableDisplacement = 101,
+    ScrewVariableSpeedDrives = 102,
+    OilInjectedScrewLoadUnloadShort = 103,
+    OilInjectedScrewLoadUnloadLong = 104,
+    OilFreeScrewLoadUnload = 105,
+    ReciprocatingLoadUnload = 106,
+    ReciprocatingOnOff = 107,
+    CentrifugalBlowoff = 108,
+    CentrifugalModulatingIBV = 109,
+    CentrifugalModulatingIGV = 110,
+    Custom = 8
+}
+
+export enum CompressorSpecificPowerType {
+    Reciprocating = 0,
+    RotaryScrewLubricantInjected = 1,
+    RotaryScrewLubricantFree = 2,
+    Centrifugal = 3,
+    Custom = 4
+}
+
+export const measurementMethods: Array<{ display: string, value: number }> = [
+    { display: 'Estimate', value: LeakMeasurementMethod.Estimate },
+    { display: 'Decibel Method', value: LeakMeasurementMethod.Decibel },
+    { display: 'Bag Method', value: LeakMeasurementMethod.Bag },
+    { display: 'Orifice Method', value: LeakMeasurementMethod.Orifice },
+  ];

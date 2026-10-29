@@ -1,0 +1,174 @@
+<div bsModal #releaseNotesModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+  aria-labelledby="versionModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header p-2">
+          <span class="card-header-text">
+            MEASUR v{{versionNum}} Release Notes
+          </span>
+          <button class="close" aria-label="Close" (click)="hideModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            MEASUR helps manufacturers increase industrial energy efficiency at the plant-level and in specific systems.
+            Learn step-by-step ways to identify opportunities, monitor progress, and improve efficiency in any facility.
+            Some tools help facilities implement an energy management system and prepare to become ISO 50001 and
+            Superior Energy Performance certified.
+            Based on older Department of Energy (DOE) tools, the Industrial Technologies Office (ITO)
+            has undertaken this effort to refactor the legacy tools into a modern environment.
+            The suite includes 8 assessment modules (6 energy system, the treasure hunt, and the water balance modules),
+            a Data Exploration Module, extensive help text, comprehensive reports, data visualization, and 80
+            calculators!
+          </p>
+          <p class="card-text-small">
+            MEASUR is a supported application, updates are expected and may impact previously created assessments.
+          </p>
+          <label class="header-label">Warnings</label>
+          <ul>
+            <li>
+              Users are experiencing issues with the desktop auto-update feature on some machines. This can often be resolved by simply closing the application, re-opening, and allowing the auto-update to finish. The development team is actively working on this issue.
+            </li>
+            <li>Installing v1.0.0 or an earlier version of this tool will automatically reset your app data. Data can be
+              imported into an earlier version from v1.0.0</li>
+            <li>Do not install an earlier version of this tool without resetting your app data (in settings).</li>
+            <li>If MEASUR freezes during installation or fails to install, uninstall the previous version of MEASUR and
+              repeat installation of the new installer</li>
+            <li>Assessments created in MEASUR 0.8.0 or later are not compatible with older versions. </li>
+            <li>Exporting from v.0.8.0 and importing to a lower version will continue to work, though new features will
+              not be available.</li>
+          </ul>
+
+          <label class="header-label">Here are the details of what's new in version {{versionNum}}:</label>
+
+          <label>Water</label>
+          <ul>
+            <li><b>Fixed:</b> Diagram data being lost or overwritten when the diagram was not saved by changing tabs, or when the app was refreshed before assessment data finished loading</li>
+            <li><b>Fixed:</b> Bug where diagram console showed errors but none were present on data entry tray</li>
+            <li><b>Enhanced:</b> Added route-based navigation for Water Assessment main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Wastewater</label>
+          <ul>
+            <li><b>Enhanced:</b> Added route-based navigation for Wastewater Assessment main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Compressed Air</label>
+          <ul>
+            <li><b>Fixed:</b> Changed color of validation message for negative values for "Average System Pressure Reduction" and "Airflow Reduction" to yellow</li>
+            <li><b>Enhanced:</b> Explore Opportunities form now has a more prominent drag handle for resizing</li>
+            <li><b>Enhanced:</b> Updated compressor modeling to use the corrected engineering behavior in the latest MEASUR Tools Suite</li>
+            <li><b>Enhanced:</b> Verified route-based analytics coverage for Compressed Air Assessment main tabs</li>
+          </ul>
+          <label>Process Cooling Assessment</label>
+          <ul>
+            <li><b>Added:</b> Equipment notes throughout the Process Cooling Assessment</li>
+            <li><b>Fixed:</b> Issue regarding EEM to apply VSD to water pumps</li>
+            <li><b>Enhanced:</b> Verified route-based analytics coverage for Process Cooling Assessment main tabs</li>
+          </ul>
+          <label>Process Heating</label>
+          <ul>
+            <li><b>Fixed:</b> Bug where extended surface losses were not incorporated into the heat balance properly</li>
+          </ul>
+          <label>Pumps</label>
+          <ul>
+            <li><b>Enhanced:</b> Moved the Stages field up into the Pump section of Pump &amp; Fluid</li>
+            <li><b>Enhanced:</b> Added route-based navigation for PSAT main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Pump Inventory</label>
+          <ul>
+            <li><b>Added:</b> Support for Positive Displacement Pumps</li>
+            <li><b>Enhanced:</b> Added route-based navigation for Pump Inventory main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Motor Inventory</label>
+          <ul>
+            <li><b>Enhanced:</b> Added route-based navigation for Motor Inventory main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Compressed Air Inventory</label>
+          <ul>
+            <li><b>Enhanced:</b> Added route-based navigation for Compressed Air Inventory main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Treasure Hunt</label>
+          <ul>
+            <li><b>Enhanced:</b> Added route-based navigation for Treasure Hunt main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Fans</label>
+          <ul>
+            <li><b>Enhanced:</b> Added route-based navigation for FSAT main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Steam</label>
+          <ul>
+            <li><b>Enhanced:</b> Added route-based navigation for SSMT main tabs to improve analytics visibility</li>
+          </ul>
+          <label>Application</label>
+          <ul>
+            <li><b>Fixed:</b> Export Reports panel cutoff on small devices and media views</li>
+            <li><b>Fixed:</b> Privacy notice link now points to the current ORNL security and privacy notice</li>
+            <li><b>Enhanced:</b> Updated JUSTIFI export modal language (Non-Energy Benefits renamed to Multiple Benefits) and Knowledge Library link</li>
+            <li><b>Enhanced:</b> Updated the body text of emails sent from MEASUR</li>
+          </ul>
+
+          <!--  Include prev version -->
+          <label class="header-label">Here are the details of what's new in version 1.9.0:</label>
+
+          <label>Water</label>
+          <ul>
+            <li><b>Fixed:</b> True cost result support for diagram configurations containing multi-component losses and unaccounted flows</li>
+            <li><b>Fixed:</b> Intake and treatment cost attribution for configurations with chained/forked treatment losses (RO with misallocated wastewater treatment, treatment loss intake attribution)</li>
+            <li><b>Fixed:</b> Diagram flow validation reworked to remove false-positive errors and add missing checks (total-flow mismatch, known losses, discharge flow)</li>
+            <li><b>Fixed:</b> Diagram flow validation now checks against the flow decimal precision set in diagram options instead of full unrounded values</li>
+            <li><b>Enhanced:</b> Cascading flows now populates a downstream component's Total Outflow field when the cascade fills its last remaining flow</li>
+            <li><b>Added:</b> Flow value confidence states (Estimated, Metered, Calculated) with icon, color, and border indicators on diagram arrows and flow labels</li>
+            <li><b>Enhanced:</b> Water Reports upgraded to the new Export Report UI and report builder module</li>
+          </ul>
+          <label>Wastewater</label>
+          <ul>
+            <li><b>Enhanced:</b> Wastewater Reports upgraded to the new Export Report UI and report builder module</li>
+          </ul>
+          <label>Fans</label>
+          <ul>
+            <li><b>Enhanced:</b> FSAT/Fans Reports upgraded to the new Export Report UI and report builder module</li>
+          </ul>
+          <label>Compressed Air</label>
+          <ul>
+            <li><b>Enhanced:</b> Compressed Air Reports upgraded to the new Export Report UI and report builder module</li>
+            <li><b>Fixed:</b> Bag-method leak survey electricity and cost results no longer scaled 1000x, now use the same conversion path as other leak survey methods</li>
+          </ul>
+          <label>Steam</label>
+          <ul>
+            <li><b>Enhanced:</b> SSMT/Steam Reports upgraded to the new Export Report UI and report builder module</li>
+          </ul>
+          <label>Process Heating</label>
+          <ul>
+            <li><b>Enhanced:</b> Process Heating Reports upgraded to the new Export Report UI and report builder module</li>
+            <li><b>Fixed:</b> Sidebar name for the Orifice Meter Flow calculator</li>
+          </ul>
+          <label>Application</label>
+          <ul>
+            <li><b>Added:</b> Contact list on the Assessment Dashboard for storing sender/recipient contacts used when emailing files, with type-ahead when entering an email</li>
+            <li><b>Added:</b> Default Sender Email setting on the contact list to auto-populate the Assessor Email in Facility Info</li>
+          </ul>
+
+          <!--  Include prev version -->
+          <label class="header-label">Here are the details of what's new in version 1.8.5:</label>
+
+          <label>Steam</label>
+          <ul>
+            <li><b>Enhanced:</b> Added Steam Leak calculator to assessment calculators tab</li>
+          </ul>
+          <label>Treasure Hunt</label>
+          <ul>
+            <li><b>Fixed:</b> Import of Steam Leak opportunities does not preserve input data</li>
+            <li><b>Fixed:</b> Steam Leak opportunity cannot be deleted</li>
+          </ul>
+
+          <div class="modal-footer p-2 d-flex flex-row justify-content-end">
+            <div>
+              <button type="button" class="btn btn-secondary btn-sm mr-2 pull-right"
+                (click)="hideModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

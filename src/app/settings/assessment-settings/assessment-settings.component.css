@@ -1,0 +1,42 @@
+.settings-container{
+    max-height: 100vh;
+    overflow-y: scroll;
+}
+
+.group-label{
+    width: 100%;
+    font-size: large;
+}
+
+.group-label.general{
+    border-bottom: groove 2px #808B96;
+}
+
+.btn{
+  padding: 6px;
+}
+
+.btn-danger{
+    padding: 6px;
+}
+
+.red{
+    color: red;
+}
+
+.content-container{
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.group-label:hover{
+    cursor: pointer;
+    background: #efefef;
+}
+
+
+.sub-label {
+    text-decoration: underline;
+    font-size: .875rem;
+}

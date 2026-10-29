@@ -1,0 +1,189 @@
+<app-electricity-reduction *ngIf="selectedCalc == 'electricity-reduction'" [inTreasureHunt]="true"
+(emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-electricity-reduction>
+
+<app-replace-existing *ngIf="selectedCalc == 'replace-existing'" 
+(emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()"
+ [settings]="settings" [inTreasureHunt]="true"
+  [opperatingHours]="treasureHunt.operatingHours">
+</app-replace-existing>
+
+<app-motor-drive *ngIf="selectedCalc == 'motor-drive'" 
+(emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()"
+[settings]="settings" [inTreasureHunt]="true"
+  [opperatingHours]="treasureHunt.operatingHours">
+</app-motor-drive>
+
+<app-lighting-replacement *ngIf="selectedCalc == 'lighting-replacement'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-lighting-replacement>
+
+<app-waste-heat *ngIf="selectedCalc == 'waste-heat'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-waste-heat>
+
+<app-natural-gas-reduction *ngIf="selectedCalc == 'natural-gas-reduction'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+    [operatingHours]="treasureHunt.operatingHours"></app-natural-gas-reduction>
+
+<app-steam-reduction *ngIf="selectedCalc == 'steam-reduction'" [inTreasureHunt]="true"
+    (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+      [operatingHours]="treasureHunt.operatingHours"></app-steam-reduction>
+
+<app-pipe-insulation-reduction *ngIf="selectedCalc == 'pipe-insulation-reduction'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours">
+</app-pipe-insulation-reduction>
+
+<app-tank-insulation-reduction *ngIf="selectedCalc == 'tank-insulation-reduction'" [inTreasureHunt]="true"
+(emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours">
+</app-tank-insulation-reduction>
+
+<app-flue-gas *ngIf="selectedCalc == 'flue-gas'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours">
+</app-flue-gas>
+
+<app-opening *ngIf="selectedCalc == 'opening-loss'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-opening>
+
+<app-wall *ngIf="selectedCalc == 'wall-loss'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-wall>
+
+<app-leakage *ngIf="selectedCalc == 'leakage-loss'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-leakage>
+
+<app-heat-cascading *ngIf="selectedCalc == 'heat-cascading'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours">
+</app-heat-cascading>
+
+<app-air-heating *ngIf="selectedCalc == 'air-heating'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-air-heating>
+
+<app-water-heating *ngIf="selectedCalc == 'water-heating'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours">
+</app-water-heating>
+
+<app-compressed-air-reduction *ngIf="selectedCalc == 'compressed-air-reduction'" [inTreasureHunt]="true"
+  (emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+    [operatingHours]="treasureHunt.operatingHours"></app-compressed-air-reduction>
+
+<app-compressed-air-pressure-reduction *ngIf="selectedCalc == 'compressed-air-pressure-reduction'"
+  [inTreasureHunt]="true" (emitSave)="saveOpportunity($event)" 
+  (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-compressed-air-pressure-reduction>
+
+<app-air-leak-survey *ngIf="selectedCalc == 'air-leak-survey'" [inTreasureHunt]="true"
+(emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours">
+</app-air-leak-survey>
+
+<app-water-reduction *ngIf="selectedCalc == 'water-reduction'" [inTreasureHunt]="true"
+(emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+[operatingHours]="treasureHunt.operatingHours"></app-water-reduction>
+
+<app-standalone-opportunity-sheet *ngIf="selectedCalc == 'opportunity-sheet'"
+  (emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveCustomOpportunity($event)"
+  [settings]="settings">
+</app-standalone-opportunity-sheet>
+
+<app-assessment-opportunity *ngIf="selectedCalc == 'assessment-opportunity'"
+  (emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveCustomOpportunity($event)"
+  [settings]="settings">
+</app-assessment-opportunity>
+
+<app-cooling-tower *ngIf="selectedCalc == 'cooling-tower-makeup'"
+  [inTreasureHunt]="true" (emitSave)="saveOpportunity($event)" 
+  (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours"></app-cooling-tower>
+
+<app-chiller-staging *ngIf="selectedCalc == 'chiller-staging'" [inTreasureHunt]="true"
+  (emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveOpportunity($event)"
+  [settings]="settings">
+</app-chiller-staging>
+
+<app-chiller-performance *ngIf="selectedCalc == 'chiller-performance'" [inTreasureHunt]="true"
+  (emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveOpportunity($event)"
+  [settings]="settings">
+</app-chiller-performance>
+
+<app-cooling-tower-fan *ngIf="selectedCalc == 'cooling-tower-fan'" [inTreasureHunt]="true"
+(emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveOpportunity($event)"
+[settings]="settings"></app-cooling-tower-fan>
+
+<app-cooling-tower-basin *ngIf="selectedCalc == 'cooling-tower-basin'" [inTreasureHunt]="true"
+(emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveOpportunity($event)"
+[settings]="settings">
+</app-cooling-tower-basin>
+
+<app-boiler-blowdown-rate *ngIf="selectedCalc == 'boiler-blowdown-rate'" [inTreasureHunt]="true"
+(emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveOpportunity($event)"
+[settings]="settings">
+</app-boiler-blowdown-rate>
+
+<app-steam-leak-survey *ngIf="selectedCalc == 'steam-leak-survey'" [inTreasureHunt]="true"
+(emitSave)="saveOpportunity($event)" (emitCancel)="cancelTreasureHuntOpportunity()" [settings]="settings"
+  [operatingHours]="treasureHunt.operatingHours">
+</app-steam-leak-survey>
+
+<app-power-factor-correction *ngIf="selectedCalc == 'power-factor-correction'" [inTreasureHunt]="true"
+(emitCancel)="cancelTreasureHuntOpportunity()" (emitSave)="saveOpportunity($event)">  
+</app-power-factor-correction>
+
+<div bsModal #saveCalcModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+  aria-labelledby="saveCalcModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header p-1">
+        <h5 class="mb-0">Save Changes</h5>
+        <!-- <button class="close" (click)="closeSaveCalcModal()">
+          <span aria-hidden="true">&times;</span>
+        </button> -->
+      </div>
+      <div class="modal-body text-center">
+        <p class="help-text" *ngIf="!calculatorOpportunitySheet">There is no opportunity sheet filled out for this
+          opportunity. Would you like to add one
+          before saving?</p>
+        <p class="help-text" *ngIf="calculatorOpportunitySheet">Would you like to edit your opportunity sheet before
+          saving?</p>
+        <a class="click-link" (click)="showOpportunitySheetModal()">
+          <img src="assets/images/calculator-icons/opportunity-sheet-icon.png" class="save-opportunity">
+        </a> <br>
+        <a class="click-link small" (click)="showOpportunitySheetModal()" *ngIf="!calculatorOpportunitySheet">+Add
+          Opportunity Sheet</a>
+        <a class="click-link small" (click)="showOpportunitySheetModal()" *ngIf="calculatorOpportunitySheet">Edit
+          Opportunity Sheet</a>
+      </div>
+      <div class="modal-body text-center" *ngIf="selectedCalc == 'opportunity-sheet' && mainTab != 'find-treasure'">
+        <p class="help-text">Are you sure you want to save the changes to your existing opportunity? These changes
+          cannot be
+          undone.</p>
+      </div>
+      <div class="modal-footer p-1">
+        <button class="btn btn-danger btn-sm pull-right" (click)="hideSaveCalcModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm pull-right" (click)="confirmSaveCalc()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div bsModal #opportunitySheetModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+  aria-labelledby="opportunitySheetModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body pl-0 pr-0" *ngIf="opportunitySheetModal.isShown">
+        <app-opportunity-sheet (emitCancel)="hideOpportunitySheetModal()" (emitSave)="saveItemOpportunitySheet($event)"
+          [(opportunitySheet)]="calculatorOpportunitySheet">
+        </app-opportunity-sheet>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+@import "variables.css";
+.input-group-addon.left{
+    font-size: 16px;
+    border-left: inset 1px;
+    border-right: none;
+}
+
+/* .input-group-addon.right{
+    font-size: 16px;
+    border-left: none;
+    border-right: inset 1px;
+} */
+
+.name-input-form .input-group-addon:hover{
+    font-weight: bold;
+    cursor: pointer;
+    background-color: gray;
+}
+
+
+.name-input-form .name-input{
+    padding-left: 8px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.input-group-addon.op-hour-addon.units {
+    border-left: solid 1px;
+    border-right: none;
+
+}
+
+input[type="checkbox"]:hover {
+  cursor: pointer;
+}
+
+.form-group.label-select {
+  display: flex;
+  align-items: center;
+}
+
+.form-group.label-select select {
+  width: calc(50% - 1rem) !important;
+  flex-shrink: 0 !important;
+}
+
+.form-group.label-select .spacer {
+  width: 1rem;
+  flex-shrink: 0;
+}
+
+.form-group.label-select .input-group {
+  flex: 1;
+}

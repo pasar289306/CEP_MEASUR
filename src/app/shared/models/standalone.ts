@@ -1,0 +1,860 @@
+import { Mode } from "fs";
+
+export interface CombinedHeatPower {
+  annualOperatingHours: number;
+  annualElectricityConsumption: number;
+  annualThermalDemand: number;
+  boilerThermalFuelCosts: number;
+  avgElectricityCosts: number;
+  option: number;
+  boilerThermalFuelCostsCHPcase: number;
+  CHPfuelCosts: number;
+  percentAvgkWhElectricCostAvoidedOrStandbyRate: number;
+  displacedThermalEfficiency: number;
+  chpAvailability: number;
+  thermalUtilization: number;
+}
+
+export interface CombinedHeatPowerOutput {
+  annualOperationSavings: number;
+  totalInstalledCostsPayback: number;
+  simplePayback: number;
+  fuelCosts: number;
+  thermalCredit: number;
+  incrementalOandM: number;
+  totalOperatingCosts: number;
+}
+
+export interface PneumaticAirRequirementInput {
+  pistonType: number;
+  cylinderDiameter: number;
+  cylinderStroke: number;
+  pistonRodDiameter?: number; // only used / needed if pistonType == 1  meaning Double Acting Piston Type
+  airPressure: number;
+  cyclesPerMinute: number;
+}
+
+export interface PneumaticAirRequirementOutput {
+  airRequirementPneumaticCylinder: number;
+  volumeAirIntakePiston: number;
+  compressionRatio: number;
+}
+
+export interface ReceiverTank {
+  method: number;
+  atmosphericPressure: number;
+}
+
+export interface ReceiverTankGeneral extends ReceiverTank {
+  airDemand: number;
+  allowablePressureDrop: number;
+}
+
+export interface ReceiverTankDedicatedStorage extends ReceiverTank {
+  lengthOfDemand: number;
+  airFlowRequirement: number;
+  initialTankPressure: number;
+  finalTankPressure: number;
+}
+
+export interface ReceiverTankBridgingCompressor extends ReceiverTankGeneral {
+  distanceToCompressorRoom: number;
+  speedOfAir: number;
+}
+
+
+export interface ReceiverTankMeteredStorage extends ReceiverTankDedicatedStorage {
+  meteredControl: number;
+}
+
+export interface ReceiverTankMeteredResults {
+  volume: number;
+  refillTime: number;
+}
+
+export interface ReceiverTankCompressorCycle extends ReceiverTank {
+  loadTime: number;
+  unloadTime: number;
+  compressorCapacity: number;
+  fullLoadPressure: number;
+  unloadPressure: number;
+}
+
+export interface ReceiverTankCompressorCycleOutput {
+  pressureChange: number;
+  capacity: number;
+  areaStorageVolume: number;
+  liquidStorageVolume: number;
+}
+
+export interface OperatingCostInput {
+  motorBhp: number;
+  bhpUnloaded: number;
+  annualOperatingHours: number;
+  runTimeLoaded: number;
+  efficiencyLoaded: number;
+  efficiencyUnloaded: number;
+  costOfElectricity: number;
+}
+
+export interface OperatingCostOutput {
+  runTimeUnloaded: number;
+  costForLoaded: number;
+  costForUnloaded: number;
+  totalAnnualCost: number;
+}
+
+export interface OperatingSrcInput {
+  name: string;
+  usage: number;
+  cost: number;
+}
+
+export interface OperatingSrcOutput {
+  totalCost: number;
+}
+
+export interface PipeSizes {
+  oneHalf: number;
+  threeFourths: number;
+  one: number;
+  oneAndOneFourth: number;
+  oneAndOneHalf: number;
+  two: number;
+  twoAndOneHalf: number;
+  three: number;
+  threeAndOneHalf: number;
+  four: number;
+  five: number;
+  six: number;
+  eight: number;
+  ten: number;
+  twelve: number;
+  fourteen: number;
+  sixteen: number;
+  eighteen: number;
+  twenty: number;
+  twentyFour: number;
+}
+
+export interface AirSystemCapacityInput extends PipeSizes {
+  receiverCapacities: Array<number>;
+  leakRateInput?: LeakRateInput;
+  customPipes: Array<{ pipeSize: number, pipeLength: number }>;
+  allPipes: Array<{ pipeSize: string, customPipeSize: number, pipeLength: number }>;
+}
+
+export interface LeakRateInput {
+  airPressureIn?: number;
+  airPressureOut?: number;
+  dischargeTime: number;
+  atmosphericPressure: number;
+}
+
+export interface AirSystemCapacityOutput extends PipeSizes {
+  totalPipeVolume: number;
+  totalReceiverVolume: number;
+  totalCapacityOfCompressedAirSystem: number;
+  totalPipeVolumeCubicFeet?: number;
+  totalReceiverVolumeCubicFeet?: number;
+  totalCapacityOfCompressedAirSystemCubicFeet?: number;
+  receiverCapacities: Array<number>;
+  leakRate?: number;
+}
+
+export interface AirVelocityInput {
+  airFlow: number;
+  pipePressure: number;
+  atmosphericPressure: number;
+}
+
+export interface BleedTestInput {
+  totalSystemVolume: number;
+  atmosphericPressure: number;
+  normalOperatingPressure: number;
+  testPressure: number;
+  time: number;
+}
+
+export interface PipeSizingInput {
+  airFlow: number;
+  airlinePressure: number;
+  designVelocity: number;
+  atmosphericPressure: number;
+}
+
+export interface PipeSizingOutput {
+  crossSectionalArea: number;
+  pipeDiameter: number;
+}
+
+// export interface PneumaticValve {
+//   inletPressure: number;
+//   outletPressure: number;
+//   flowRate: number;
+// }
+
+// export interface PneumaticValveFlowRateInput {
+//   inletPressure: number, 
+//   outletPressure: number
+// }
+
+// export interface PneumaticValveFlowRateOutput {
+//   flowRate: number
+// }
+
+// export interface PneumaticValveFlowCoefficient {
+//   flowCoefficient: number;
+// }
+
+export interface BagMethodInput {
+  operatingTime: number;
+  bagFillTime: number;
+  bagVolume: number;
+}
+
+export interface BagMethodOutput {
+  flowRate: number;
+  annualConsumption: number;
+}
+
+
+export interface CalculateUsableCapacity {
+  tankSize: number;
+  airPressureIn: number;
+  airPressureOut: number;
+  leakRateInput?: LeakRateInput;
+};
+
+
+//======= electricity reduction objects =======
+export interface ElectricityReductionInput {
+  electricityReductionInputVec: Array<ElectricityReductionData>
+};
+
+export interface ElectricityReductionData {
+  name: string,
+  operatingHours: number,
+  electricityCost: number,
+  measurementMethod: number, // 0 = multimeter reading, 1 = name plate data, 2 = power meter method, 3 = offsheet / other method
+  multimeterData: MultimeterReadingData,
+  nameplateData: NameplateData,
+  powerMeterData: PowerMeterData,
+  otherMethodData: OtherMethodData,
+  units: number,
+  userSelectedHP: boolean
+};
+
+export interface MultimeterReadingData {
+  numberOfPhases: number,
+  supplyVoltage: number,
+  averageCurrent: number,
+  powerFactor: number
+};
+
+export interface NameplateData {
+  ratedMotorPower: number,
+  variableSpeedMotor: boolean,
+  operationalFrequency: number,
+  lineFrequency: number,
+  motorAndDriveEfficiency: number,
+  loadFactor: number
+};
+
+export interface PowerMeterData {
+  power: number,
+};
+
+export interface OtherMethodData {
+  energy: number;
+};
+
+export interface ElectricityReductionResults {
+  baselineResults: ElectricityReductionResult,
+  modificationResults: ElectricityReductionResult,
+  annualEnergySavings: number,
+  annualCostSavings: number,
+};
+
+export interface ElectricityReductionResult {
+  energyUse: number,
+  energyCost: number,
+  power: number;
+};
+
+//====== end electricity reduction objects ====
+
+
+
+//======= natural gas reduction objects ========
+export interface NaturalGasReductionInput {
+  naturalGasReductionInputVec: Array<NaturalGasReductionData>
+};
+
+export interface NaturalGasReductionData {
+  name: string,
+  operatingHours: number,
+  fuelCost: number,
+  measurementMethod: number,
+  flowMeterMethodData: FlowMeterMethodData,
+  otherMethodData: NaturalGasOtherMethodData,
+  airMassFlowData: AirMassFlowData,
+  waterMassFlowData: WaterMassFlowData,
+  units: number
+};
+
+export interface FlowMeterMethodData {
+  flowRate: number
+};
+
+export interface NaturalGasOtherMethodData {
+  consumption: number
+};
+
+export interface AirMassFlowData {
+  isNameplate: boolean,
+  airMassFlowMeasuredData: AirMassFlowMeasuredData,
+  airMassFlowNameplateData: AirMassFlowNameplateData,
+  inletTemperature: number,
+  outletTemperature: number,
+  systemEfficiency: number
+};
+
+export interface AirMassFlowMeasuredData {
+  areaOfDuct: number,
+  airVelocity: number
+};
+
+export interface AirMassFlowNameplateData {
+  airFlow: number
+};
+
+export interface WaterMassFlowData {
+  waterFlow: number,
+  inletTemperature: number,
+  outletTemperature: number,
+  systemEfficiency: number
+};
+
+export interface NaturalGasReductionResults {
+  baselineResults: NaturalGasReductionResult,
+  modificationResults: NaturalGasReductionResult,
+  annualEnergySavings: number,
+  annualCostSavings: number,
+};
+
+export interface NaturalGasReductionResult {
+  energyUse: number,
+  energyCost: number,
+  heatFlow: number,
+  totalFlow: number
+};
+//====== end natural gas reduction objects =======
+
+
+
+//====== compressed air reduction objects ======
+export interface CompressedAirReductionInput {
+  compressedAirReductionInputVec: Array<CompressedAirReductionData>
+};
+
+export interface CompressedAirReductionData {
+  name: string,
+  hoursPerYear: number,
+  utilityType: number,
+  utilityCost: number,
+  compressedAirCost: number,
+  electricityCost: number,
+  measurementMethod: number,
+  flowMeterMethodData: CompressedAirFlowMeterMethodData,
+  bagMethodData: BagMethodInput,
+  pressureMethodData: PressureMethodData,
+  otherMethodData: CompressedAirOtherMethodData,
+  compressorElectricityData: CompressorElectricityData,
+  units: number
+};
+
+export interface CompressedAirFlowMeterMethodData {
+  meterReading: number
+};
+
+export interface PressureMethodData {
+  nozzleType: number,
+  numberOfNozzles: number,
+  supplyPressure: number
+};
+
+export interface CompressedAirOtherMethodData {
+  consumption: number
+};
+
+export interface CompressorElectricityData {
+  compressorControl: number,
+  compressorControlAdjustment: number,
+  compressorSpecificPowerControl: number,
+  compressorSpecificPower: number
+};
+
+
+export interface CompressedAirReductionResults {
+  baselineResults: Array<CompressedAirReductionResult>,
+  modificationResults: Array<CompressedAirReductionResult>,
+  baselineAggregateResults: CompressedAirReductionResult,
+  modificationAggregateResults: CompressedAirReductionResult,
+  annualEnergySavings: number,
+  annualCostSavings: number,
+  annualFlowRateReduction: number,
+  annualConsumptionReduction: number
+};
+
+export interface CompressedAirReductionResult {
+  energyUse: number,
+  energyCost: number,
+  flowRate: number,
+  singleNozzleFlowRate: number,
+  consumption: number
+};
+//===== END compressed air reduction objects =====
+
+export interface AirLeakSurveyInput {
+  compressedAirLeakSurveyInputVec: Array<AirLeakSurveyData>
+  facilityCompressorData: FacilityCompressorData;
+}
+  
+export interface AirLeakSurveyData {
+  selected: boolean;
+  name: string;
+  leakDescription: string,
+  measurementMethod: number;
+  bagMethodData: BagMethodInput,
+  estimateMethodData: EstimateMethodData,
+  orificeMethodData: OrificeMethodData,
+  decibelsMethodData: DecibelsMethodData,
+  units: number
+}
+
+export interface AirLeakSurveyOutput {
+  individualLeaks: Array<AirLeakSurveyResult>;
+  baselineTotal: AirLeakSurveyResult;
+  modificationTotal: AirLeakSurveyResult;
+  savings: AirLeakSurveyResult;
+  facilityCompressorData?: FacilityCompressorData,
+}
+
+export interface AirLeakSurveyResult {
+  name?: string;
+  leakDescription?: string;
+  selected?: boolean;
+  totalFlowRate: number;
+  annualTotalFlowRate: number;
+  annualTotalElectricity: number;
+  annualTotalElectricityCost: number;
+  }
+
+export interface DecibelsMethodData {
+  linePressure: number;
+  decibels: number;
+  decibelRatingA: number;
+  pressureA: number;
+  firstFlowA: number;
+  secondFlowA: number;
+  decibelRatingB: number;
+  pressureB: number;
+  firstFlowB: number;
+  secondFlowB: number;
+};
+
+export interface OrificeMethodData {
+  compressorAirTemp: number;
+  atmosphericPressure: number;
+  dischargeCoefficient: number;
+  orificeDiameter: number;
+  supplyPressure: number;
+  numberOfOrifices: number;
+};
+
+export interface EstimateMethodData {
+  leakRateEstimate: number,
+};
+
+export interface FacilityCompressorData {
+  hoursPerYear: number;
+  utilityType: number;
+  utilityCost: number;
+  compressorElectricityData: CompressorElectricityData
+}
+
+
+//====== compressed air pressure reduction objects =====
+export interface CompressedAirPressureReductionInput {
+  compressedAirPressureReductionInputVec: Array<CompressedAirPressureReductionData>;
+};
+
+export interface CompEEM_kWAdjustedInput {
+  kW_fl_rated: number,
+  P_fl_rated: number,
+  P_discharge: number,
+  P_alt: number,
+  P_atm: number
+}
+
+export interface CompressedAirPressureReductionData {
+  name: string,
+  powerType?: string,
+  isBaseline: boolean,
+  hoursPerYear: number,
+  electricityCost: number,
+  compressorPower: number,
+  pressure: number,
+  proposedPressure: number,
+  pressureRated: number,
+  atmosphericPressure: number
+};
+
+export interface CompressedAirPressureReductionResults {
+  baselineResults: CompressedAirPressureReductionResult,
+  modificationResults: CompressedAirPressureReductionResult,
+  annualEnergySavings: number,
+  annualCostSavings: number
+};
+
+export interface CompressedAirPressureReductionResult {
+  energyUse: number,
+  energyCost: number
+};
+//==== END compressed air pressure reduction objects =====
+
+
+
+//====== water/wastewater reduction objects ======
+// wastewater shares the same objects as water
+export interface WaterReductionInput {
+  waterReductionInputVec: Array<WaterReductionData>
+};
+
+export interface WaterReductionData {
+  name: string,
+  hoursPerYear: number,
+  waterCost: number,
+  measurementMethod: number,
+  meteredFlowMethodData: MeteredFlowMethodData,
+  volumeMeterMethodData: VolumeMeterMethodData,
+  bucketMethodData: BucketMethodData,
+  otherMethodData: WaterOtherMethodData,
+  isWastewater: boolean
+};
+
+export interface VolumeMeterMethodData {
+  finalMeterReading: number,
+  initialMeterReading: number,
+  elapsedTime: number
+};
+
+export interface MeteredFlowMethodData {
+  meterReading: number
+};
+
+export interface BucketMethodData {
+  bucketVolume: number,
+  bucketFillTime: number
+};
+
+export interface WaterOtherMethodData {
+  consumption: number
+};
+
+export interface WaterReductionResults {
+  baselineResults: WaterReductionResult,
+  modificationResults: WaterReductionResult,
+  annualWaterSavings: number,
+  annualCostSavings: number
+};
+
+export interface WaterReductionResult {
+  waterUse: number,
+  waterCost: number,
+  annualWaterSavings: number,
+  costSavings: number
+};
+//===== END water/wastewater reduction objects =====
+
+
+//====== steam reduction objects ======
+export interface SteamReductionInput {
+  steamReductionInputVec: Array<SteamReductionData>
+};
+
+export interface SteamReductionOutput {
+  energyCost?: number,
+  energyUse: number,
+  steamUse: number
+};
+
+export interface SteamReductionData {
+  name: string,
+  hoursPerYear: number,
+  utilityType: number,
+  utilityCost: number,
+  steamUtilityCost: number,
+  naturalGasUtilityCost: number,
+  otherUtilityCost: number,
+  measurementMethod: number,
+  systemEfficiency: number,
+  pressure: number,
+  boilerEfficiency: number;
+  steamVariableOption: number;
+  steamVariable: number;
+  feedWaterTemperature: number;
+  flowMeterMethodData: SteamFlowMeterMethodData,
+  airMassFlowMethodData: SteamMassFlowMethodData,
+  waterMassFlowMethodData: SteamMassFlowMethodData,
+  otherMethodData: SteamOtherMethodData,
+  units: number
+};
+
+export interface SteamFlowMeterMethodData {
+  flowRate: number
+};
+
+export interface SteamMassFlowNameplateData {
+  flowRate: number
+};
+
+export interface SteamMassFlowMeasuredData {
+  areaOfDuct: number,
+  airVelocity: number
+};
+
+export interface SteamMassFlowMethodData {
+  isNameplate: boolean,
+  massFlowMeasuredData: SteamMassFlowMeasuredData,
+  massFlowNameplateData: SteamMassFlowNameplateData,
+  inletTemperature: number,
+  outletTemperature: number
+};
+
+export interface SteamOtherMethodData {
+  consumption: number
+};
+
+export interface SteamReductionResults {
+  baselineResults: SteamReductionResult,
+  modificationResults: SteamReductionResult,
+  annualEnergySavings: number,
+  annualCostSavings: number,
+  annualSteamSavings: number
+};
+
+export interface SteamReductionResult {
+  energyCost: number,
+  energyUse: number,
+  steamUse: number
+};
+//===== END steam reduction objects =====
+
+
+//====== steam leak survey objects ======
+export interface SteamLeakSurveyInput {
+  steamLeakSurveyInputVec: Array<SteamLeakSurveyData>;
+  facilitySteamLeakData: FacilitySteamLeakData;
+}
+
+export interface SteamLeakSurveyData {
+  selected: boolean;
+  name: string;
+  leakDescription: string;
+  measurementMethod: number;
+  estimateMethodData: SteamLeakEstimateMethodData;
+  estimateTurbineMethodData: SteamLeakEstimateTurbineMethodData;
+  orificeMethodData: SteamLeakOrificeMethodData;
+  plumeMethodData: SteamLeakPlumeMethodData;
+  units: number;
+}
+
+export interface FacilitySteamLeakData {
+  annualOperatingHours: number;
+  utilityType: number;
+  steamCost: number;
+  steamTemperature: number;
+  steamPressure: number;
+  feedwaterTemperature: number;
+  fuelCost: number;
+  electricityCost: number;
+  boilerEfficiency: number;
+  systemEfficiency: number;
+}
+
+export interface SteamLeakEstimateMethodData {
+  leakPressure: number;
+  leakTemperature: number;
+  pressureReductionMethod: number;
+  turbineEfficiency: number;
+  leakRate: number;
+  costOfElectricity: number;
+}
+
+export interface SteamLeakEstimateTurbineMethodData {
+  turbineEfficiency: number;
+  leakRate: number;
+}
+
+export interface SteamLeakOrificeMethodData {
+  holeSize: number;
+  dischargeCoefficient: number;
+  atmosphericPressure: number;
+  leakPressure: number;
+  leakTemperature: number;
+  pressureReductionMethod: number;
+  turbineEfficiency: number;
+  costOfElectricity: number;
+}
+
+export interface SteamLeakPlumeMethodData {
+  leakPressure: number;
+  leakTemperature: number;
+  ambientTemperature: number;
+  plumeLength: number;
+  pressureReductionMethod: number;
+  turbineEfficiency: number;
+  costOfElectricity: number;
+}
+
+export interface SteamLeakSurveyOutput {
+  individualLeaks: Array<SteamLeakSurveyResult>;
+  baselineTotal: SteamLeakSurveyResult;
+  modificationTotal: SteamLeakSurveyResult;
+  savings: SteamLeakSurveyResult;
+  facilitySteamLeakData?: FacilitySteamLeakData;
+}
+
+export interface SteamLeakSurveyResult {
+  name?: string;
+  leakDescription?: string;
+  selected?: boolean;
+  leakRate: number;
+  steamLoss: number;
+  energyLoss: number;
+  leakCost: number;
+}
+//===== END steam leak survey objects =====
+
+
+//====== pipe insulation reduction objects ======
+export interface PipeInsulationReductionInput {
+  operatingHours: number,
+  utilityType: number,
+  utilityCost: number,
+  naturalGasUtilityCost: number,
+  otherUtilityCost: number,
+  pipeLength: number,
+  pipeDiameterSelection: number,
+  pipeDiameter: number,
+  pipeThickness: number,
+  pipeTemperature: number,
+  ambientTemperature: number,
+  windVelocity: number,
+  systemEfficiency: number,
+  insulationThickness: number,
+  pipeEmissivity: number,
+  pipeJacketMaterialSelection: number,
+  jacketEmissivity: number,
+  pipeBaseMaterialSelection: number,
+  pipeMaterialCoefficients: Array<number>,
+  insulationMaterialSelection: number,
+  insulationMaterialCoefficients: Array<number>,
+  heatedOrChilled: number
+};
+
+export interface PipeInsulationReductionResults {
+  baselineResults: PipeInsulationReductionResult,
+  modificationResults: PipeInsulationReductionResult,
+  annualHeatSavings: number,
+  annualCostSavings: number,
+  energyUnit: string
+};
+
+export interface PipeInsulationReductionResult {
+  heatLength: number,
+  annualHeatLoss: number,
+  energyCost: number,
+  energySourceType?: number,
+  heatedOrChilled?: number
+};
+
+//===== END pipe insulation reduction objects =====
+
+
+
+//====== tank insulation reduction objects ======
+export interface TankInsulationReductionInput {
+  operatingHours: number,
+  utilityType: number,
+  utilityCost: number,
+  naturalGasUtilityCost: number,
+  otherUtilityCost: number,
+  tankHeight: number,
+  tankDiameter: number,
+  tankThickness: number,
+  tankEmissivity: number,
+  tankConductivity: number,
+  tankTemperature: number,
+  ambientTemperature: number,
+  systemEfficiency: number,
+  insulationThickness: number,
+  insulationConductivity: number,
+  customInsulationConductivity: number,
+  jacketEmissivity: number,
+  tankMaterialSelection: number,
+  insulationMaterialSelection: number,
+  jacketMaterialSelection: number,
+  heatedOrChilled: number,
+  surfaceTemperature: number
+};
+
+export interface TankInsulationReductionResults {
+  baselineResults: TankInsulationReductionResult,
+  modificationResults: TankInsulationReductionResult,
+  annualHeatSavings: number,
+  annualCostSavings: number,
+  energyUnit: string
+};
+
+export interface TankInsulationReductionResult {
+  heatLoss: number,
+  annualHeatLoss: number,
+  energyCost: number,
+  energySourceType?: number,
+  heatedOrChilled?: number
+};
+
+//===== END tank insulation reduction objects =====
+
+//===== Power Factor Triangle objects =====
+
+export interface PowerFactorTriangleInputs {
+  mode: number;
+  apparentPower: number;
+  realPower: number;
+  reactivePower: number;
+  phaseAngle: number;
+  powerFactor: number;
+}
+
+export interface PowerFactorTriangleModeInputs {
+  mode: number;
+  input1: number;
+  input2: number;
+  inputPowerFactor: number;
+}
+
+
+export interface PowerFactorTriangleOutputs {
+  apparentPower: number;
+  realPower: number;
+  reactivePower: number;
+  phaseAngle: number;
+  powerFactor: number;
+}
+
+//==== END Power Factor Triangle objects =====
+

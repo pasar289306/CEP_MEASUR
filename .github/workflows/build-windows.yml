@@ -1,0 +1,51 @@
+name: Build Windows installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/build-windows.yml'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            process-flow-diagram-component/package-lock.json
+
+      - name: Install process-flow-diagram-component dependencies
+        working-directory: process-flow-diagram-component
+        run: npm ci
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build desktop app
+        run: npm run build-prod-desktop-ci
+
+      - name: Build NSIS installer
+        run: npx electron-builder --win nsis --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: MEASUR-FA-windows-installer
+          path: output/*.exe
+          if-no-files-found: error
+          retention-days: 14

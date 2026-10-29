@@ -1,0 +1,19 @@
+.book-item{
+    background-color: #BF3D00;
+    position: absolute;
+    right: 189px;
+}
+
+.welcome-screen .welcome-content a.user-manual{
+    color: white;
+}
+
+.banner-box{
+    height: 90px !important;
+}
+.manual-arrow{
+    position: absolute;
+    height: 300px;
+    top: 45px;
+    right: 0px;
+}

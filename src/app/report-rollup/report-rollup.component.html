@@ -1,0 +1,70 @@
+
+<!--PRINT TITLE PAGE-->
+<div class="report-cover" *ngIf="printView">
+    <img src="assets/images/Logo_Color_Seal_Blue_Lettering_Horizontal.png" class="doe-logo">
+
+    <div class="report-title">
+        <h4>Energy Assessment
+            <br> Summary Report</h4>
+        <h5>{{createdDate| date:'medium'}}</h5>
+    </div>
+
+    <p class="report-notes">{{reportNotes}}</p>
+</div>
+<!--END PRINT-->
+
+<!--CONTENT-->
+<div *ngIf="!gatheringAssessments">
+    <!--TOP BANNER (NOT PRINT)-->
+    <div #reportHeader class="row sticky-top no-gutters" id="reportHeader" *ngIf="!printView">
+        <div class="col-12">
+            <div class="report-header hide-print">
+                <app-report-banner></app-report-banner>
+                <app-report-summary id="reportSummary" (hideSummary)="setContainerHeight()">
+                </app-report-summary>
+            </div>
+        </div>
+    </div>
+    <!-- SIDEBAR AND REPORTS -->
+    <div class="d-flex">
+        <div class="assessment-padding d-flex flex-column print-height w-100 skyline scroll-item" 
+        [ngStyle]="{'height.px': containerHeight}">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>
+
+<!--GATHERING ASSESSMENTS-->
+<div *ngIf="!assessmentsGathered"
+    class="gathering-assessments d-flex justify-content-center align-items-center skyline">
+    <div class="main-content">
+        <div class="spinner text-center">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+        <h1 *ngIf="gatheringAssessments">Gathering Assessments</h1>
+        <h1 *ngIf="!gatheringAssessments">Calculating Results</h1>
+    </div>
+</div>
+
+<!--BUILDING PRINT VIEW-->
+<div class="print-notification hide-print" *ngIf="printView">
+    <div class="col-12 mx-auto">
+        <div class="print-div row justify-content-center align-items-center">
+            <div class="print-col">
+                <h4>Building Print View</h4>
+                <h5>One Moment Please</h5>
+                <span class="fa fa-print"></span>
+                <div class="spinner">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--MODALS-->
+<app-report-rollup-modals></app-report-rollup-modals>

@@ -1,0 +1,255 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "amo-tools-desktop": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-esbuild:application",
+          "options": {
+            "plugins": ["./esbuild.plugins.js"],
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "regression",
+              "xlsx",
+              "exceljs",
+              "pptxgenjs",
+              "file-saver",
+              "moment",
+              "plotly.js-dist"
+            ],
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "tsConfig": "src/tsconfig.app.json",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
+            "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              "src/robots.txt",
+              "src/sitemap.xml",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/measur-tools-suite/bin/",
+                "output": "."
+              },
+              {
+                "glob": "process-flow-diagram-component.js",
+                "input": "./process-flow-diagram-component/dist/",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "./process-flow-diagram-component/dist/assets/",
+                "output": "/assets/"
+              },
+              "src/manifest.webmanifest"
+            ],
+            "styles": [
+              "node_modules/font-awesome/css/font-awesome.css",
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/assets/styles/app.css",
+              "src/assets/styles/variables.css",
+              "src/assets/styles/two-panel.css",
+              "src/assets/styles/tabs.css",
+              "src/assets/styles/utilities.css",
+              "src/assets/styles/integrations.css",
+              "src/assets/styles/graphs.css",
+              "src/assets/styles/forms.css",
+              "src/assets/styles/help.css",
+              "src/assets/styles/ssmt-diagram.css",
+              "src/assets/styles/toggle-switch.css",
+              "src/assets/styles/assessment-banner.css",
+              "src/assets/styles/directory-dashboard.css",
+              "src/assets/styles/sidebar.css",
+              "src/assets/styles/plotly-overrides.css",
+              "src/assets/styles/responsive-calculators.css",
+              "src/assets/styles/explore-opps.css",
+              "src/assets/styles/pagination.css",
+              "src/assets/styles/welcome-screen.css",
+              "src/assets/styles/process-cooling-assessment-shared.css",
+              "src/assets/styles/compressed-air.css"
+            ],
+            "scripts": [
+              "node_modules/plotly.js-dist/plotly.js"
+            ],
+            "serviceWorker": "ngsw-config.json",
+            "browser": "src/main.ts"
+          },
+          "configurations": {
+            "production-web": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production-web.ts"
+                }
+              ]
+            },
+            "development-web": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development-web.ts"
+                }
+              ]
+            },
+            "desktop": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.desktop.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "serve": {
+          "builder": "@angular-builders/custom-esbuild:dev-server",
+          "options": {
+            "buildTarget": "amo-tools-desktop:build"
+          },
+          "configurations": {
+            "production-web": {
+              "buildTarget": "amo-tools-desktop:build:production-web"
+            },
+            "development-web": {
+              "buildTarget": "amo-tools-desktop:build:development-web"
+            },
+            "development": {
+              "buildTarget": "amo-tools-desktop:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "amo-tools-desktop:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-builders/custom-webpack:karma",
+          "options": {
+            "customWebpackConfig": {
+              "path": "./webpack.test.config.js"
+            },
+            "karmaConfig": "karma.conf.cjs",
+            "tsConfig": "src/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "scripts": [],
+            "styles": [
+              "node_modules/font-awesome/css/font-awesome.css",
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/assets/styles/variables.css",
+              "src/assets/styles/two-panel.css",
+              "src/assets/styles/tabs.css",
+              "src/assets/styles/utilities.css",
+              "src/assets/styles/graphs.css",
+              "src/assets/styles/forms.css",
+              "src/assets/styles/assessment-banner.css",
+              "src/assets/styles/directory-dashboard.css",
+              "src/assets/styles/sidebar.css"
+            ],
+            "assets": [
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/measur-tools-suite/bin/",
+                "output": "."
+              },
+              "src/favicon.ico",
+              "src/robots.txt",
+              "src/sitemap.xml",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/measur-tools-suite/bin/",
+                "output": "."
+              },
+              "src/manifest.webmanifest"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "src/tsconfig.app.json",
+              "src/tsconfig.spec.json"
+            ],
+            "exclude": []
+          }
+        }
+      }
+    }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "inlineTemplate": false,
+      "prefix": "app",
+      "style": "css",
+      "type": "component",
+      "standalone": false
+    },
+    "@schematics/angular:directive": {
+      "prefix": "app",
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
+    }
+  },
+  "cli": {
+    "analytics": "c7c821ee-29e2-4918-ab71-1e94bd66b1fb",
+    "cache": {
+      "enabled": false
+    }
+  }
+}

@@ -1,0 +1,39 @@
+.opening-tutorial{
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  z-index: 1800;
+}
+
+.survey-card{
+  position: fixed;
+  z-index: 800000;
+  width: 50%;
+  box-shadow: 6px 8px 18px 1px;
+  border-color: #145A32;
+  left: 35%;
+}
+
+.survey-card .card-header, .translate-card .card-header{
+  background-color: #145A32;
+  color: white;
+}
+
+.survey-card .close, .translate-card .close{
+  color: white;
+}
+
+
+.translate-card{
+  position: fixed;
+  z-index: 800000;
+  box-shadow: 6px 8px 18px 1px;
+  border-color: #145A32;
+  top: -100%;
+  left: 35%;
+  width: 400px;
+}
+
+.modal-open {
+  z-index: initial !important;
+}

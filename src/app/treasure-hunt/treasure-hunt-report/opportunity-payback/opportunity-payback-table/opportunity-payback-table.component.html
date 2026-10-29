@@ -1,0 +1,89 @@
+<div class="d-flex flex-column output-summary align-items-center">
+  <table #copyTable class="table table-striped table-hover">
+    <tbody>
+      <tr class="bold">
+        <td>
+          Payback Length
+        </td>
+        <td>
+          Number of Opportunities
+        </td>
+        <td>
+          Total Savings ({{settings.currency}})
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Less than 1 year
+        </td>
+        <td>
+          {{ opportunitiesPaybackDetails.lessThanOneYear.numOpportunities }}
+        </td>
+        <td>
+          {{
+            opportunitiesPaybackDetails.lessThanOneYear.totalSavings
+              | number:"1.0-0"
+          }}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          1 to 2 years
+        </td>
+        <td>
+          {{ opportunitiesPaybackDetails.oneToTwoYears.numOpportunities }}
+        </td>
+        <td>
+          {{
+            opportunitiesPaybackDetails.oneToTwoYears.totalSavings
+              | number:"1.0-0"
+          }}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          2 to 3 years
+        </td>
+        <td>
+          {{ opportunitiesPaybackDetails.twoToThreeYears.numOpportunities }}
+        </td>
+        <td>
+          {{
+            opportunitiesPaybackDetails.twoToThreeYears.totalSavings
+              | number:"1.0-0"
+          }}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          More than 3 years
+        </td>
+        <td>
+          {{ opportunitiesPaybackDetails.moreThanThreeYears.numOpportunities }}
+        </td>
+        <td>
+          {{
+            opportunitiesPaybackDetails.moreThanThreeYears.totalSavings
+              | number:"1.0-0"
+          }}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Total
+        </td>
+        <td>
+          {{ opportunitiesPaybackDetails.totals.numOpportunities }}
+        </td>
+        <td>
+          {{
+            opportunitiesPaybackDetails.totals.totalSavings
+              | number:"1.0-0"
+          }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <app-exportable-results-table [tableString]="copyTableString"
+    (updateTableString)="updateCopyTableString()"></app-exportable-results-table>
+</div>

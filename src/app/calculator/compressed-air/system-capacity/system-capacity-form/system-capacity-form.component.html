@@ -1,0 +1,180 @@
+<div class="tab-content">
+  <form>
+
+    <div class="form-section pt-1">
+      <label class="bold">Pipes</label>
+      <div class="form-group">
+        <label>Pipe Size
+          (<span *ngIf="settings.unitsOfMeasure != 'Metric'">in</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'">mm</span>)</label>
+        <label>Pipe Length
+          (<span *ngIf="settings.unitsOfMeasure != 'Metric'">ft</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'">m</span>)</label>
+      </div>
+      <div *ngFor="let inputPipe of inputs.allPipes; let index = index;">
+        <div class="m-0 form-group row no-gutters">
+          <div class="col-6 pr-2">
+            <!--pipe size dropdown-->
+            <select name="{{'pipe_size_' + index}}" class="form-control w-100" id="{{'pipe_size_' + index}}"
+              [(ngModel)]="inputPipe.pipeSize" autofocus (focus)="changeField('pipeSize')" (change)="emitChange()">
+              <option *ngFor="let pipeSize of pipeSizeOptions" [ngValue]="pipeSize.size">
+                {{pipeSize.display}}
+              </option>
+            </select>
+            <!--custom-->
+            <div class="input-group pt-2" *ngIf="inputPipe.pipeSize == 'CUSTOM'">
+              <input name="{{'custom_pipe_size_' + index}}" class="form-control" type="number" step="any"
+                [(ngModel)]="inputPipe.customPipeSize" id="{{'custom_pipe_size_' + index}}" (input)="emitChange()"
+                onfocus="this.select();" (focus)="changeField('pipeSize')">
+              <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">in</span>
+              <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">mm</span>    
+            </div>
+          </div>
+          <!--length-->
+          <div class="col-6">
+            <div class="input-group">
+              <input name="{{'pipe_length_' + index}}" class="form-control" type="number" step="any"
+                [(ngModel)]="inputPipe.pipeLength" id="{{'pipe_length_' + index}}" (input)="emitChange()"
+                onfocus="this.select();" (focus)="changeField('pipeLength')">
+                <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">ft</span>
+                <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">m</span>      
+                <div class="btn-delete-field" (click)="deletePipe(index)"> &times;</div>
+            </div>
+          </div>
+        </div>
+        <hr class="mt-1 mb-1">
+      </div>
+      <div class="row">
+        <div class="col-md-auto mx-auto">
+          <a class="click-link small" (click)="addPipe()" (focus)="changeField('standardPipe')">Add Pipe</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section pt-1">
+      <label class="bold">Receiver Tanks</label>
+      <div class="form-group" *ngFor="let capacity of inputs.receiverCapacities; let index=index; trackBy:trackByFn;">
+        <label for="{{'capacity_'+index}}">Receiver {{index+1}}</label>
+        <div class="input-group">
+          <input name="{{'capacity_'+index}}" class="form-control" type="number" step="any"
+            [(ngModel)]="inputs.receiverCapacities[index]" id="{{'capacity_'+index}}" (input)="emitChange()"
+            onfocus="this.select();" (focus)="changeField('receiverTanks')">
+          <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">gal</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">m<sup>3</sup></span>
+          <span class="input-group-addon">
+            <div class="btn-delete-field" (click)="removeCapacity(index)"> &times;</div>
+          </span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-auto mx-auto">
+          <a class="click-link small" (click)="addReceiver()" (focus)="changeField('receiverTanks')">Add Receiver
+            Tank</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label class="bold"> Leak Rate Calculator</label>
+      <div class="form-group">
+        <label for="airPressureIn">Normal Operating Pressure</label>
+        <div class="input-group">
+          <input name="airPressureIn" [(ngModel)]="inputs.leakRateInput.airPressureIn" class="form-control" type="number" step="any" id="airPressureIn"
+            (input)="emitChange()" onfocus="this.select();" (focus)="changeField('airPressureIn')">
+            <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">psi</span>
+            <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kPa</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="airPressureOut">Test Pressure</label>
+        <div class="input-group">
+          <input name="airPressureOut" [(ngModel)]="inputs.leakRateInput.airPressureOut" class="form-control" type="number" step="any" id="airPressureOut"
+            (input)="emitChange()" onfocus="this.select();" (focus)="changeField('airPressureOut')">
+          <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">psi</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kPa</span>
+        </div>
+      </div>
+      <div class="form-group">
+          <label for="dischargeTime">Time</label>
+          <div class="input-group">
+            <input name="dischargeTime" [(ngModel)]="inputs.leakRateInput.dischargeTime" class="form-control" type="number" step="any" id="dischargeTime"
+              (input)="emitChange()" onfocus="this.select();" (focus)="changeField('dischargeTime')">
+            <span class="input-group-addon units">min</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="atmosphericPressure">Atmospheric Pressure</label>
+          <div class="input-group">
+            <input name="atmosphericPressure" [(ngModel)]="inputs.leakRateInput.atmosphericPressure" class="form-control" type="number" step="any" id="atmosphericPressure"
+              (input)="emitChange()" onfocus="this.select();" (focus)="changeField('atmosphericPressure')">
+          <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">psia</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kPaa</span>
+          </div>
+        </div>
+    </div>
+
+    <div class="form-section pt-1">
+      <div class="form-group">
+        <label class="bold">Total Pipe Volume</label>
+        <div class="text-center small">
+          <span *ngIf="outputs.totalPipeVolume">
+            <span *ngIf="settings.unitsOfMeasure != 'Metric'">
+              <strong>{{outputs.totalPipeVolume | number:'1.0-0'}} gal</strong>
+               ({{outputs.totalPipeVolumeCubicFeet | number:'1.0-0'}} ft<sup>3</sup>)
+            </span>
+            <strong *ngIf="settings.unitsOfMeasure == 'Metric'">
+              {{outputs.totalPipeVolume | number:'1.0-2'}}
+              m<sup>3</sup></strong>
+          </span>
+          <span *ngIf="!outputs.totalPipeVolume">
+            <strong>&mdash; &mdash;</strong>
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="bold">Total Receiver Volume</label>
+        <div class="text-center small">
+          <span *ngIf="outputs.totalReceiverVolume">
+              <span *ngIf="settings.unitsOfMeasure != 'Metric'">
+                <strong>{{outputs.totalReceiverVolume | number:'1.0-0'}} gal</strong>
+                 ({{outputs.totalReceiverVolumeCubicFeet | number:'1.0-0'}} ft<sup>3</sup>)
+              </span>
+            <strong *ngIf="settings.unitsOfMeasure == 'Metric'">
+              {{outputs.totalReceiverVolume | number:'1.0-2'}}
+              m<sup>3</sup></strong>
+          </span>
+          <span *ngIf="!outputs.totalReceiverVolume">
+            <strong>&mdash; &mdash;</strong>
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="bold">Total Capacity of Compressed Air System</label>
+        <div class="text-center small">
+          <span *ngIf="outputs.totalCapacityOfCompressedAirSystem">
+            <span *ngIf="settings.unitsOfMeasure != 'Metric'">
+              <strong>{{outputs.totalCapacityOfCompressedAirSystem | number:'1.0-0'}} gal</strong>
+               ({{outputs.totalCapacityOfCompressedAirSystemCubicFeet | number:'1.0-0'}} ft<sup>3</sup>)
+            </span>
+            <strong *ngIf="settings.unitsOfMeasure == 'Metric'">
+              {{outputs.totalCapacityOfCompressedAirSystem | number:'1.0-2'}}
+              m<sup>3</sup></strong>
+          </span>
+          <span *ngIf="!outputs.totalCapacityOfCompressedAirSystem">
+            <strong>&mdash; &mdash;</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="bold">Leak Rate</label>
+      <div class="text-center small">
+        <strong *ngIf="outputs.leakRate">{{outputs.leakRate | number: '1.0-2'}} 
+          <span *ngIf="settings.unitsOfMeasure == 'Imperial'">acfm</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'">Am<sup>3</sup>/min</span>
+        </strong>
+        <strong class="pr-1" *ngIf="!outputs.leakRate">&mdash; &mdash; </strong>
+      </div>
+    </div>
+  </form>
+</div>

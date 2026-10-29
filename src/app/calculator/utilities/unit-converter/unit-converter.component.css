@@ -1,0 +1,38 @@
+.measure-row{
+    padding-top: 15px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.value-row{
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.input-field {
+  margin-bottom: 5px;
+}
+
+
+.btn-group {
+    display: block;
+    text-align: center;
+}
+
+.btn-group .btn-sm {
+    font-size: small !important;
+}
+.reset-size {
+    max-width: 800px;
+    height: 250px;
+}
+
+.input-swap-btn {
+    width:40px; 
+    height:32px;
+}
+
+.input-swap-img {
+    font-size:16px;
+}

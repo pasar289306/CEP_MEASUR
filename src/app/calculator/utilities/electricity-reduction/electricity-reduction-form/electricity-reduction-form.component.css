@@ -1,0 +1,27 @@
+.form-section {
+  padding-bottom: .25rem;
+  border-bottom: 1px dashed;
+}
+
+.no-bottom-border {
+  border-bottom: none;
+}
+
+.form-row-pad-fix {
+  margin-left: -15px !important;
+}
+
+.form-card {
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 20px 0 grey;
+}
+
+.btn-edit-name:hover {
+  cursor: pointer;
+}
+
+.input-group-addon.units.op-hour-addon{
+    border-left: solid 1px;
+    border-right: none;
+  }

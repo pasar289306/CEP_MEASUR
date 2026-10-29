@@ -1,0 +1,148 @@
+<div class="col-10 mx-auto utilities">
+    <div class="content-container calculator-list">
+        <h2 class="mb-1">General Calculators</h2>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/unit-converter.png" class="calc-img"
+                        [routerLink]="['/calculators/unit-converter']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/unit-converter']">Unit Converter</a>
+                <p>
+                    Perform quick unit conversion calculations
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/chp.png" class="calc-img"
+                        [routerLink]="['/calculators/combined-heat-power']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/combined-heat-power']">Combined Heat and Power</a>
+                <p>
+                    Conduct a preliminary screening of the potential cost savings from CHP
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/cash-flow.png" class="calc-img"
+                        [routerLink]="['/calculators/cash-flow']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/cash-flow']">Cash Flow</a>
+                <p>
+                    Plot the savings and costs associated with an investment
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/power-factor-correction-icon.png"
+                        class="calc-img" [routerLink]="['/calculators/power-factor-correction']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/power-factor-correction']">Power Factor Correction</a>
+                <p>
+                    Identify the capacitance (in kVAR) required for improving the power factor to the proposed level
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/power-factor-triangle-icon.png"
+                        class="calc-img" [routerLink]="['/calculators/power-factor-triangle']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/power-factor-triangle']">Power Factor Triangle</a>
+                <p>
+                    Calculate different parameters of the power factor triangle
+                </p>
+            </div>
+        </div>
+        @if (showOperationalImpacts()) {
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/co2-savings.png" class="calc-img"
+                        [routerLink]="['/calculators/co2-conversion']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/co2-conversion']">CO<sub>2</sub> Conversion</a>
+                <p>
+                    Estimate carbon dioxide (CO<sub>2</sub>) products for given electricity and fuel uses
+                </p>
+            </div>
+        </div>
+        }
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/electricity-reduction-icon.png"
+                        class="calc-img" [routerLink]="['/calculators/electricity-reduction']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/electricity-reduction']">Electricity Reduction</a>
+                <p>
+                    Quantify the energy savings associated with reducing electricity usage.
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/natural-gas-reduction-icon.png"
+                        class="calc-img" [routerLink]="['/calculators/natural-gas-reduction']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/natural-gas-reduction']">Natural Gas Reduction</a>
+                <p>
+                    Quantify the energy savings associated with reducing natural gas usage.
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/altitude-correction-icon.png"
+                        class="calc-img" [routerLink]="['/calculators/altitude-correction']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/altitude-correction']">Altitude Correction</a>
+                <p>
+                    Calculate barometric pressure from altitude.
+                </p>
+            </div>
+        </div>
+        <div class="d-block d-lg-flex calc-item-row w-100">
+            <div class="p-2 col-12 col-lg-2 d-flex justify-content-center align-items-center">
+                <div class="calc-icon-div d-flex justify-content-center align-items-center">
+                    <img src="assets/images/calculator-icons/utilities-icons/weather-bins-icon.png" class="calc-img"
+                        [routerLink]="['/calculators/weather-bins']">
+                </div>
+            </div>
+            <div class="d-flex flex-fill flex-column justify-content-center">
+                <a [routerLink]="['/calculators/weather-bins']">Weather Bins</a>
+                <p>
+                    Perform a bin analysis on TMY data to determine the number of hours per year that meet specific weather conditions.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>

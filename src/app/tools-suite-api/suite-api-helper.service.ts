@@ -1,0 +1,611 @@
+import { Injectable } from '@angular/core';
+import * as _ from 'lodash';
+import { ToolsSuiteApiService } from './tools-suite-api.service';
+import {
+  type DoubleVector,
+  type DoubleVector2D,
+  type CompressorControl,
+  type CompressorInputBasis,
+  type CompressorLubricant,
+  type CompressorStage,
+  type CompressorType,
+  type IntVector,
+  type LineFrequency,
+  type MotorEfficiencyClass,
+  type PowerFactorModeType,
+  type PumpStyle,
+  type RegisteredVector,
+} from 'measur-tools-suite';
+
+@Injectable()
+export class SuiteApiHelperService {
+
+  constructor(private toolsSuiteApiService: ToolsSuiteApiService) { }
+  getPumpStyleEnum(pumpStyle: number): PumpStyle {
+    switch (pumpStyle) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.END_SUCTION_SLURRY;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.END_SUCTION_SEWAGE;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.END_SUCTION_STOCK;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.END_SUCTION_SUBMERSIBLE_SEWAGE;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.API_DOUBLE_SUCTION;
+      case 5:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.MULTISTAGE_BOILER_FEED;
+      case 6:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.END_SUCTION_ANSI_API;
+      case 7:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.AXIAL_FLOW;
+      case 8:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.DOUBLE_SUCTION;
+      case 9:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.VERTICAL_TURBINE;
+      case 10:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.LARGE_END_SUCTION;
+      case 11:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.SPECIFIED_OPTIMAL_EFFICIENCY;
+      case 12:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PumpStyle.POSITIVE_DISPLACEMENT;
+    }
+  }
+
+  getLineFrequencyEnum(lineFreq: number): LineFrequency {
+    let lineFrequency: LineFrequency = this.toolsSuiteApiService.ToolsSuiteModule.LineFrequency.FREQ50;
+    if (lineFreq == 60) {
+      lineFrequency = this.toolsSuiteApiService.ToolsSuiteModule.LineFrequency.FREQ60;
+    }
+
+    return lineFrequency;
+  }
+
+  // Frontend forms use values 50, 60. Backend uses 0,1
+  getLineFrequencyFromSuiteEnumValue(lineFrequency: number): number {
+    switch (lineFrequency) {
+      case 0:
+        return 50;
+      case 1:
+        return 60;
+    }
+  }
+
+  getMotorEfficiencyEnum(motorEffVal: number): MotorEfficiencyClass {
+    switch (motorEffVal) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.MotorEfficiencyClass.STANDARD;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.MotorEfficiencyClass.ENERGY_EFFICIENT;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.MotorEfficiencyClass.PREMIUM;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.MotorEfficiencyClass.SPECIFIED;
+    }
+  }
+
+  getDriveEnum(drive: number) {
+    switch (drive) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.Drive.DIRECT_DRIVE;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.Drive.V_BELT_DRIVE;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.Drive.N_V_BELT_DRIVE;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.Drive.S_BELT_DRIVE;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.Drive.SPECIFIED;
+    }
+  }
+
+  getFixedSpeedEnum(fixedSpeed: number) {
+    if (fixedSpeed == 0) {
+      return this.toolsSuiteApiService.ToolsSuiteModule.SpecificSpeed.FIXED_SPEED;
+    } else {
+      return this.toolsSuiteApiService.ToolsSuiteModule.SpecificSpeed.NOT_FIXED_SPEED;
+    }
+  }
+
+  getLoadEstimationMethod(method: number) {
+    if (method == 0) {
+      return this.toolsSuiteApiService.ToolsSuiteModule.LoadEstimationMethod.POWER;
+    } else {
+      return this.toolsSuiteApiService.ToolsSuiteModule.LoadEstimationMethod.CURRENT;
+    }
+  }
+
+  getBasGensityInputTypeEnum(type: string) {
+    if (type == 'relativeHumidity') {
+      return this.toolsSuiteApiService.ToolsSuiteModule.BaseGasDensityInputType.RelativeHumidity;
+    } else if (type == 'wetBulb') {
+      return this.toolsSuiteApiService.ToolsSuiteModule.BaseGasDensityInputType.WetBulbTemp;
+    } else if (type == 'dewPoint') {
+      return this.toolsSuiteApiService.ToolsSuiteModule.BaseGasDensityInputType.DewPoint;
+    } else if (type == 'custom') {
+      return;
+    }
+  }
+  getGasTypeEnum(type: string) {
+    if (type == 'AIR') {
+      return this.toolsSuiteApiService.ToolsSuiteModule.GasType.AIR;
+    } else if (type == 'OTHER') {
+      return this.toolsSuiteApiService.ToolsSuiteModule.GasType.OTHERGAS;
+    }
+  }
+
+  getCHPOptionEnum(option: number) {
+    if (option === 0) {
+      return this.toolsSuiteApiService.ToolsSuiteModule.CHPOption.PercentAvgkWhElectricCostAvoided;
+    } else if (option === 1) {
+      return this.toolsSuiteApiService.ToolsSuiteModule.CHPOption.StandbyRate;
+    }
+  }
+
+  getFanTypeEnum(fanType: number) {
+    switch (fanType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.AirfoilSISW;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.BackwardCurvedSISW;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.RadialSISW;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.RadialTipSISW;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.BackwardInclinedSISW;
+      case 5:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.AirfoilDIDW;
+      case 6:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.BackwardCurvedDIDW;
+      case 7:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.BackwardInclinedDIDW;
+      case 8:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanType.VaneAxial;
+    }
+  }
+
+  getOpeningShapeEnum(openingShape: number) {
+    switch (openingShape) {
+      case 0:
+        return 0;
+      case 1:
+        return 1;
+    }
+  }
+
+  getMaterialThermicReactionType(thermicReactionType: number) {
+    switch (thermicReactionType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ThermicReactionType.ENDOTHERMIC;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ThermicReactionType.EXOTHERMIC;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ThermicReactionType.NONE;
+    }
+  }
+
+  getCoolingTowerFanControlSpeedType(speedType: number) {
+    switch (speedType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanControlSpeedType.One;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanControlSpeedType.Two;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.FanControlSpeedType.Variable;
+
+    }
+  }
+
+  getCoolingTowerChillerType(chillerType: number) {
+    switch (chillerType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ChillerType.Centrifugal;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ChillerType.Screw;
+
+    }
+  }
+
+  getCoolingTowerCondenserCoolingType(condenserType: number) {
+    switch (condenserType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CondenserCoolingType.Water;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CondenserCoolingType.Air;
+
+    }
+  }
+
+  getCoolingTowerCompressorConfigType(configType: number) {
+    switch (configType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorConfigType.NoVFD;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorConfigType.VFD;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorConfigType.MagneticBearing;
+    }
+  }
+
+  getThermodynamicQuantityType(thermodynamicQuantity: number) {
+    switch (thermodynamicQuantity) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ThermodynamicQuantity.TEMPERATURE;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ThermodynamicQuantity.ENTHALPY;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ThermodynamicQuantity.ENTROPY;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ThermodynamicQuantity.QUALITY;
+    }
+  }
+
+  getCondensingTurbineOperation(option: number) {
+    switch (option) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CondensingTurbineOperation.STEAM_FLOW;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CondensingTurbineOperation.POWER_GENERATION;
+
+    }
+  }
+
+  getPressureTurbineOperation(option: number) {
+    switch (option) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PressureTurbineOperation.STEAM_FLOW;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PressureTurbineOperation.POWER_GENERATION;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PressureTurbineOperation.BALANCE_HEADER;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PressureTurbineOperation.POWER_RANGE;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PressureTurbineOperation.FLOW_RANGE;
+    }
+  }
+
+  getTurbineProperty(turbineProperty: number) {
+    switch (turbineProperty) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.TurbineProperty.MassFlow;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.TurbineProperty.PowerOut;
+    }
+  }
+
+  getSolveForMethod(solve: number) {
+    switch (solve) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.Solve.OutletProperties;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.Solve.IsentropicEfficiency;
+    }
+  }
+
+
+  getCompressorTypeEnum(compressorType: number): CompressorType {
+    switch (compressorType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorType.Centrifugal;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorType.Screw;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorType.Reciprocating;
+    }
+  }
+
+  getControlTypeEnum(controlType: number): CompressorControl {
+    switch (controlType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.LoadUnload;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.ModulationUnload;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.BlowOff;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.ModulationWithoutUnload;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.StartStop;
+      case 5:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.VariableDisplacementUnload;
+      case 6:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.MultiStepUnloading;
+      case 7:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorControl.Vfd;
+    }
+  }
+
+  getLubricantEnum(lubricant: number): CompressorLubricant {
+    switch (lubricant) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorLubricant.Injected;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorLubricant.Free;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorLubricant.None;
+    }
+  }
+
+  getStageEnum(stage: number): CompressorStage {
+    switch (stage) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorStage.Single;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorStage.Two;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorStage.Multiple;
+    }
+  }
+
+  getComputeFromEnum(computeFrom: number): CompressorInputBasis {
+    switch (computeFrom) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorInputBasis.PowerFraction;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorInputBasis.CapacityFraction;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorInputBasis.MeasuredPower;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorInputBasis.MeasuredCapacity;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressorInputBasis.Electrical;
+    }
+  }
+
+
+  returnDoubleVector(doublesArray: Array<number>): DoubleVector {
+    let doubleVector: DoubleVector = new this.toolsSuiteApiService.ToolsSuiteModule.DoubleVector();
+    doublesArray.forEach(x => {
+      doubleVector.push_back(x);
+    });
+    return doubleVector;
+  }
+
+  returnIntVector(intsArray: Array<number>): IntVector {
+    let intVector: IntVector = new this.toolsSuiteApiService.ToolsSuiteModule.IntVector();
+    intsArray.forEach(x => {
+      intVector.push_back(x);
+    });
+    return intVector;
+  }
+
+
+  returnDoubleVector2d(doubles2dArray: Array<Array<number>>): DoubleVector2D {
+    let doubleVector2d: DoubleVector2D = new this.toolsSuiteApiService.ToolsSuiteModule.DoubleVector2D();
+    let doubleVectors: Array<DoubleVector> = [];
+    for (let i: number = 0; i < doubles2dArray.length; i++) {
+      let innerArray: Array<number> = doubles2dArray[i];
+      let doubleVector: DoubleVector = this.returnDoubleVector(innerArray);
+      doubleVector2d.push_back(doubleVector);
+      doubleVectors.push(doubleVector);
+    }
+    doubleVectors.forEach(vector => vector.delete());
+    return doubleVector2d;
+  }
+
+  convertNullInputsForObjectConstructor(inputObj: Object, inputField?: number | string) {
+    const record: { [key: string]: number | string | boolean | null | undefined } = inputObj as { [key: string]: number | string | boolean | null | undefined };
+    Object.keys(record).forEach((prop: string) => {
+      if (record[prop] === null || record[prop] === undefined) {
+        record[prop] = 0;
+      }
+    });
+    return inputObj;
+  }
+
+  convertNullInputValueForObjectConstructor(inputValue: number | string): number {
+    let validInput: number;
+    if (inputValue === null || inputValue === undefined) {
+      validInput = 0;
+    } else if (typeof inputValue === 'string' && inputValue == '') {
+      // There are various number type properties in PHAST that 
+      // get set to '' in places that aren't clear
+      validInput = 0;
+    } else {
+      validInput = Number(inputValue);
+    }
+    return validInput;
+  }
+
+  /**
+   * Get a JS array from a WASM vector without taking ownership of the vector.
+   * The caller remains responsible for deleting the vector handle.
+   * @param vector WASM vector to extract from
+   * @returns JS number array
+   */
+  extractWASMArray(vector: RegisteredVector<number>): number[] {
+    if (!vector) return [];
+    const arr: number[] = [];
+    for (let i: number = 0; i < vector.size(); i++) {
+      arr.push(vector.get(i));
+    }
+    return arr;
+  }
+
+  getSteamCondition(steamCondition: number) {
+    switch (steamCondition) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamConditionType.Superheated;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamConditionType.Saturated;
+    }
+  }
+
+  getPowerFactorModeEnum(mode: number): PowerFactorModeType {
+    switch (mode) {
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.ApparentPower_RealPower;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.ApparentPower_ReactivePower;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.ApparentPower_PhaseAngle;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.ApparentPower_PowerFactor;
+      case 5:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.RealPower_ReactivePower;
+      case 6:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.RealPower_PhaseAngle;
+      case 7:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.RealPower_PowerFactor;
+      case 8:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.ReactivePower_PhaseAngle;
+      case 9:
+        return this.toolsSuiteApiService.ToolsSuiteModule.PowerFactorModeType.ReactivePower_PowerFactor;
+    }
+  }
+
+  getProcessCoolingFanTypeEnum(fanType: number | string) {
+    if (fanType === 0 || fanType === 'AxialFan') return this.toolsSuiteApiService.ToolsSuiteModule.CellFanType.AxialFan;
+    if (fanType === 1 || fanType === 'CentrifugalFan') return this.toolsSuiteApiService.ToolsSuiteModule.CellFanType.CentrifugalFan;
+  }
+
+  getProcessCoolingRefrigerantTypeEnum(type: number | string) {
+    switch (type) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.RefrigerantType.R_11;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.RefrigerantType.R_123;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.RefrigerantType.R_12;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.RefrigerantType.R_134a;
+      case 4:
+        return this.toolsSuiteApiService.ToolsSuiteModule.RefrigerantType.R_22;
+      case 5:
+        return this.toolsSuiteApiService.ToolsSuiteModule.RefrigerantType.R_717;
+    }
+  }
+  
+  getProcessCoolingCoolingAirSourceEnum(loc: number | string) {
+    if (loc === 0 || loc === 'Inside') return this.toolsSuiteApiService.ToolsSuiteModule.ACSourceLocation.Inside;
+    if (loc === 1 || loc === 'Outside') return this.toolsSuiteApiService.ToolsSuiteModule.ACSourceLocation.Outside;
+  }
+
+  getProcessCoolingCoolingSystemTypeEnum(type: number | string) {
+    if (type === 0 || type === 'Water') return this.toolsSuiteApiService.ToolsSuiteModule.CoolingSystemType.Water;
+    if (type === 1 || type === 'Air') return this.toolsSuiteApiService.ToolsSuiteModule.CoolingSystemType.Air;
+  }
+
+  getProcessCoolingTowerSizedByEnum(val: number | string) {
+    if (val === 0 || val === 'Tonnage') return this.toolsSuiteApiService.ToolsSuiteModule.TowerSizedBy.Tonnage;
+    if (val === 1 || val === 'Fan_HP') return this.toolsSuiteApiService.ToolsSuiteModule.TowerSizedBy.Fan_HP;
+    if (val === 2 || val === 'Unknown') return this.toolsSuiteApiService.ToolsSuiteModule.TowerSizedBy.Unknown;
+  }
+
+  
+  /**
+   * Returns the corresponding `ChillerCompressorType` enum value from the provided type.
+   *
+   * @param type - The compressor type, either as a numeric code or a string label.
+   *   - `0` or `'Centrifugal'` returns `ChillerCompressorType.Centrifugal`
+   *   - `1` or `'Screw'` returns `ChillerCompressorType.Screw`
+   *   - `2` or `'Reciprocating'` returns `ChillerCompressorType.Reciprocating`
+   *
+   * @remarks
+   * In the CWSAT, the value `1` represents the "RECIPROCATING" compressor type.
+   * In the suite API, RECIPROCATING is value `2`. Use "Screw" or `1` for HELICAL ROTARY
+   * until the suite API is updated to reflect this distinction.
+   */
+  getProcessCoolingChillerCompressorTypeEnum(type: number | string) {
+    if (type === 0 || type === 'Centrifugal') return this.toolsSuiteApiService.ToolsSuiteModule.ChillerCompressorType.Centrifugal;
+    // This is actually HELICAL ROTARY in the old app but is referenced as 'Screw' in the suite
+    if (type === 1 || type === 'Screw') return this.toolsSuiteApiService.ToolsSuiteModule.ChillerCompressorType.Screw;
+    if (type === 2 || type === 'Reciprocating') return this.toolsSuiteApiService.ToolsSuiteModule.ChillerCompressorType.Reciprocating;
+  }
+
+  getProcessCoolingFanMotorSpeedTypeEnum(type: number | string) {
+    if (type === 0 || type === 'One') return this.toolsSuiteApiService.ToolsSuiteModule.FanMotorSpeedType.One;
+    if (type === 1 || type === 'Two') return this.toolsSuiteApiService.ToolsSuiteModule.FanMotorSpeedType.Two;
+    if (type === 2 || type === 'Variable') return this.toolsSuiteApiService.ToolsSuiteModule.FanMotorSpeedType.Variable;
+  }
+
+
+
+
+  getWaterReductionMeasurementMethodEnum(method: number) {
+    switch (method) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.WaterReductionMeasurementMethod.Metered;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.WaterReductionMeasurementMethod.Volume;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.WaterReductionMeasurementMethod.Bucket;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.WaterReductionMeasurementMethod.Other;
+    }
+  }
+
+  getElectricityReductionMeasurementMethodEnum(method: number) {
+    switch (method) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ElectricityReductionMeasurementMethod.Multimeter;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ElectricityReductionMeasurementMethod.Nameplate;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ElectricityReductionMeasurementMethod.PowerMeter;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.ElectricityReductionMeasurementMethod.Other;
+    }
+  }
+
+  getNaturalGasReductionMeasurementMethodEnum(method: number) {
+    switch (method) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.NaturalGasMeasurementMethod.FlowMeter;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.NaturalGasMeasurementMethod.AirMassFlow;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.NaturalGasMeasurementMethod.WaterMassFlow;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.NaturalGasMeasurementMethod.Other;
+    }
+  }
+
+  getSteamMeasurementMethodEnum(method: number) {
+    switch (method) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamMeasurementMethod.FlowMeter;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamMeasurementMethod.AirMassFlow;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamMeasurementMethod.WaterMassFlow;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamMeasurementMethod.Offsheet;
+    }
+  }
+
+  getSteamUtilityTypeEnum(type: number) {
+    switch (type) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamUtilityType.Steam;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamUtilityType.NaturalGas;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.SteamUtilityType.Other;
+    }
+  }
+
+  getCompressedAirMeasurementMethodEnum(method: number) {
+    switch (method) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressedAirMeasurementMethod.FlowMeter;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressedAirMeasurementMethod.Bag;
+      case 2:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressedAirMeasurementMethod.Pressure;
+      case 3:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressedAirMeasurementMethod.Other;
+    }
+  }
+
+  getCompressedAirUtilityTypeEnum(utilityType: number) {
+    switch (utilityType) {
+      case 0:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressedAirUtilityType.CompressedAir;
+      case 1:
+        return this.toolsSuiteApiService.ToolsSuiteModule.CompressedAirUtilityType.Electricity;
+    }
+  }
+}

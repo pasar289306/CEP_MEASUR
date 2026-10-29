@@ -1,0 +1,49 @@
+.img-icon{
+    width: 80px;
+}
+
+.h2-name{
+    font-weight: 400;
+    font-size: 18px;
+}
+
+/* .home-nav-item{
+    color: white;
+    border-color: white !important;
+} */  
+a.user-manual{
+    color: white;
+  }
+
+.btn.chevron-btn{
+    border: none !important;
+    width: 20px;
+    height: 28px;
+    color: white;
+    box-shadow: none !important;
+}
+
+.fa.fa-chevron-right,
+.fa.fa-chevron-left {
+    font-size: 28px;
+}
+
+.fa.fa-lock, .fa.fa-book, .fa.fa-cog, .fa.fa-folder-open, .fa.fa-home{
+    width: 28px;
+    font-size: 28px;
+}
+
+span.fa.fa-download{
+    padding: 0px !important;
+}
+
+.download-nav-item .fa.fa-download{
+    border: none !important;
+    background-color: inherit;
+    opacity: 1;
+}
+
+.download-nav-item{
+    border: none !important;
+    background-color: #BF3D00;
+}

@@ -1,0 +1,13 @@
+.header .h3{
+    font-size: 20px;
+}
+
+.help-item {
+    flex:1;
+    min-width: 0;
+}
+
+.scroll-container.scroll-item {
+    min-height: 200px;
+    background: #ececec;
+}

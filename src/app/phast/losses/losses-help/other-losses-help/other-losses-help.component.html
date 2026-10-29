@@ -1,0 +1,40 @@
+<div class="p-2 pt-3 d-flex flex-column help-info">
+  <h5>
+    Other Losses Help
+    <br>
+    <small class="text-muted">
+      Enter measured data to calculate your system's annual savings potential.
+    </small>
+  </h5>
+  <hr class="my-1 hr-spacer">
+
+
+  <div class="my-2" *ngIf="currentField == 'description'">
+    <h6>
+      Loss Description
+      <br>
+      <small class="text-muted">
+        Provide a descriptive name for the additional loss.
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'heatLoss'">
+    <h6>
+      Heat Loss
+      <br>
+      <small class="text-muted">
+        Heat loss per hour. Note that for batch furnaces the total weight should be corrected for cycle time to obtain weight per
+        hour value.
+      </small>
+    </h6>
+  </div>
+
+
+</div>
+
+  <!-- <p>Enter loss data</p>
+  <p class="text-muted">
+    <span class="fa fa-youtube-play"></span> Watch tutorial on entering other loss data.
+  </p> -->

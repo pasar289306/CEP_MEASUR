@@ -1,0 +1,25 @@
+.img-icon{
+    width: 100px;
+    background-color: white;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.h2-name{
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.home-nav-item{
+    color: black;
+    border-color: black !important;
+}
+
+.banner{
+   color: black;
+}
+
+.nav-btn {
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+}

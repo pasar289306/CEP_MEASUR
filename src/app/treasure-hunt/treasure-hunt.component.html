@@ -1,0 +1,72 @@
+<div #content class="treasure-hunt-container treasure-hunt d-flex flex-column" *ngIf="assessment && settings">
+  <div #header class="w-100 hide-print sticky-top" id="treasureHuntBanner">
+    <app-treasure-hunt-banner [assessment]="assessment"></app-treasure-hunt-banner>
+  </div>
+
+  <div class="small-tab-select nav-pills nav-fill" #smallTabSelect *ngIf="mainTab == 'baseline'">
+    <div class="nav-item" (click)="setSmallScreenTab('form')"
+      [ngClass]="{'small-screen-active': smallScreenTab === 'form'}">
+      <a class="nav-link" *ngIf="subTab == 'settings'">Assessment Basics</a>
+      <a class="nav-link" *ngIf="subTab == 'operation-costs'">Energy Usage and Cost</a>
+    </div>
+    <div class="nav-item" (click)="setSmallScreenTab('details')"
+      [ngClass]="{'small-screen-active': smallScreenTab === 'details'}">
+      <a class="nav-link">Help</a>
+    </div>
+  </div>
+
+  <div *ngIf="mainTab == 'baseline'" class="assessment-container tab-content">
+    <div class="assessment-panel-container lookup-form modification scroll-item"
+      [ngClass]="{'modal-open': isModalOpen == true || showUpdateUnitsModal, 'small-screen-tab': smallScreenTab === 'form'}"
+      [ngStyle]="{'height.px': containerHeight}">
+      <app-system-basics *ngIf="subTab == 'settings'" (openUpdateUnitsModal)="initUpdateUnitsModal($event)"
+        [settings]="settings" [assessment]="assessment">
+      </app-system-basics>
+      <app-operation-costs *ngIf="subTab == 'operation-costs'" [settings]="settings"
+        [treasureHunt]="assessment.treasureHunt">
+      </app-operation-costs>
+
+    </div>
+    <div class="assessment-panel-container" [ngClass]="{'small-screen-tab': smallScreenTab === 'details'}"
+      [ngStyle]="{'height.px': containerHeight}">
+      <app-help-panel [currentTab]="subTab"></app-help-panel>
+    </div>
+  </div>
+
+  <div *ngIf="mainTab == 'find-treasure'" class="assessment-container tab-content justify-content-center"
+    [ngStyle]="{'height.px': containerHeight}">
+    <app-find-treasure class="w-100 scroll-item" [settings]="settings"></app-find-treasure>
+  </div>
+
+  <div *ngIf="mainTab == 'treasure-chest'" class="assessment-container tab-content">
+    <app-treasure-chest class="w-100" [settings]="settings" [containerHeight]="containerHeight"></app-treasure-chest>
+  </div>
+
+
+  <div class="assessment-tab-container report-container mx-0" *ngIf="mainTab == 'report'">
+    <app-treasure-hunt-report [assessment]="assessment" [settings]="settings" [directory]="directory"
+      [containerHeight]="containerHeight">
+    </app-treasure-hunt-report>
+  </div>
+
+
+
+  <div #footer id="thuntFooter" class="footer hide-print d-none d-lg-block"
+    *ngIf="mainTab == 'baseline' && selectedCalc == 'none'">
+    <div class="pull-left" *ngIf="subTab != 'settings'">
+      <button class="btn btn-default" (click)="back()">Back</button>
+    </div>
+    <div class="pull-right">
+      <button class="btn btn-primary" [disabled]="nextDisabled" (click)="continue()">Next</button>
+    </div>
+  </div>
+</div>
+<app-welcome-screen *ngIf="showWelcomeScreen" (emitClose)="closeWelcomeScreen()"></app-welcome-screen>
+
+<app-update-units-modal *ngIf="showUpdateUnitsModal" (emitClose)="closeUpdateUnitsModal()"
+  [assessmentType]="'treasure-hunt'" (emitShouldUpdateData)="selectUpdateAction($event)" [settings]="settings">
+</app-update-units-modal>
+
+
+<app-export-modal *ngIf="showExportModal" [inAssessment]="true" [assessment]="assessment"
+  (close)="closeExportModal($event)"></app-export-modal>

@@ -1,0 +1,158 @@
+import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableContainerProps, TableHead, TableRow } from "@mui/material";
+import { DiagramCalculatedData, getSystemTrueCostData, ProcessFlowPart, sortTrueCostReport, SystemTrueCostContributions, SystemTrueCostData, TrueCostOfSystems } from "process-flow-lib";
+import { JSX } from "react";
+import { Node } from "@xyflow/react";
+
+
+export const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: '#3055cf',
+    // backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+export const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
+
+export const StyledHeadTableRow = styled(TableRow)(({ theme }) => ({
+  backgroundColor: '#3055cf',
+  color: theme.palette.common.white,
+}));
+
+
+export interface TwoCellResultRow {
+  label: string,
+  result: number | string | JSX.Element,
+  unit: string | JSX.Element,
+}
+
+
+export interface TwoCellTablResultProps extends React.HTMLAttributes<TableContainerProps> {
+  headerTitle: string;
+  rows: Array<TwoCellResultRow>;
+  units?: string;
+}
+
+
+export const TwoCellResultTable = (props: TwoCellTablResultProps) => {
+  const { headerTitle, rows } = props as TwoCellTablResultProps;
+
+  return (
+    <TableContainer component={Paper} sx={{ ...props.style }}>
+      <Table sx={{ minWidth: 300 }} size="small" aria-label="customized table">
+        <TableHead>
+          <StyledHeadTableRow>
+            <StyledTableCell colSpan={2}>
+              {headerTitle}
+            </StyledTableCell>
+          </StyledHeadTableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row: TwoCellResultRow, index: number) => (
+            <StyledTableRow key={index}>
+              <StyledTableCell component="th" scope="row">
+                {row.label}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.unit === '$' ?
+                  <>
+                    <span>{row.result}</span>
+                  </>
+                  :
+                  <>
+                    <span>{row.result}</span><span>{row.unit}</span>
+                  </>}
+              </StyledTableCell>
+            </StyledTableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+
+export interface SystemTrueCostResultRow extends Partial<SystemTrueCostData> {
+  label: string,
+  results: Array<string>,
+}
+
+export interface TrueCostOfSystemTableProps extends React.HTMLAttributes<TableContainerProps> {
+  trueCostOfSystems: TrueCostOfSystems;
+  nodes: Array<Node>;
+}
+
+
+const headerCells = [
+  'Intake',
+  'Disposal',
+  '3rd Disposal',
+  'Treatment',
+  'Waste Treatment',
+  'Motor Energy',
+  'Heat Energy',
+  'Total',
+];
+
+
+
+export const TrueCostOfSystemResultTable = (props: TrueCostOfSystemTableProps) => {
+  const { trueCostOfSystems, nodes } = props;
+  let systemCosts: SystemTrueCostData[]= [];
+
+  const currency = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  });
+  
+  const nodeNameMap = nodes.reduce((map, node) => {
+    map[node.id] = node.data.name as string;
+    return map;
+  }, {} as Record<string, string>);
+
+  systemCosts = getSystemTrueCostData(trueCostOfSystems, nodeNameMap)
+  sortTrueCostReport(systemCosts);
+
+  return (
+    <TableContainer component={Paper} sx={{ overflow: 'auto', ...props.style }}>
+      <Table sx={{ minWidth: 300 }} size="small" aria-label="customized table">
+        <TableHead>
+          <StyledHeadTableRow>
+            <StyledTableCell colSpan={1}>
+              Water Using System
+            </StyledTableCell>
+            {headerCells.map((headerCell, index) => (
+              <StyledTableCell key={index} align="right">
+                {headerCell}
+              </StyledTableCell>
+            ))}
+          </StyledHeadTableRow>
+        </TableHead>
+        <TableBody>
+          {systemCosts.map((row: SystemTrueCostData, index: number) => (
+            <StyledTableRow key={index}>
+              <StyledTableCell component="th" scope="row">
+                {row.label}
+              </StyledTableCell>
+              {row.connectionCostByType.map((result, index) => (
+                <StyledTableCell key={index} align="right">
+                  {result?.cost ? currency.format(Number(result.cost)) : '-'}
+                </StyledTableCell>
+              ))}
+            </StyledTableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}

@@ -1,0 +1,23 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - "master"
+      - "develop"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pr-checks:
+    if: github.event_name == 'pull_request' && (github.base_ref == 'develop' || github.base_ref == 'master' || startsWith(github.base_ref, 'epic-'))
+    uses: ./.github/workflows/pr_checks.yml
+
+  web:
+    if: github.event_name == 'push' && (github.ref_name == 'develop' || github.ref_name == 'master')
+    uses: ./.github/workflows/release_web.yml
+
+  desktop:
+    if: github.event_name == 'push' && github.ref_name == 'master'
+    uses: ./.github/workflows/release_desktop.yml
+    secrets: inherit

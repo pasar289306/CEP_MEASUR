@@ -1,0 +1,254 @@
+<div class="d-none d-md-flex p-3 align-self-stretch ssmt-diagram" [ngClass]="hoveredEquipment" *ngIf="outputData">
+  <div class="d-flex flex-grow">
+    <app-feedwater-diagram [deaerator]="outputData.deaeratorOutput" (emitSetHover)="setHover($event)"
+      [settings]="settings" (emitSelectEquipment)="selectTable($event)"></app-feedwater-diagram>
+  </div>
+  <div class="d-flex flex-column flex-fill align-content-stretch">
+    <div class="d-flex boiler-table-height">
+      <div class="boiler">
+        <app-boiler-diagram [boiler]="outputData.boilerOutput" [inputData]="inputData" (emitSetHover)="setHover($event)"
+          (emitSelectEquipment)="selectTable($event)" [settings]="settings"></app-boiler-diagram>
+      </div>
+      <div class="hover-equipment-table justify-content-center sticky-top">
+        <app-hover-table class="w-100" [hoveredEquipment]="hoveredEquipment" [settings]="settings"
+          [outputData]="outputData" [inputData]="inputData"></app-hover-table>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between inner-system-padding">
+      <div class="d-flex flex-column justify-content-between flex-fill">
+        <div class="p-0 d-flex justify-content-end">
+          <div class="w-100">
+            <!--high pressure header-->
+            <app-header-diagram [header]="outputData.highPressureHeaderSteam" [pressureLevel]="'highPressure'"
+              [condensate]="outputData.highPressureCondensate" [steamUsage]="outputData.highPressureProcessSteamUsage"
+              (emitSetHover)="setHover($event)" [settings]="settings" (emitSelectEquipment)="selectTable($event)">
+            </app-header-diagram>
+          </div>
+        </div>
+        <div class="d-flex w-100">
+          <div class="d-flex flex-fill">
+            <div class="p-0 w-25">
+              <!--high to medium prv (3 headers)-->
+              <app-prv-diagram *ngIf="inputData.headerInput.numberOfHeaders == 3"
+                [prv]="outputData.highPressureToMediumPressurePrv" [inletSteam]="'high-pressure'"
+                [outletSteam]="'medium-pressure'" (emitSetHover)="setHover($event)"
+                (emitSelectEquipment)="selectTable($event)" [settings]="settings"></app-prv-diagram>
+              <!--medium to low prv (2 headers)-->
+              <app-prv-diagram *ngIf="inputData.headerInput.numberOfHeaders == 2"
+                [prv]="outputData.mediumPressureToLowPressurePrv" [inletSteam]="'high-pressure'"
+                [outletSteam]="'low-pressure'" (emitSetHover)="setHover($event)"
+                (emitSelectEquipment)="selectTable($event)" [settings]="settings">
+              </app-prv-diagram>
+              <!--header connector (1 header)-->
+              <app-one-header-connector *ngIf="inputData.headerInput.numberOfHeaders == 1"
+                (emitSetHover)="setHover($event)" (emitSelectEquipment)="selectTable($event)">
+              </app-one-header-connector>
+            </div>
+            <div class="p-0 w-25">
+              <!--condensing turbine-->
+              <app-turbine-diagram *ngIf="inputData.turbineInput.condensingTurbine.useTurbine == true"
+                [noOutletConnection]="inputData.headerInput.numberOfHeaders > 1"
+                [turbine]="outputData.condensingTurbine" [inletColor]="'high-pressure'" [outletColor]="'makeup-water'"
+                (emitSetHover)="setHover($event)" [turbineType]="'condensing'"
+                (emitSelectEquipment)="selectTable('condensingTurbine')" [settings]="settings"></app-turbine-diagram>
+            </div>
+            <div class="p-0 w-25">
+              <!--high to medium turbine-->
+              <app-turbine-diagram *ngIf="inputData.headerInput.numberOfHeaders == 3 && inputData.turbineInput.highToMediumTurbine.useTurbine == true"
+                [noOutletConnection]="false" [turbine]="outputData.highPressureToMediumPressureTurbine"
+                [inletColor]="'high-pressure'" [outletColor]="'medium-pressure'" (emitSetHover)="setHover($event)"
+                [turbineType]="'highToMedium'"
+                (emitSelectEquipment)="selectTable('highPressureToMediumPressureTurbine')" [settings]="settings">
+              </app-turbine-diagram>
+            </div>
+            <div class="p-0 w-25">
+              <!--high to low turbine-->
+              <app-turbine-diagram *ngIf="inputData.headerInput.numberOfHeaders > 1 && inputData.turbineInput.highToLowTurbine.useTurbine == true"
+                [noOutletConnection]="inputData.headerInput.numberOfHeaders == 3"
+                [turbine]="outputData.highPressureToLowPressureTurbine" [inletColor]="'high-pressure'"
+                [outletColor]="'low-pressure'" (emitSetHover)="setHover($event)" [turbineType]="'highToLow'"
+                (emitSelectEquipment)="selectTable('highToLowPressureTurbine')" [settings]="settings">
+              </app-turbine-diagram>
+            </div>
+          </div>
+          <div class="w-25">
+            <!--high pressure flash tank (3 headers, medium pressure flash condensate into header-->
+            <app-flash-tank-diagram
+              *ngIf="inputData.headerInput.numberOfHeaders == 3 && inputData.headerInput.mediumPressureHeader.flashCondensateIntoHeader == true"
+              [flashTank]="outputData.highPressureCondensateFlashTank" [steamPressure]="'medium-pressure'"
+              (emitSetHover)="setHover($event)" [flashTankType]="'highPressure'"
+              (emitSelectEquipment)="selectTable($event)" [settings]="settings"></app-flash-tank-diagram>
+            <!--high pressure flash tank (2 headers, low pressure flash condensate into header-->
+            <app-flash-tank-diagram
+              *ngIf="inputData.headerInput.numberOfHeaders == 2 && inputData.headerInput.lowPressureHeader.flashCondensateIntoHeader == true"
+              [flashTank]="outputData.highPressureCondensateFlashTank" [steamPressure]="'low-pressure'"
+              (emitSetHover)="setHover($event)" [flashTankType]="'highPressure'"
+              (emitSelectEquipment)="selectTable($event)" [settings]="settings"></app-flash-tank-diagram>
+            <!--condensate connector for no flash tank
+              (1 header) or
+              (2 headers and not low pressure flash condensate)
+              (3 headers and not medium pressure flash condensate)
+            -->
+            <app-condensate-connector
+              *ngIf="(inputData.headerInput.numberOfHeaders == 1) || (inputData.headerInput.numberOfHeaders == 2 && inputData.headerInput.lowPressureHeader.flashCondensateIntoHeader == false) || (inputData.headerInput.numberOfHeaders == 3 && inputData.headerInput.mediumPressureHeader.flashCondensateIntoHeader == false)"
+              (emitSetHover)="setHover($event)" [settings]="settings" [returnCondensate]="outputData.returnCondensate"
+              [isConnector]="true" (emitSelectEquipment)="selectTable($event)">
+            </app-condensate-connector>
+          </div>
+        </div>
+        <div class="p-0 d-flex justify-content-end">
+          <div class="w-100">
+            <!--medium pressure header (3 headers)-->
+            <app-header-diagram *ngIf="inputData.headerInput.numberOfHeaders == 3"
+              [header]="outputData.mediumPressureHeaderSteam" [pressureLevel]="'mediumPressure'"
+              [condensate]="outputData.mediumPressureCondensate"
+              [steamUsage]="outputData.mediumPressureProcessSteamUsage" (emitSetHover)="setHover($event)"
+              [settings]="settings" (emitSelectEquipment)="selectTable($event)">
+            </app-header-diagram>
+          </div>
+        </div>
+        <div class="d-flex w-100">
+          <div class="d-flex flex-fill">
+            <div class="p-0 w-25">
+              <!--medium to low pressure prv (3 headers)-->
+              <app-prv-diagram *ngIf="inputData.headerInput.numberOfHeaders == 3"
+                [prv]="outputData.mediumPressureToLowPressurePrv" [inletSteam]="'medium-pressure'"
+                [outletSteam]="'low-pressure'" (emitSetHover)="setHover($event)"
+                (emitSelectEquipment)="selectTable($event)" [settings]="settings">
+              </app-prv-diagram>
+            </div>
+            <div class="p-0 w-25">
+              <!--condensing turbine connector (3 headers and condensing turbine on)-->
+              <app-turbine-connector
+                *ngIf="inputData.headerInput.numberOfHeaders == 3 && inputData.turbineInput.condensingTurbine.useTurbine == true"
+                [noOutletConnection]="true" [noInletConnection]="outputData.lowPressureHeaderSteam != undefined"
+                [inletColor]="'makeup-water'" (emitSetHover)="setHover($event)"
+                [massFlow]="outputData.condensingTurbine.massFlow" (emitSelectEquipment)="selectTable($event)">
+              </app-turbine-connector>
+            </div>
+            <div class="p-0 w-25">
+              <!--medium to low pressure turbine-->
+              <app-turbine-diagram *ngIf="inputData.headerInput.numberOfHeaders == 3 && inputData.turbineInput.mediumToLowTurbine.useTurbine == true"
+                [noOutletConnection]="false" [turbine]="outputData.mediumPressureToLowPressureTurbine"
+                [inletColor]="'medium-pressure'" [outletColor]="'low-pressure'" (emitSetHover)="setHover($event)"
+                [turbineType]="'mediumToLow'" (emitSelectEquipment)="selectTable('mediumToLowPressureTurbine')"
+                [settings]="settings">
+              </app-turbine-diagram>
+            </div>
+            <div class="p-0 w-25">
+              <!--high to low turbine connector (3 headers and medium to low turbine on)-->
+              <app-turbine-connector
+                *ngIf="inputData.headerInput.numberOfHeaders == 3 && inputData.turbineInput.highToLowTurbine.useTurbine == true"
+                [noOutletConnection]="false" [inletColor]="'low-pressure'" [noInletConnection]="true"
+                (emitSetHover)="setHover($event)" [massFlow]="outputData.highPressureToLowPressureTurbine.massFlow"
+                (emitSelectEquipment)="selectTable($event)">
+              </app-turbine-connector>
+            </div>
+          </div>
+          <div class="w-25">
+            <!--medium pressure flash tank (more then 1 header, flash condesnate into low pressure header-->
+            <app-flash-tank-diagram
+              *ngIf="inputData.headerInput.numberOfHeaders > 2 && inputData.headerInput.lowPressureHeader.flashCondensateIntoHeader == true"
+              [flashTank]="outputData.mediumPressureCondensateFlashTank" [steamPressure]="'low-pressure'"
+              (emitSetHover)="setHover($event)" [flashTankType]="'mediumPressure'"
+              (emitSelectEquipment)="selectTable($event)" [settings]="settings"></app-flash-tank-diagram>
+            <app-condensate-connector
+              *ngIf="inputData.headerInput.numberOfHeaders > 2 && inputData.headerInput.lowPressureHeader.flashCondensateIntoHeader == false"
+              (emitSetHover)="setHover($event)" [settings]="settings" [returnCondensate]="outputData.returnCondensate"
+              [isConnector]="true" (emitSelectEquipment)="selectTable($event)">
+            </app-condensate-connector>
+          </div>
+        </div>
+        <div class="p-0 d-flex justify-content-end">
+          <div class="w-100">
+            <!--low pressure header (more then 1 header)-->
+            <app-header-diagram *ngIf="inputData.headerInput.numberOfHeaders > 1"
+              [header]="outputData.lowPressureHeaderSteam" [pressureLevel]="'lowPressure'"
+              [condensate]="outputData.lowPressureCondensate" [steamUsage]="outputData.lowPressureProcessSteamUsage"
+              (emitSetHover)="setHover($event)" [settings]="settings"
+              [ventedLowPressureSteam]="outputData.lowPressureVentedSteam" (emitSelectEquipment)="selectTable($event)">
+            </app-header-diagram>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex w-100 pl-4">
+      <div class="d-flex flex-fill">
+        <div class="w-25 deaerator-margin" [ngClass]="{'pt-3': inputData.headerInput.numberOfHeaders > 1}">
+          <!--dearator diagram for more than one header system-->
+          <app-deaerator-diagram *ngIf="inputData.headerInput.numberOfHeaders > 1"
+            [deaerator]="outputData.deaeratorOutput" [inletPressure]="'low-pressure'" (emitSetHover)="setHover($event)"
+            (emitSelectEquipment)="selectTable($event)" [settings]="settings"></app-deaerator-diagram>
+          <!--deaerator diagram for one header system-->
+          <app-deaerator-diagram *ngIf="inputData.headerInput.numberOfHeaders == 1"
+            [deaerator]="outputData.deaeratorOutput" [inletPressure]="'high-pressure'" (emitSetHover)="setHover($event)"
+            (emitSelectEquipment)="selectTable($event)" [settings]="settings"></app-deaerator-diagram>
+        </div>
+        <div class="w-25 deaerator-condensate-padding">
+          <app-turbine-connector *ngIf="inputData.turbineInput.condensingTurbine.useTurbine == true"
+            [noOutletConnection]="false" [noInletConnection]="outputData.lowPressureHeaderSteam != undefined"
+            [inletColor]="'makeup-water'" (emitSetHover)="setHover($event)"
+            [massFlow]="outputData.condensingTurbine.massFlow" (emitSelectEquipment)="selectTable($event)">
+          </app-turbine-connector>
+        </div>
+        <div class="p-0 w-25">
+          <!--diagram spacer-->
+        </div>
+        <div class="p-0 w-25">
+          <!--blowdown flash tank-->
+          <app-blowdown-flash-tank *ngIf="inputData.boilerInput.blowdownFlashed == true"
+            [flashTank]="outputData.blowdownFlashTank" (emitSetHover)="setHover($event)"
+            (emitSelectEquipment)="selectTable($event)" [settings]="settings"
+            [numberOfHeaders]="inputData.headerInput.numberOfHeaders">
+          </app-blowdown-flash-tank>
+        </div>
+      </div>
+      <div class="w-25">
+        <!--condensate flash tank (high pressure header flash condensate return)-->
+        <app-condensate-flash-tank *ngIf="inputData.headerInput.highPressureHeader.flashCondensateReturn == true"
+          [flashTank]="outputData.condensateFlashTank" (emitSetHover)="setHover($event)"
+          (emitSelectEquipment)="selectTable($event)" [settings]="settings">
+        </app-condensate-flash-tank>
+        <!--condensate connector (high pressure header not flashing condensate return)-->
+        <app-condensate-connector *ngIf="inputData.headerInput.highPressureHeader.flashCondensateReturn == false"
+          (emitSetHover)="setHover($event)" [returnCondensate]="outputData.returnCondensate"
+          [isOneHeaderSystem]="inputData.headerInput.numberOfHeaders == 1" [settings]="settings"
+          (emitSelectEquipment)="selectTable($event)">
+        </app-condensate-connector>
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="w-25">
+        <!--return condensate connector, always present-->
+        <app-return-condensate-connector (emitSetHover)="setHover($event)"
+          [makeupWaterAndCondensateHeader]="outputData.makeupWaterAndCondensate" [settings]="settings"
+          (emitSelectEquipment)="selectTable($event)"></app-return-condensate-connector>
+      </div>
+      <div class="w-75">
+        <!--return condensate header, always present-->
+        <app-return-condensate-header [makeupWaterAndCondensateHeader]="outputData.makeupWaterAndCondensate"
+          [returnCondensate]="outputData.returnCondensate" [condensateFlashTank]="outputData.condensateFlashTank"
+          (emitSetHover)="setHover($event)" [deaerator]="outputData.deaeratorOutput" [settings]="settings"
+          (emitSelectEquipment)="selectTable($event)">
+        </app-return-condensate-header>
+      </div>
+    </div>
+    <div class="p-0 d-flex">
+      <div class="w-100 ">
+        <!--makeup water diagram, always present-->
+        <app-makeup-water-diagram [makeupWater]="outputData.makeupWater"
+          [makeupWaterVolumeFlow]="outputData.operationsOutput.makeupWaterVolumeFlow" (emitSetHover)="setHover($event)"
+          (emitSelectEquipment)="selectTable($event)" [heatExchangerOutput]="outputData.heatExchanger"
+          [settings]="settings"></app-makeup-water-diagram>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="d-flex d-md-none">
+  <span class="alert-warning pull-right small">
+    Steam Diagram is unavailable to view on your current device. 
+    Please export the assessment and upload to a desktop or a device with a screen size of at least 768px to view the Steam Diagram.
+  </span>
+    
+</div> -->

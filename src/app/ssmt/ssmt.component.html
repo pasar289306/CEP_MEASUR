@@ -1,0 +1,181 @@
+<div #content class="ssmt-container d-flex flex-column ssmt" *ngIf="assessment && settings">
+  <div #header class="w-100 hide-print sticky-top" [ngClass]="{'modal-open': isModalOpen == true}">
+    <app-ssmt-banner [assessment]="assessment"></app-ssmt-banner>
+    <app-ssmt-tabs [settings]="settings" [ssmt]="_ssmt"></app-ssmt-tabs>
+  </div>
+
+  <div class="small-tab-select nav-pills nav-fill" #smallTabSelect *ngIf="mainTab == 'baseline'">
+    <div class="nav-item" (click)="setSmallScreenTab('form')"
+      [ngClass]="{'small-screen-active': smallScreenTab === 'form'}">
+      <a class="nav-link" *ngIf="stepTab == 'baseline'">Assessment Settings</a>
+      <a class="nav-link" *ngIf="stepTab == 'operations'">Operations</a>
+      <a class="nav-link" *ngIf="stepTab == 'boiler'">Boiler</a>
+      <a class="nav-link" *ngIf="stepTab == 'header'">Header</a>
+      <a class="nav-link" *ngIf="stepTab == 'turbine'">Turbine</a>
+    </div>
+    <div class="nav-item" (click)="setSmallScreenTab('details')"
+      [ngClass]="{'small-screen-active': smallScreenTab === 'details'}">
+      <a class="nav-link">Help</a>
+    </div>
+  </div>
+  <!--Setup-->
+  <div *ngIf="mainTab == 'baseline'" class="assessment-container tab-content">
+    <div class="assessment-panel-container lookup-form modification scroll-item" [ngClass]="{'modal-open': isModalOpen == true || showUpdateUnitsModal, 'small-screen-tab': smallScreenTab === 'form'}"
+      [ngStyle]="{'height.px': containerHeight}">
+        @switch (stepTab) {
+          @case ('baseline') {
+          <app-system-basics [(settings)]="settings" [assessment]="assessment" (emitSave)="saveSettings($event)"
+            (emitSaveSsmt)="saveSetup($event)" (openUpdateUnitsModal)="initUpdateUnitsModal($event)"></app-system-basics>
+          }
+          @case ('operations') {
+          <app-operations [ssmt]="_ssmt" [settings]="settings" (emitSave)="saveSetup($event)" [selected]="true" [inSetup]="true"
+            [isBaseline]="true"></app-operations>
+          }
+          @case ('boiler') {
+          <app-boiler [ssmt]="_ssmt" [selected]="true" [inSetup]="true" [settings]="settings" (emitSave)="saveBoiler($event)"
+            [isBaseline]="true"></app-boiler>
+          }
+          @case ('header') {
+          <app-header [ssmt]="_ssmt" [selected]="true" [inSetup]="true" [settings]="settings" (emitSave)="saveHeaderData($event)"
+            [modificationExists]="modificationExists" [isBaseline]="true"></app-header>
+          }
+          @case ('turbine') {
+          <app-turbine [turbineInput]="_ssmt.turbineInput" [numberOfHeaders]="_ssmt.headerInput.numberOfHeaders" [selected]="true"
+            [inSetup]="true" [settings]="settings" (emitSave)="saveTurbineData($event)" [isBaseline]="true"></app-turbine>
+          }
+        }
+    </div>
+    <div class="assessment-panel-container scroll-item" [ngClass]="{'small-screen-tab': smallScreenTab === 'details'}" [ngStyle]="{'height.px': containerHeight}">
+      <app-help-panel [ssmt]="_ssmt" [settings]="settings" [inSetup]="true"></app-help-panel>
+    </div>
+  </div>
+  <!--Assessment-->
+  <div *ngIf="mainTab == 'assessment' && !modificationModalOpen" [ngClass]="{'modal-open': isModalOpen == true}" class="assessment-tab-container tab-content"
+    [ngStyle]="{'height.px': containerHeight}">
+    <app-modify-conditions *ngIf="assessmentTab == 'modify-conditions'" [settings]="settings" [ssmt]="_ssmt"
+      [modificationIndex]="modificationIndex" [modificationExists]="modificationExists" (emitSaveAssessment)="save()"
+      [containerHeight]="containerHeight" [inSetup]="false"></app-modify-conditions>
+    <!-- TODO: addNewMod() is not defined on SsmtComponent; review this binding -->
+    <app-explore-opportunities *ngIf="assessmentTab == 'explore-opportunities'" [ssmt]="_ssmt" [assessment]="assessment"
+      [settings]="settings" (emitSave)="saveSsmt($event)" [containerHeight]="containerHeight"
+      [modificationIndex]="modificationIndex" [modificationExists]="modificationExists" (emitAddNewMod)="addNewMod()">
+    </app-explore-opportunities>
+  </div>
+
+  <!--report-->
+  <div class="assessment-tab-container report-container mx-0" *ngIf="mainTab == 'report'">
+      <app-ssmt-report [assessment]="assessment" [settings]="settings" [containerHeight]="containerHeight">
+      </app-ssmt-report>
+  </div>
+  <!--diagram-->
+  <div class="assessment-tab-container tab-content scroll-item diagram-content" [ngStyle]="{'height.px': containerHeight}"
+    *ngIf="mainTab == 'diagram'">
+    <app-ssmt-diagram-tab [settings]="settings" [ssmt]="_ssmt" [containerHeight]="containerHeight">
+    </app-ssmt-diagram-tab>
+  </div>
+  <!--calculators-->
+  <div *ngIf="mainTab == 'calculators'" class="assessment-tab-container tab-content" [ngStyle]="{'height.px': containerHeight}">
+    <app-steam-properties-calculator *ngIf="calcTab == 'steam-properties'" [settings]="settings">
+    </app-steam-properties-calculator>
+    <app-saturated-properties-calculator *ngIf="calcTab == 'saturated-properties'" [settings]="settings">
+    </app-saturated-properties-calculator>
+    <app-stack-loss-calculator *ngIf="calcTab == 'stack-loss'" [settings]="settings"></app-stack-loss-calculator>
+    <app-steam-leak-survey *ngIf="calcTab == 'steam-leak'" [settings]="settings" [assessment]="assessment">
+    </app-steam-leak-survey>
+    <app-heat-loss-calculator *ngIf="calcTab == 'heat-loss'" [settings]="settings"></app-heat-loss-calculator>
+    <app-boiler-calculator *ngIf="calcTab == 'boiler'" [settings]="settings" ></app-boiler-calculator>
+    <app-flash-tank-calculator *ngIf="calcTab == 'flash-tank'" [settings]="settings"></app-flash-tank-calculator>
+    <app-prv-calculator *ngIf="calcTab == 'prv'" [settings]="settings"></app-prv-calculator>
+    <app-deaerator-calculator *ngIf="calcTab == 'deaerator'" [settings]="settings"></app-deaerator-calculator>
+    <app-header-calculator *ngIf="calcTab == 'header'" [settings]="settings"></app-header-calculator>
+    <app-turbine-calculator *ngIf="calcTab == 'turbine'" [settings]="settings"></app-turbine-calculator>
+  </div>
+  <!--sankey-->
+  <div *ngIf="mainTab == 'sankey'" class="d-flex flex-column scroll-item w-100"
+    [ngStyle]="{'height.px': containerHeight}">
+    <nav class="navbar ssmt">
+      <div *ngIf="showSankeyLabelOptions" class="d-flex justify-content-start align-items-center w-100 flex-wrap">
+        <div class="tab-content pl-2 pr-2">
+          <div class="form-group">
+            <select name="ssmtSelect" class="form-control mx-auto w-100" id="ssmtSelect" [(ngModel)]="selectedSSMT">
+              <option *ngFor="let ssmt of ssmtOptions" [ngValue]="ssmt">{{ssmt.name}}</option>
+            </select>
+          </div>
+        </div>
+          <div class="btn-group btn-group-sm align-self-center">
+              <button type="button" class="btn btn-sm" (click)="setSankeyLabelStyle('percent')"
+                  [ngClass]="{'active': sankeyLabelStyle == 'percent'}">Loss Percent</button>
+              <button type="button" class="btn btn-sm" (click)="setSankeyLabelStyle('energy')"
+                  [ngClass]="{'active': sankeyLabelStyle == 'energy'}">Loss Energy</button>
+              <button type="button" class="btn btn-sm" (click)="setSankeyLabelStyle('both')"
+                  [ngClass]="{'active': sankeyLabelStyle == 'both'}">Both</button>
+          </div>
+      </div>
+  </nav>
+    <div class="sankey-padding w-100">
+      <app-ssmt-sankey [ssmt]="selectedSSMT.ssmt" [settings]="settings" [assessment]="assessment"
+      [isBaseline]="selectedSSMT.ssmt.name == 'Baseline'" [labelStyle]="sankeyLabelStyle" [appBackground]="true"></app-ssmt-sankey>
+    </div>
+  </div>
+
+
+
+  <div #footer id="ssmtFooter" class="footer hide-print d-none d-lg-block" *ngIf="mainTab == 'assessment' || mainTab == 'baseline'">
+    <div class="pull-left" *ngIf="stepTab != 'baseline'">
+      <button class="btn btn-default" (click)="back()">Back</button>
+    </div>
+    <div class="pull-right" *ngIf="mainTab == 'baseline' && mainTab != 'assessment'">
+      <button class="btn btn-primary" [disabled]="!getCanContinue()" (click)="continue()">Next</button>
+    </div>
+    <div class="pull-right" *ngIf="mainTab == 'assessment'">
+      <button class="btn btn-primary" (click)="goToReport()">View Report</button>
+    </div>
+  </div>
+</div>
+
+
+<div bsModal #addNewModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel"
+  aria-hidden="true" [config]="{backdrop: 'static'}">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Scenario</h3>
+        <button class="close" (click)="closeAddNewModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <app-add-modification *ngIf="showAddModal" [ssmt]="_ssmt" [modifications]="_ssmt.modifications"
+          (save)="saveNewMod($event)"></app-add-modification>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div bsModal #changeModificationModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+  aria-labelledby="changeModificationModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}"
+  *ngIf="_ssmt && _ssmt.modifications">
+  <div class="modal-dialog modal-lg list-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Select Scenario</h3>
+        <button class="close" (click)="closeSelectModification()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <app-modification-list *ngIf="modListOpen" [ssmt]="_ssmt" (save)="saveSsmt($event)"
+          (saveNewMod)="saveNewMod($event)" [modificationIndex]="modificationIndex" (close)="closeSelectModification()">
+        </app-modification-list>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-update-units-modal *ngIf="showUpdateUnitsModal" (emitClose)="closeUpdateUnitsModal()" [assessmentType]="'ssmt'"
+ (emitShouldUpdateData)="selectUpdateAction($event)" [settings]="settings"></app-update-units-modal>
+
+<app-welcome-screen *ngIf="showWelcomeScreen" (emitClose)="closeWelcomeScreen()"></app-welcome-screen>
+
+<app-export-modal *ngIf="showExportModal" [inAssessment]="true" [assessment]="assessment" (close)="closeExportModal($event)"></app-export-modal>

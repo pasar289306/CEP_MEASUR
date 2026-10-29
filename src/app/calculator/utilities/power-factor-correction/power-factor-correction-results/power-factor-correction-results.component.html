@@ -1,0 +1,140 @@
+<table #copyChart class="table table-hover table-striped">
+  <tbody>
+    <tr>
+      <th>
+        Month
+      </th>
+      <th *ngIf="inputs.billedForDemand == BilledForDemand.REAL_POWER && inputs.adjustedOrActual == AdjustedOrActual.POWER_FACTOR">
+        Actual Demand (kW)
+      </th>
+      <th *ngIf="inputs.billedForDemand == BilledForDemand.REAL_POWER && inputs.adjustedOrActual == AdjustedOrActual.ACTUAL_DEMAND">
+        PF Adjusted Demand (kW)
+      </th>
+      <th *ngIf="inputs.billedForDemand == BilledForDemand.APPARENT_POWER && (inputs.adjustedOrActual == AdjustedOrActual.POWER_FACTOR || inputs.adjustedOrActual == AdjustedOrActual.ACTUAL_DEMAND)">
+        Proposed Apparent Power (kVA)
+      </th>
+
+      <th *ngIf="inputs.billedForDemand == BilledForDemand.REAL_POWER">
+        Demand Penalty (kW)
+      </th>
+      <th *ngIf="inputs.billedForDemand == BilledForDemand.APPARENT_POWER">
+        Excess Demand Penalty (kVA)
+      </th>
+
+  
+      <th *ngIf="inputs.billedForDemand == BilledForDemand.REAL_POWER">
+        Penalty Cost ($)
+      </th>
+
+      <th *ngIf="inputs.billedForDemand == BilledForDemand.APPARENT_POWER">
+        Excess Penalty Cost ($)
+      </th>
+
+      <th>
+        Current Reactive Power (kVAr)
+      </th>
+
+      <th>
+        Proposed Reactive Power (kVAr)
+      </th>
+
+      <th>
+        Proposed Capacitance (kVAr)
+      </th>
+    </tr>
+    
+    <tr *ngFor="let output of results.monthlyOutputs; let i = index;">
+      <td>
+        {{inputs.monthyInputs[i].month}}
+      </td>
+
+      <!-- 'input' / 'column' are interchangable. 
+
+      pfAdjustedDemand - When present is always the first column
+      names: PF Adjusted Demand (kW), Apparent Power (kVA)
+
+      actualDemand - When present is first or second column. realDemand is also used, for clarity.
+      names: Actual Demand (kW)
+
+      powerFactor - When present is the second input or if 'BOTH' will be the third input
+      names: Power Factor -->
+
+      <td *ngIf="inputs.billedForDemand == BilledForDemand.REAL_POWER && inputs.adjustedOrActual == AdjustedOrActual.POWER_FACTOR">
+      {{output.realDemand | number:'1.2-2'}}
+      </td>
+      <td *ngIf="inputs.billedForDemand == BilledForDemand.REAL_POWER && inputs.adjustedOrActual == AdjustedOrActual.ACTUAL_DEMAND">
+      {{output.pfAdjustedDemand | number:'1.2-2'}}
+      </td>
+      <td *ngIf="inputs.billedForDemand == BilledForDemand.APPARENT_POWER && (inputs.adjustedOrActual == AdjustedOrActual.POWER_FACTOR || inputs.adjustedOrActual == AdjustedOrActual.ACTUAL_DEMAND)">
+      {{output.proposedApparentPower | number:'1.2-2'}}
+      </td>
+
+      <td>
+        {{output.demandPenalty | number:'1.2-2'}}
+      </td>
+
+      <td>
+        {{output.penaltyCost | number:'1.2-2'}}
+      </td>
+
+      <td>
+        {{output.currentReactivePower | number:'1.2-2'}}
+      </td>
+
+      <td>
+        {{output.proposedReactivePower | number:'1.2-2'}}
+      </td>
+
+      <td>
+        {{output.proposedCapacitance | number:'1.2-2'}}
+      </td>
+
+
+    </tr>
+
+  </tbody>
+</table>
+
+<app-exportable-results-table [tableString]="chartString" (updateTableString)="updateChartString()"></app-exportable-results-table>
+
+<table #copyTable class="table table-hover table-striped">
+  <tbody>
+    <tr>
+      <td class="bold w-50">Annual Power Factor Penalty</td>
+      <td class="text-center w-50">
+        ${{results.annualPFPenalty | number:'1.2-2'}} /yr
+      </td>
+    </tr>
+    <tr>
+      <td class="bold w-50">Proposed Fixed Capacitance</td>
+      <td class="text-center w-50">
+
+        {{results.proposedFixedCapacitance | number:'1.2-2'}} kVAr
+      </td>
+    </tr>
+    <tr>
+      <td class="bold w-50">Proposed Variable Capacitance</td>
+      <td class="text-center w-50">
+
+        {{results.proposedVariableCapacitance | number:'1.2-2'}} kVAr
+      </td>
+    </tr>
+    <tr>
+      <td class="bold w-50">
+        Capital Cost
+      </td>
+      <td class="text-center w-50">
+
+        ${{results.capitalCost | number:'1.2-2'}}
+      </td>
+    </tr>
+    <tr>
+      <td class="bold w-50"> Simple Payback</td>
+      <td class="text-center w-50">
+        {{results.simplePayback | number:'1.2-2'}} years
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<app-exportable-results-table [tableString]="tableString" (updateTableString)="updateTableString()"></app-exportable-results-table>

@@ -1,0 +1,8 @@
+<a class="nav-link small">
+  Opening
+  <span (mouseenter)="showTooltip()" (mouseleave)="hideTooltip()" class="badge gray-badge" [ngClass]="badgeClass" *ngIf="numLosses">
+      <strong>{{numLosses}}</strong>
+  </span>
+</a>
+
+<app-tabs-tooltip [display]="badgeHover" [reveal]="displayTooltip" [badgeClass]="badgeClass[0]"></app-tabs-tooltip>

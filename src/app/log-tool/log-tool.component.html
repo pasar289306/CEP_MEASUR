@@ -1,0 +1,18 @@
+<div #content class="log-tool-container log-tool d-flex flex-column">
+    <!--header-->
+    <div #header class="w-100 hide-print sticky-top">
+        <app-log-tool-banner></app-log-tool-banner>
+    </div>
+    <div class="d-none d-md-block" [ngStyle]="{'height.px': containerHeight}">
+        <router-outlet></router-outlet>
+    </div>
+    <div class="d-block d-md-none" [ngStyle]="{'height.px': containerHeight}">
+        <span class="alert alert-warning small pull-right p-3">
+            The Data Exploration module is unavailable to use on your current device.
+            Please export any necessary data and upload to a desktop or a device with a screen size of at least 768px to
+            use the Data Exploration module.
+        </span>
+    </div>
+</div>
+<app-export-log-tool-modal *ngIf="openExportData"></app-export-log-tool-modal>
+<app-welcome-screen *ngIf="showWelcomeScreen" (emitClose)="closeWelcomeScreen()"></app-welcome-screen>

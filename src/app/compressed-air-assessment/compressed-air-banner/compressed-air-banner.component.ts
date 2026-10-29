@@ -1,0 +1,147 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { DashboardService } from '../../dashboard/dashboard.service';
+import { Assessment } from '../../shared/models/assessment';
+import { Modification } from '../../shared/models/compressed-air-assessment';
+import { ModalDialogService } from '../../shared/modal-dialog.service';
+import { SecurityAndPrivacyItemComponent } from '../../shared/security-and-privacy/security-and-privacy-item/security-and-privacy-item.component';
+import { CompressedAirAssessmentService } from '../compressed-air-assessment.service';
+import { EmailMeasurDataService } from '../../shared/email-measur-data/email-measur-data.service';
+import { CoreService } from '../../core/core.service';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+
+@Component({
+  selector: 'app-compressed-air-banner',
+  templateUrl: './compressed-air-banner.component.html',
+  styleUrls: ['./compressed-air-banner.component.css'],
+  standalone: false
+})
+export class CompressedAirBannerComponent implements OnInit {
+  @Input({ required: true })
+  assessment: Assessment;
+
+  isBaselineValid: boolean = false;
+  selectedModificationSub: Subscription;
+  selectedModification: Modification;
+  compresssedAirAssessmentSub: Subscription;
+  bannerCollapsed: boolean = true;
+
+  mainTab: 'baseline' | 'assessment' | 'calculators';
+  routerSub: Subscription;
+  constructor(private compressedAirAssessmentService: CompressedAirAssessmentService,
+    private emailMeasurDataService: EmailMeasurDataService,
+    private dashboardService: DashboardService, private modalDialogService: ModalDialogService,
+    private coreService: CoreService,
+    private router: Router,
+    private route: ActivatedRoute) { }
+
+  ngOnInit(): void {
+    this.selectedModificationSub = this.compressedAirAssessmentService.selectedModification.subscribe(val => {
+      this.selectedModification = val;
+    });
+
+    this.compresssedAirAssessmentSub = this.compressedAirAssessmentService.compressedAirAssessment.subscribe(val => {
+      if (val) {
+        this.isBaselineValid = val.setupDone;
+      }
+    });
+
+    this.routerSub = this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.setMainTab();
+      }
+    });
+    this.setMainTab();
+  }
+
+  collapseBanner() {
+    this.bannerCollapsed = !this.bannerCollapsed;
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  ngOnDestroy() {
+    this.selectedModificationSub.unsubscribe();
+    this.compresssedAirAssessmentSub.unsubscribe();
+    this.routerSub.unsubscribe();
+  }
+
+  navigateHome() {
+    this.dashboardService.navigateWithSidebarOptions('/landing-screen', { shouldCollapse: false });
+  }
+
+  showSecurityAndPrivacyModal() {
+    // Collapse banner to prevent it from reopening the modal on mobile when dismissed
+    this.bannerCollapsed = true;
+    this.modalDialogService.openModal(
+      SecurityAndPrivacyItemComponent,
+      SecurityAndPrivacyItemComponent.getDialogConfig()
+    );
+  }
+
+
+  selectModification() {
+    this.compressedAirAssessmentService.showModificationListModal.next(true);
+  }
+
+  openExportModal() {
+    this.compressedAirAssessmentService.showExportModal.next(true);
+  }
+
+  openShareDataModal() {
+    this.emailMeasurDataService.measurItemAttachment = {
+      itemType: 'assessment',
+      itemName: this.assessment.name,
+      itemData: this.assessment
+    }
+    this.emailMeasurDataService.emailItemType.next('CompressedAir');
+    this.coreService.showShareDataModal.next(true);
+  }
+
+  setMainTab() {
+    if (this.router.url.includes('baseline')) {
+      this.mainTab = 'baseline';
+    } else if (this.router.url.includes('assessment')) {
+      this.mainTab = 'assessment';
+    } else if (this.router.url.includes('calculators')) {
+      this.mainTab = 'calculators';
+    }
+  }
+
+  /*
+  MAIN TABS:
+  baseline
+  assessment
+  diagram
+  report
+  sankey
+  calculators
+  */
+
+  continue() {
+    if(this.router.url.includes('baseline')){
+      this.router.navigate(['assessment/explore-opportunities'], { relativeTo: this.route });
+    }else if(this.router.url.includes('assessment')){
+      this.router.navigate(['diagram'], { relativeTo: this.route });
+    }else if(this.router.url.includes('diagram')){
+      this.router.navigate(['report'], { relativeTo: this.route });
+    }else if(this.router.url.includes('report')){
+      this.router.navigate(['sankey'], { relativeTo: this.route });
+    }else if(this.router.url.includes('sankey')){
+      this.router.navigate(['calculators'], { relativeTo: this.route });
+    }
+  }
+
+  back() {
+    if(this.router.url.includes('assessment')){
+      this.router.navigate(['baseline'], { relativeTo: this.route });
+    }else if(this.router.url.includes('diagram')){
+      this.router.navigate(['assessment/explore-opportunities'], { relativeTo: this.route });
+    }else if(this.router.url.includes('report')){
+      this.router.navigate(['diagram'], { relativeTo: this.route });
+    }else if(this.router.url.includes('sankey')){
+      this.router.navigate(['report'], { relativeTo: this.route });
+    }else if(this.router.url.includes('calculators')){
+      this.router.navigate(['sankey'], { relativeTo: this.route });
+    }
+  }
+}

@@ -1,0 +1,68 @@
+<div class="my-2">
+  <h6>
+    Dedicated Storage
+    <br>
+    <small class="text-muted">When there is a sudden demand of air at relatively high volume, this method is used. In such cases, a secondary air receiver
+      close to the point of demand is used.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'lengthOfDemand'">
+  <h6>
+    Length of Demand
+    <br>
+    <small class="text-muted">
+      Time duration for which the compressed air is needed.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'airFlowRequirement'">
+  <h6>
+    Air Flow Demand
+    <br>
+    <small class="text-muted">
+      The quantity of air needed.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'atmosphericPressure'">
+  <h6>
+    Atmospheric Pressure
+    <br>
+    <small class="text-muted">
+      General value is 14.7 psi. In case the receiver tank is at higher altitude location, the respective atmospheric pressure
+      at that location can be given.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'initialTankPressure'">
+  <h6>
+    Initial Tank Pressure
+    <br>
+    <small class="text-muted">
+      Tank pressure before release of air.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'finalTankPressure'">
+  <h6>
+    Final Tank Pressure
+    <br>
+    <small class="text-muted">
+      Tank pressure after release of air.
+      <hr>
+    </small>
+  </h6>
+</div>
+
+<div class="my-2">
+  <a class="click-link" [href]="docsLink + 'group__receiver__tank__calculator'" target="_blank">
+    <span class="fa fa-external-link"></span>
+    <span class="pl-1">How is Receiver Tank Sizing calculated?</span>
+  </a>
+</div>

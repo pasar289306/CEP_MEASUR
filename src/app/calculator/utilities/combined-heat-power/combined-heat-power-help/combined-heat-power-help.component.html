@@ -1,0 +1,213 @@
+<div class="p-4 pt-2 d-flex flex-column help-info">
+  <h5>
+    Combined Heat and Power Help
+    <br>
+    <small class="text-muted"> The Combined Heat and Power (CHP) calculator is intended to help plant managers and other intended parties to conduct
+      a very preliminary initial screening of the potential CHP cost savings at the facility based on - Annual Electricity
+      Consumption, Annual Thermal Loads, Average Electricity and Fuel prices and Annual Operating hours. This calculator
+      is not intended to estimate the economic performance of a specific CHP project, rather it is intended to only give
+      the user an initial understanding of whether CHP has the potential to provide economic savings at their facility.
+    </small>
+  </h5>
+  <hr class="my-1 hr-spacer">
+
+
+  <div class="my-2" *ngIf="currentField == 'annualOperatingHours'">
+    <h6>
+      Annual Operating Hours
+      <br>
+      <small class="text-muted">
+        Annual operating hours with loads facilitating CHP.
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="text-center">Minimum</th>
+            <th class="text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="text-center">0 hrs/yr</td>
+            <td class="text-center">8760 hrs/yr</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'annualElectricityConsumption'">
+    <h6>
+      Annual Electricity Consumption
+      <br>
+      <small class="text-muted">
+        Total energy consumed by the plant.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'annualThermalDemand'">
+    <h6>
+      Annual Thermal Demand
+      <br>
+      <small class="text-muted">
+        Annual fuel consumption.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'chpAvailability'">
+    <h6>
+      CHP Availability
+      <br>
+      <small class="text-muted">
+        The percentage of time that a CHP system is either up and running or available for use.
+        <br>Typical range: 90-98%
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="w-50 text-center">Minimum</th>
+            <th class="w-50 text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">0 %</td>
+            <td class="w-50 text-center">100 %</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'thermalUtilization'">
+    <h6>
+      Thermal Utilization
+      <br>
+      <small class="text-muted">
+        Amount of available thermal energy captured and used for CHP Generation.
+        <br>Typical range: 80-100%
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="w-50 text-center">Minimum</th>
+            <th class="w-50 text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">0 %</td>
+            <td class="w-50 text-center">100 %</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'displacedThermalEfficiency'">
+    <h6>
+      Displaced Thermal Efficiency
+      <br>
+      <small class="text-muted">
+        Efficiency of the equipment currently providing thermal energy to the facility. This can be boilers producing steam or hot
+        water, or direct processes heaters.
+        <br> Typical range: 75-82%
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="w-50 text-center">Minimum</th>
+            <th class="w-50 text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">0 %</td>
+            <td class="w-50 text-center">100 %</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'boilerThermalFuelCosts'">
+    <h6>
+      Boiler/Thermal Fuel Cost
+      <br>
+      <small class="text-muted">
+        Cost of fuel currently used to produce thermal energy at the facility.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'avgElectricityCosts'">
+    <h6>
+      Average Electricity Cost
+      <br>
+      <small class="text-muted">
+        Total price of electricity at the facility. To calculate this value, take the total bill amount for a representative month
+        and divide by the energy consumed (kWh).
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'CHPfuelCosts'">
+    <h6>
+      CHP Fuel Cost
+      <br>
+      <small class="text-muted">
+        In most cases, CHP fuel costs will be same as the existing fuel costs. However, in certain states, fuel for CHP Systems is
+        provided at a special rate. If your state/utility offers a discounted CHP fuel price enter it in this subsection;
+        otherwise, enter the same fuel price as existing system.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'boilerThermalFuelCostsCHPcase'">
+    <h6>
+      CHP Boiler/Thermal Fuel Cost
+      <br>
+      <small class="text-muted">
+        Cost of fuel currently used to produce thermal energy at the facility.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'percentAvgkWhElectricCostAvoidedOrStandbyRate' && inputs.option == 1">
+    <h6>
+      Standby Rate
+      <br>
+      <small class="text-muted">
+        Standby rates are charges levied by utilities when an on-site CHP system experiences a scheduled or emergency outage.
+        <hr>
+      </small>
+    </h6>
+  </div>
+  <div class="my-2" *ngIf="currentField == 'percentAvgkWhElectricCostAvoidedOrStandbyRate' && inputs.option == 0">
+    <h6>
+      Percent Average per kWh Electric Cost Avoided
+      <br>
+      <small class="text-muted">
+        Percent of average electricity costs per kWh saved by one kWh of CHP electricity.
+        <br> Typical range: 70-95%
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="w-50 text-center">Minimum</th>
+            <th class="w-50 text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="w-50 text-center">0 %</td>
+            <td class="w-50 text-center">100 %</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

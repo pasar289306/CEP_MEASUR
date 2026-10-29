@@ -1,0 +1,91 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { Assessment } from '../../shared/models/assessment';
+import { FsatService } from '../fsat.service';
+import { Subscription } from 'rxjs';
+import { ModalDialogService } from '../../shared/modal-dialog.service';
+import { SecurityAndPrivacyItemComponent } from '../../shared/security-and-privacy/security-and-privacy-item/security-and-privacy-item.component';
+import { DashboardService } from '../../dashboard/dashboard.service';
+import { EmailMeasurDataService } from '../../shared/email-measur-data/email-measur-data.service';
+import { CoreService } from '../../core/core.service';
+import { FSAT_SETUP_GATED_VIEWS, FsatMainView } from '../routing/fsat-main-views';
+import { isMainTabAllowed } from '../../shared/main-tab-routing/main-tab-routing';
+
+@Component({
+  selector: 'app-fsat-banner',
+  templateUrl: './fsat-banner.component.html',
+  styleUrls: ['./fsat-banner.component.css'],
+  standalone: false
+})
+export class FsatBannerComponent implements OnInit {
+  @Input()
+  assessment: Assessment;
+
+  mainTab: string;
+  mainTabSubscription: Subscription;
+  bannerCollapsed: boolean = true;
+  constructor(private fsatService: FsatService,
+    private emailMeasurDataService: EmailMeasurDataService,
+    private dashboardService: DashboardService, private modalDialogService: ModalDialogService,
+    private coreService: CoreService) { }
+
+  ngOnInit() {
+    this.mainTabSubscription = this.fsatService.mainTab.subscribe(val => {
+      this.mainTab = val;
+    });
+  }
+
+  ngOnDestroy() {
+    this.mainTabSubscription.unsubscribe();
+  }
+
+  canOpenMainTab(view: FsatMainView): boolean {
+    return isMainTabAllowed(FSAT_SETUP_GATED_VIEWS, view, this.assessment.fsat.setupDone);
+  }
+
+  changeTab(str: FsatMainView) {
+    if (this.canOpenMainTab(str)) {
+      this.fsatService.goToMainTab(str);
+    }
+    this.collapseBanner();
+  }
+
+  showSecurityAndPrivacyModal() {
+    // Collapse banner to prevent it from reopening the modal on mobile when dismissed
+    this.bannerCollapsed = true;
+    this.modalDialogService.openModal(
+      SecurityAndPrivacyItemComponent,
+      SecurityAndPrivacyItemComponent.getDialogConfig()
+    );
+  }
+
+  collapseBanner() {
+    this.bannerCollapsed = !this.bannerCollapsed;
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  navigateHome() {
+    this.dashboardService.navigateWithSidebarOptions('/landing-screen', { shouldCollapse: false });
+  }
+
+  back() {
+    this.fsatService.backMainTab();
+  }
+
+  continue() {
+    this.fsatService.continueMainTab();
+  }
+
+  openExportModal() {
+    this.fsatService.showExportModal.next(true);
+  }
+
+  openShareDataModal() {
+    this.emailMeasurDataService.measurItemAttachment = {
+      itemType: 'assessment',
+      itemName: this.assessment.name,
+      itemData: this.assessment
+    }
+    this.emailMeasurDataService.emailItemType.next('FSAT');
+    this.coreService.showShareDataModal.next(true);
+  }
+}

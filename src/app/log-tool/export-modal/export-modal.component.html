@@ -1,0 +1,42 @@
+<div bsModal #exportModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
+    aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-md export-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Data</h3>
+                <button class="close" aria-label="Close" (click)="closeExportData()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body pb-0">
+                <div *ngIf="exceedsDownloadSizeLimit && !isProcessing" class="alert alert-warning">
+                    <p class="text-center small danger export-text">
+                        <span class="bold">Large dataset detected:</span>
+                        Exported data will be zipped to (.gz). You may import the zipped file using "Import Existing Data Exploration" in Setup.
+                    </p>
+                </div>
+                <ng-container *ngIf="isProcessing">
+                    <div class="spinner-overlay align-items-center w-100 text-center">
+                        <div class="spinner mt-2 w-100">
+                            <div class="bounce1"></div>
+                            <div class="bounce2"></div>
+                            <div class="bounce3"></div>
+                        </div>
+                    </div>
+                    <p class="card-text text-center">
+                        Processing Export. This may take some time depending on the size of your data...
+                    </p>
+                </ng-container>
+                <div *ngIf="!isProcessing" class="form-group">
+                    <label for="exportName"> Name your file:</label>
+                    <input type="text" class="form-control w-100" id="exportName" [(ngModel)]="exportName">
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button class="btn btn-secondary" (click)="closeExportData()">Cancel</button>
+                <button class="btn btn-primary ml-2" *ngIf="!exceedsDownloadSizeLimit" [disabled]="!dataExists" (click)="exportJson()">Export as .json</button>
+                <button class="btn btn-primary ml-2" *ngIf="exceedsDownloadSizeLimit" [disabled]="!dataExists" (click)="exportZip()">Export as .gz</button>
+            </div>
+        </div>
+    </div>
+</div>

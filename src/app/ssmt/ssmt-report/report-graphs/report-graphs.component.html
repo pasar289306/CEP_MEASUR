@@ -1,0 +1,49 @@
+<div class="d-flex flex-wrap justify-content-center">
+  <div class="d-flex" [ngClass]="{'col-12 col-lg-6 flex-column': selectedSsmt2, 'col-12': !selectedSsmt2}">
+    <select *ngIf="selectedSsmt2" name="selectedSsmt1" class="form-control w-100" id="selectedSsmt1"
+      [(ngModel)]="selectedSsmt1">
+      <option [ngValue]="ssmt">Baseline</option>
+      <option *ngFor="let modification of ssmt.modifications" [ngValue]="modification.ssmt">{{modification.ssmt.name}}
+      </option>
+    </select>
+    <div class="pt-2" [ngClass]="{'col-6': !selectedSsmt2}">
+      <label class="group-label">{{selectedSsmt1.name}} Process Usage</label>
+      <app-ssmt-pie-chart [ssmt]="selectedSsmt1" [graphType]="'processUsage'" [settings]="settings">
+      </app-ssmt-pie-chart>
+    </div>
+    <div class="p-0" [ngClass]="{'pt-2 col-6': !selectedSsmt2}">
+      <label class="group-label">{{selectedSsmt1.name}} Generation</label>
+      <app-ssmt-pie-chart [ssmt]="selectedSsmt1" [graphType]="'powerGeneration'" [settings]="settings">
+      </app-ssmt-pie-chart>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6 flex-column" *ngIf="selectedSsmt2">
+    <select name="selectedSsmt2" class="form-control w-100" id="selectedSsmt2" [(ngModel)]="selectedSsmt2">
+      <option [ngValue]="ssmt">Baseline</option>
+      <option *ngFor="let modification of ssmt.modifications" [ngValue]="modification.ssmt">{{modification.ssmt.name}}
+      </option>
+    </select>
+    <div class="pt-2">
+      <label class="group-label">{{selectedSsmt2.name}} Process Usage</label>
+      <app-ssmt-pie-chart [ssmt]="selectedSsmt2" [graphType]="'processUsage'" [settings]="settings">
+      </app-ssmt-pie-chart>
+    </div>
+    <div class="p-0">
+      <label class="group-label">{{selectedSsmt2.name}} Generation</label>
+      <app-ssmt-pie-chart [ssmt]="selectedSsmt2" [graphType]="'powerGeneration'" [settings]="settings">
+      </app-ssmt-pie-chart>
+    </div>
+  </div>
+  <div class="col-12">
+    <label class="group-label">{{selectedSsmt1.name}} Energy Usage</label>
+    <app-ssmt-waterfall [ssmt]="selectedSsmt1" [baselineLosses]="baselineLosses"
+      [modificationLosses]="modificationLosses" [settings]="settings" [xAxisRange]="waterfallXAxisRange">
+    </app-ssmt-waterfall>
+  </div>
+  <div class="col-12" *ngIf="selectedSsmt2">
+    <label class="group-label">{{selectedSsmt2.name}} Energy Usage</label>
+    <app-ssmt-waterfall [ssmt]="selectedSsmt2" [baselineLosses]="baselineLosses"
+      [modificationLosses]="modificationLosses" [settings]="settings" [xAxisRange]="waterfallXAxisRange">
+    </app-ssmt-waterfall>
+  </div>
+</div>

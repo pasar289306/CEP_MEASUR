@@ -1,0 +1,64 @@
+<div class="my-2">
+  <h6>
+    Bridging Compressor Reaction Delay
+    <br>
+    <small class="text-muted">This method calculates the size of the tank when air is removed from the tank for a few seconds before which the compressor
+      can start reacting and pump more air. So an initial pressure might be created, which should be avoided.
+      <hr>
+    </small>
+  </h6>
+</div>
+
+<div class="my-2" *ngIf="currentField == 'distanceToCompressorRoom'">
+  <h6>
+    Distance to Compressor Room
+    <br>
+    <small class="text-muted">Distance of the event, i.e removing the air, from the compressor room.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'speedOfAir'">
+  <h6>
+    Speed of Air
+    <br>
+    <small class="text-muted">Flow rate of air from the tank.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'airDemand'">
+  <h6>
+    Air Demand
+    <br>
+    <small class="text-muted">Quantity of air that is required for the event.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'allowablePressureDrop'">
+  <h6>
+    Allowable Pressure Drop
+    <br>
+    <small class="text-muted">Limit on the permissible pressure drop.
+      <hr>
+    </small>
+  </h6>
+</div>
+<div class="my-2" *ngIf="currentField == 'atmosphericPressure'">
+  <h6>
+    Atmospheric Pressure
+    <br>
+    <small class="text-muted">General value is 14.7 psi. In case the receiver tank is at higher altitude location, the respective atmospheric pressure
+      at that location can be given.
+      <hr>
+    </small>
+  </h6>
+</div>
+
+<div class="my-2">
+  <a class="click-link" [href]="docsLink + 'group__receiver__tank__calculator'" target="_blank">
+    <span class="fa fa-external-link"></span>
+    <span class="pl-1">How is Receiver Tank Sizing calculated?</span>
+  </a>
+</div>

@@ -1,0 +1,149 @@
+<form>
+  <div *ngIf="isDevelopment" class="alert alert-warning small my-3">
+    Tutorials are off in development. See settings-dev.service (function setTutorialsOff);
+  </div>
+  <!--Landing Screen-->
+  <!--Assessment Dashboard-->
+  <div class="form-group">
+    <label for="disableDashboardTutorial">Dashboard Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleDashboard()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableDashboardTutorial" id="disableDashboardTutorial"
+          [ngModel]="!settings.disableDashboardTutorial" (ngModelChange)="settings.disableDashboardTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Pumps-->
+  <div class="form-group">
+    <label for="disablePsatTutorial">Pumps Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="togglePumps()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disablePsatTutorial" id="disablePsatTutorial"
+          [ngModel]="!settings.disablePsatTutorial" (ngModelChange)="settings.disablePsatTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Fans-->
+  <div class="form-group">
+    <label for="disableFansTutorial">Fans Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleFans()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableFansTutorial" id="disableDashboardTutorial"
+          [ngModel]="!settings.disableFansTutorial" (ngModelChange)="settings.disableFansTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Process Heating-->
+  <div class="form-group">
+    <label for="disablePhastTutorial">Process Heating Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="togglePHAST()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disablePhastTutorial" id="disablePhastTutorial"
+          [ngModel]="!settings.disablePhastTutorial" (ngModelChange)="settings.disablePhastTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Waste Water-->
+  <div class="form-group">
+    <label for="disableWasteWaterTutorial">Waste Water Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleWasteWater()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableWasteWaterTutorial" id="disableWasteWaterTutorial"
+          [ngModel]="!settings.disableWasteWaterTutorial" (ngModelChange)="settings.disableWasteWaterTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Steam-->
+  <div class="form-group">
+    <label for="disableSteamTutorial">Steam Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleSteam()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableSteamTutorial" id="disableSteamTutorial"
+          [ngModel]="!settings.disableSteamTutorial" (ngModelChange)="settings.disableSteamTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Motor Inventory-->
+  <div class="form-group">
+    <label for="disableMotorInventoryTutorial">Motor Inventory Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleMotorInventory()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableMotorInventoryTutorial" id="disableMotorInventoryTutorial"
+          [ngModel]="!settings.disableMotorInventoryTutorial" (ngModelChange)="settings.disableMotorInventoryTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Treasure Hunt-->
+  <div class="form-group">
+    <label for="disableTreasureHuntTutorial">Treasure Hunt Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleTreasureHunt()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableTreasureHuntTutorial" id="disableTreasureHuntTutorial"
+          [ngModel]="!settings.disableTreasureHuntTutorial" (ngModelChange)="settings.disableTreasureHuntTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Data Explorer-->
+  <div class="form-group">
+    <label for="disableDataExplorerTutorial">Data Explorer Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleDataExplorer()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableDataExplorerTutorial" id="disableDataExplorerTutorial"
+          [ngModel]="!settings.disableDataExplorerTutorial" (ngModelChange)="settings.disableDataExplorerTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--Compressed air-->
+  <div class="form-group">
+    <label for="disableCompressedAirTutorial">Compressed Air Tutorial</label>
+    <div class="d-flex justify-content-center" (click)="toggleCompressedAir()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableCompressedAirTutorial" id="disableCompressedAirTutorial"
+          [ngModel]="!settings.disableCompressedAirTutorial" (ngModelChange)="settings.disableCompressedAirTutorial = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+  <!--All-->
+
+  <div class="form-group">
+    <label for="disableAllTutorials">All Tutorials</label>
+    <div class="d-flex justify-content-center" (click)="toggleDisableAll()">
+      <span class="pr-2">Hide</span>
+      <span class="switch">
+        <input name="disableAllTutorials" id="disableAllTutorials" [ngModel]="!disableAllTutorials" (ngModelChange)="disableAllTutorials = $event" type="checkbox">
+        <span class="slider round"></span>
+      </span>
+      <span class="pl-2">Show</span>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,13 @@
+<div class="d-flex flex-column w-100">
+  <div class="btn-group justify-content-center">
+    <button type="button" class="btn btn-secondary" (click)="setGraphType('value')"
+      [ngClass]="{'active': resultType == 'value'}">Energy Use</button>
+    <button type="button" class="btn btn-secondary" (click)="setGraphType('energyCost')"
+      [ngClass]="{'active': resultType == 'energyCost'}">Energy Cost</button>
+  </div>
+  <div class="w-100 pt-3" [ngClass]="{'pt-1': inRollup}">
+    <div class="w-100" #preAssessmentPieChart></div>
+  </div>
+  <p class="mx-auto no-column-data">Enter metered or design energy data for multiple systems to
+    compare their energy consumption.</p>
+</div>

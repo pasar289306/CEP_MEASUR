@@ -1,0 +1,641 @@
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { CompressedAirAssessment, CompressedAirDayType, CompressorInventoryItem, Modification, ProfileSummary } from '../../shared/models/compressed-air-assessment';
+import { CompressedAirAssessmentService } from '../compressed-air-assessment.service';
+import * as _ from 'lodash';
+import { AxisRanges, HoverPositionData, SystemProfileGraphsService } from './system-profile-graphs.service';
+import { Settings } from '../../shared/models/settings';
+import { PlotlyService } from 'angular-plotly.js';
+import { CompressedAirBaselineDayTypeProfileSummary } from '../calculations/CompressedAirBaselineDayTypeProfileSummary';
+import { CompressedAirCalculationService } from '../compressed-air-calculation.service';
+import { AssessmentCo2SavingsService } from '../../shared/assessment-co2-savings/assessment-co2-savings.service';
+import { CompressedAirModifiedDayTypeProfileSummary } from '../calculations/modifications/CompressedAirModifiedDayTypeProfileSummary';
+import { ExploreOpportunitiesService } from '../assessment-tab-content/explore-opportunities/explore-opportunities.service';
+import * as Plotly from 'plotly.js-dist';
+import { defaultPlotlyConfig } from '../../shared/helperFunctions';
+@Component({
+  selector: 'app-system-profile-graphs',
+  templateUrl: './system-profile-graphs.component.html',
+  styleUrls: ['./system-profile-graphs.component.css'],
+  standalone: false
+})
+export class SystemProfileGraphsComponent implements OnInit {
+  @Input()
+  context: 'baseline' | 'modification' | 'report';
+  @Input()
+  isBaseline: boolean;
+  @Input()
+  labelName: string;
+  @Input()
+  printView: boolean;
+  @Input()
+  compressedAirModifiedDayTypeProfileSummary: CompressedAirModifiedDayTypeProfileSummary;
+  @Input()
+  selectedDayType: CompressedAirDayType;
+
+  @ViewChild("systemCapacityGraph", { static: false }) systemCapacityGraph: ElementRef;
+  @ViewChild("compressorCapacityGraph", { static: false }) compressorCapacityGraph: ElementRef;
+  @ViewChild("systemPowerGraph", { static: false }) systemPowerGraph: ElementRef;
+  @ViewChild("compressorPowerGraph", { static: false }) compressorPowerGraph: ElementRef;
+
+  compressedAirAssessmentSub: Subscription;
+  profileSummary: Array<ProfileSummary>;
+  inventoryItems: Array<CompressorInventoryItem>;
+  compressedAirAssessment: CompressedAirAssessment;
+  selectedDayTypeSub: Subscription;
+  xAxisHoverSub: Subscription;
+  axisRangeAdjustment: number = .25;
+  totalFullLoadPower: number;
+  totalFullLoadCapacity: number;
+  showingCapacityMaxSub: Subscription;
+  showingPowerMaxSub: Subscription;
+  settings: Settings;
+  timeInterval: number;
+  trimSelections: Array<{ dayTypeId: string, compressorId: string }>;
+  constructor(private compressedAirAssessmentService: CompressedAirAssessmentService, private systemProfileGraphService: SystemProfileGraphsService,
+    private exploreOpportunitiesService: ExploreOpportunitiesService,
+    private plotlyService: PlotlyService,
+    private compressedAirCalculationService: CompressedAirCalculationService,
+    private assessmentCo2SavingsService: AssessmentCo2SavingsService) { }
+
+  ngOnInit(): void {
+    if(!this.context){
+      this.labelName = 'Baseline';
+      this.context = 'baseline';
+      this.isBaseline = true;
+    }
+
+    this.settings = this.compressedAirAssessmentService.settings.getValue();
+    this.compressedAirAssessmentSub = this.compressedAirAssessmentService.compressedAirAssessment.subscribe(val => {
+      this.compressedAirAssessment = val;
+      this.timeInterval = this.compressedAirAssessment.systemProfile.systemProfileSetup.dataInterval;
+      if (this.context === 'baseline') {
+        this.selectedDayType = this.compressedAirAssessment.compressedAirDayTypes.find(dayType => { return dayType.dayTypeId == this.compressedAirAssessment.systemProfile.systemProfileSetup.dayTypeId });
+      }
+      this.inventoryItems = val.compressorInventoryItems.concat(val.replacementCompressorInventoryItems);
+      this.setProfileData();
+      this.drawCharts();
+    });
+    this.showingCapacityMaxSub = this.systemProfileGraphService.showingCapacityMax.subscribe(val => {
+      if (this.isBaseline === false) {
+        this.drawSystemCapacityChart();
+      }
+    });
+
+    this.showingPowerMaxSub = this.systemProfileGraphService.showingPowerMax.subscribe(val => {
+      if (this.isBaseline === false) {
+        this.drawSystemPowerChart();
+      }
+    });
+
+    if (this.context === 'modification' || this.context == 'report') {
+      this.initModificationSubs();
+    }
+  }
+
+  initModificationSubs() {
+    if (this.context === 'modification') {
+      this.selectedDayTypeSub = this.exploreOpportunitiesService.selectedDayType.subscribe(val => {
+        this.selectedDayType = val;
+        this.setProfileData();
+        this.drawCharts();
+      });
+    }else{
+      this.setProfileData();
+    }
+    this.xAxisHoverSub = this.systemProfileGraphService.xAxisHover.subscribe(val => {
+      this.setHover(val);
+    });
+  }
+
+  ngOnDestroy() {
+    this.compressedAirAssessmentSub.unsubscribe();
+    this.showingPowerMaxSub.unsubscribe();
+    this.showingCapacityMaxSub.unsubscribe();
+    this.xAxisHoverSub?.unsubscribe();
+    this.selectedDayTypeSub?.unsubscribe();
+  }
+
+  ngAfterViewInit() {
+    this.drawCharts();
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100)
+  }
+
+  setProfileData() {
+    //baseline daytype summary
+    if (this.selectedDayType) {
+      let compressedAirBaselineDayTypeProfileSummary: CompressedAirBaselineDayTypeProfileSummary = new CompressedAirBaselineDayTypeProfileSummary(this.compressedAirAssessment, this.selectedDayType, this.settings, this.compressedAirCalculationService, this.assessmentCo2SavingsService);
+      if (this.context === 'baseline' && this.compressedAirAssessment) {
+        this.trimSelections = this.compressedAirAssessment.systemInformation.trimSelections;
+        this.profileSummary = compressedAirBaselineDayTypeProfileSummary.profileSummary;
+        this.setMaxLineValues(this.compressedAirAssessment.compressorInventoryItems);
+        this.setYAxisRanges(this.compressedAirAssessment.systemProfile.profileSummary, this.profileSummary);
+      } else if (this.compressedAirAssessment && !this.isBaseline) {
+        this.trimSelections = this.compressedAirModifiedDayTypeProfileSummary.trimSelections;
+        this.profileSummary = this.compressedAirModifiedDayTypeProfileSummary.adjustedProfileSummary;
+        this.setMaxLineValues(this.compressedAirAssessment.compressorInventoryItems, this.compressedAirModifiedDayTypeProfileSummary.adjustedCompressors);
+        this.setYAxisRanges(this.compressedAirAssessment.systemProfile.profileSummary, this.profileSummary);
+      } else if (this.compressedAirAssessment && this.isBaseline) {
+        this.trimSelections = this.compressedAirAssessment.systemInformation.trimSelections;
+        this.profileSummary = compressedAirBaselineDayTypeProfileSummary.profileSummary;
+        this.setMaxLineValues(this.compressedAirAssessment.compressorInventoryItems);
+        this.setYAxisRanges(this.compressedAirAssessment.systemProfile.profileSummary, this.profileSummary);
+      }
+    }
+  }
+
+  setMaxLineValues(baselineCompressors: Array<CompressorInventoryItem>, modCompressors?: Array<CompressorInventoryItem>) {
+    if (modCompressors) {
+      this.totalFullLoadCapacity = _.sumBy(modCompressors, (compressor) => {
+        return compressor.nameplateData.fullLoadRatedCapacity;
+      });
+      this.totalFullLoadPower = _.sumBy(modCompressors, (compressor) => {
+        return compressor.performancePoints.fullLoad.power;
+      });
+    } else {
+      this.totalFullLoadCapacity = _.sumBy(baselineCompressors, (inventoryItem) => {
+        return inventoryItem.nameplateData.fullLoadRatedCapacity;
+      });
+      this.totalFullLoadPower = _.sumBy(baselineCompressors, (inventoryItem) => {
+        return inventoryItem.performancePoints.fullLoad.power;
+      });
+    }
+  }
+
+  getMaxLineTrace(xData: Array<number>, yMaxvalue: number, name: string) {
+    if (yMaxvalue !== undefined) {
+      let maxLineTrace = {
+        x: xData,
+        y: xData.map(x => yMaxvalue),
+        type: 'scatter',
+        // showlegend: this.isBaseline === false ? false : true,
+        mode: 'lines',
+        name: name,
+        line: {
+          dash: 'dot',
+          width: 6,
+          color: '#7030A0',
+        },
+        hovertemplate: name + ': %{y}<extra></extra>',
+      };
+
+      return maxLineTrace;
+    }
+  }
+
+  getPeakLineTrace(xData: Array<number>, peakValue: number, name: string) {
+    if (peakValue !== undefined) {
+      let peakValueTrace = {
+        x: xData,
+        y: xData.map(x => peakValue),
+        type: 'scatter',
+        mode: 'lines',
+        name: name,
+        line: {
+          dash: 'dashdot',
+          width: 3,
+          color: '#fc7f03',
+        },
+        hovertemplate: name + ': %{y}<extra></extra>',
+      };
+
+      return peakValueTrace;
+    }
+  }
+
+  setYAxisRanges(baselineSummary: Array<ProfileSummary>, modificationSummary: Array<ProfileSummary>) {
+    let powerMax: Array<number> = [
+      this.getStackedPowerMax(baselineSummary),
+      this.getStackedPowerMax(modificationSummary)
+    ];
+
+    let airflowMax: Array<number> = [
+      this.getStackedAirFlowMax(baselineSummary),
+      this.getStackedAirFlowMax(modificationSummary)
+    ];
+
+    let yAxisRanges = {
+      systemPowerGraph: { min: 0, max: _.max(powerMax) },
+      systemCapacityGraph: { min: 0, max: _.max(airflowMax) },
+    };
+
+    this.systemProfileGraphService.yAxisRangeValues.next(yAxisRanges);
+  }
+
+  getStackedPowerMax(profileSummary: Array<ProfileSummary>) {
+    let stackedMax: number = 0;
+    profileSummary.forEach(summary => {
+      stackedMax += _.max(summary.profileSummaryData.map(data => data.power));
+    });
+    return stackedMax;
+  }
+
+  getStackedAirFlowMax(profileSummary: Array<ProfileSummary>) {
+    let stackedMax: number = 0;
+    profileSummary.forEach(summary => {
+      stackedMax += _.max(summary.profileSummaryData.map(data => data.airflow));
+    });
+    return stackedMax;
+  }
+
+  drawCharts() {
+    this.drawSystemCapacityChart();
+    this.drawCompressorPercentCapacityChart();
+    this.drawSystemPowerChart();
+    this.drawCompressorPercentPowerChart();
+  }
+
+  setHover(hoverPositionData: HoverPositionData) {
+    if (hoverPositionData) {
+      if (hoverPositionData.chartName == 'systemCapacityGraph' && this.systemCapacityGraph?.nativeElement && hoverPositionData.points != undefined && this.labelName != hoverPositionData.labelName) {
+        Plotly.Fx.hover(this.systemCapacityGraph.nativeElement, hoverPositionData.points)
+      }
+      if (hoverPositionData.chartName == 'compressorCapacityGraph' && this.compressorCapacityGraph?.nativeElement && hoverPositionData.points != undefined && this.labelName != hoverPositionData.labelName) {
+        Plotly.Fx.hover(this.compressorCapacityGraph.nativeElement, hoverPositionData.points)
+      }
+      if (hoverPositionData.chartName == 'systemPowerGraph' && this.systemPowerGraph?.nativeElement && hoverPositionData.points != undefined && this.labelName != hoverPositionData.labelName) {
+        Plotly.Fx.hover(this.systemPowerGraph.nativeElement, hoverPositionData.points)
+      }
+      if (hoverPositionData.chartName == 'compressorPowerGraph' && this.compressorPowerGraph?.nativeElement && hoverPositionData.points != undefined && this.labelName != hoverPositionData.labelName) {
+        Plotly.Fx.hover(this.compressorPowerGraph.nativeElement, hoverPositionData.points)
+      }
+    } else {
+      if (this.systemCapacityGraph?.nativeElement) {
+        Plotly.Fx.unhover(this.systemCapacityGraph.nativeElement);
+      }
+      if (this.compressorCapacityGraph?.nativeElement) {
+        Plotly.Fx.unhover(this.compressorCapacityGraph.nativeElement);
+      }
+      if (this.systemPowerGraph?.nativeElement) {
+        Plotly.Fx.unhover(this.systemPowerGraph.nativeElement);
+      }
+      if (this.compressorPowerGraph?.nativeElement) {
+        Plotly.Fx.unhover(this.compressorPowerGraph.nativeElement);
+      }
+    }
+  }
+
+  updateHoverPositionData(chart: any, chartName: string) {
+    chart.on('plotly_hover', (data) => {
+      let hoverPositionData: HoverPositionData = {
+        chartName: chartName,
+        points: data.points,
+        labelName: this.labelName
+      }
+      this.systemProfileGraphService.xAxisHover.next(hoverPositionData);
+    });
+    chart.on('plotly_unhover', () => {
+      this.systemProfileGraphService.xAxisHover.next(undefined);
+    });
+  }
+
+  updateLayout(chart: any, chartRef: ElementRef) {
+    chart.on('plotly_legendclick', (data) => {
+      if (data.curveNumber == 2) {
+        if (chartRef.nativeElement.id == 'systemCapacityGraph') {
+          this.systemProfileGraphService.showingCapacityMax.next(!this.systemProfileGraphService.showingCapacityMax.getValue());
+          this.drawSystemCapacityChart();
+        } else {
+          this.systemProfileGraphService.showingPowerMax.next(!this.systemProfileGraphService.showingPowerMax.getValue());
+          this.drawSystemPowerChart();
+        }
+      }
+    });
+  }
+
+  drawSystemCapacityChart() {
+    if (this.profileSummary && this.systemCapacityGraph) {
+      let traceData = new Array();
+      let airflowByInterval = this.profileSummary.length > 0 && this.profileSummary[0].profileSummaryData.map(data => []);
+      this.profileSummary.forEach(compressorProfile => {
+        let percentOfSystem: Array<number> = [];
+        let xData = compressorProfile.profileSummaryData.map(data => {
+          return data.timeInterval
+        })
+        let yData = compressorProfile.profileSummaryData.map((data, intervalIndex) => {
+          let airflow = 0;
+          if (data.order != 0) {
+            percentOfSystem.push(data.percentSystemCapacity);
+            airflow = data.airflow;
+          } else {
+            percentOfSystem.push(0);
+          }
+          airflowByInterval[intervalIndex].push(airflow);
+          return airflow;
+        });
+        let trace = {
+          x: xData,
+          y: yData,
+          customdata: percentOfSystem,
+          type: 'bar',
+          hovertemplate: `%{y:.3r} (%{customdata: .3r}%)`,
+          name: this.getCompressorName(compressorProfile.compressorId),
+          marker: {
+            line: {
+              width: 3
+            },
+            color: this.getCompressorColor(compressorProfile.compressorId)
+          },
+
+        }
+        traceData.push(trace);
+      });
+      let yAxisRange: Array<number> = this.getYAxisRange(true, this.totalFullLoadCapacity);
+      let xRangeMax: number = traceData[0].x[traceData[0].x.length - 1];
+      let xRangeMin: number = traceData[0].x[0];
+      if (this.profileSummary[0].profileSummaryData.length == 1) {
+        xRangeMax = 1;
+        xRangeMin = 0;
+      }
+      let xRange: Array<number> = [xRangeMin, xRangeMax];
+      let unit: string = 'acfm';
+      if (this.settings.unitsOfMeasure == 'Metric') {
+        unit = 'm&#xB3;/min'
+      }
+      let yAxisTitle: string = "System Capacity (" + unit + ")";
+      var layout = this.getLayout(yAxisTitle, xRange, yAxisRange, undefined);
+      var config = {
+        responsive: !this.printView,
+        displaylogo: false
+      };
+
+      let xData = traceData[0]?.x;
+      if (this.isBaseline !== false || (this.isBaseline === false && this.systemProfileGraphService.showingCapacityMax.getValue() === true)) {
+        let maxLineTrace = this.getMaxLineTrace(xData, this.totalFullLoadCapacity, 'Max System Capacity');
+        traceData.push(maxLineTrace);
+      }
+
+      let maxFlows = airflowByInterval.map(intervalAirflows => {
+        return _.sum(intervalAirflows);
+      });
+      let peakAirflow = Math.max(...maxFlows);
+      let peakTrace = this.getPeakLineTrace(xData, peakAirflow, 'Peak Airflow');
+      traceData.push(peakTrace);
+
+      this.plotlyService.newPlot(this.systemCapacityGraph.nativeElement, traceData, layout, defaultPlotlyConfig(config, traceData)).then(chart => {
+        this.updateHoverPositionData(chart, 'systemCapacityGraph');
+        this.updateLayout(chart, this.systemCapacityGraph);
+      });
+    }
+  }
+
+  getYAxisRange(isCapacityGraph: boolean, maxValue: number): Array<number> {
+    let yAxisRanges: AxisRanges = this.systemProfileGraphService.yAxisRangeValues.getValue();
+    let graphDataMin: number;
+    let graphDataMax: number;
+    let showingMax: boolean;
+    if (isCapacityGraph) {
+      showingMax = this.systemProfileGraphService.showingCapacityMax.getValue();
+      graphDataMin = yAxisRanges.systemCapacityGraph.min;
+      graphDataMax = yAxisRanges.systemCapacityGraph.max;
+    } else {
+      showingMax = this.systemProfileGraphService.showingPowerMax.getValue();
+      graphDataMin = yAxisRanges.systemPowerGraph.min;
+      graphDataMax = yAxisRanges.systemPowerGraph.max;
+    }
+    let yAxisRange: Array<number> = [graphDataMin];
+    if (showingMax && maxValue > graphDataMax) {
+      yAxisRange.push(maxValue);
+    } else {
+      yAxisRange.push(graphDataMax + (graphDataMax * this.axisRangeAdjustment));
+    }
+    return yAxisRange;
+  }
+
+  drawCompressorPercentCapacityChart() {
+    if (this.profileSummary && this.compressorCapacityGraph) {
+      let traceData = new Array();
+      this.profileSummary.forEach(compressorProfile => {
+        let trace = {
+          x: compressorProfile.profileSummaryData.map(data => { return data.timeInterval }),
+          y: compressorProfile.profileSummaryData.map(data => {
+            if (data.order != 0) {
+              return data.percentCapacity;
+            } else {
+              return 0;
+            }
+          }),
+          type: 'scatter',
+          mode: 'lines+markers',
+          hovertemplate: `%{y:.3r}`,
+          name: this.getCompressorName(compressorProfile.compressorId),
+          marker: {
+            line: {
+              width: 3
+            }
+          },
+          line: {
+            color: this.getCompressorColor(compressorProfile.compressorId)
+          }
+        }
+        traceData.push(trace);
+      });
+      let xRangeMax: number = traceData[0].x[traceData[0].x.length - 1];
+      let xRangeMin: number = traceData[0].x[0];
+      if (this.profileSummary[0].profileSummaryData.length == 1) {
+        xRangeMax = 1;
+        xRangeMin = 0;
+      }
+      var layout = this.getLayout("Compressor Capacity (%)", [xRangeMin, xRangeMax], [0, 105], '%');
+      var config = {
+        responsive: !this.printView,
+        displaylogo: false
+      };
+      this.plotlyService.newPlot(this.compressorCapacityGraph.nativeElement, traceData, layout, defaultPlotlyConfig(config, traceData)).then(chart => {
+        this.updateHoverPositionData(chart, 'compressorCapacityGraph');
+      });
+    }
+  }
+
+  drawSystemPowerChart() {
+    if (this.profileSummary && this.systemPowerGraph) {
+      let traceData = new Array();
+      let powerByInterval = this.profileSummary.length > 0 && this.profileSummary[0].profileSummaryData.map(data => []);
+      this.profileSummary.forEach(compressorProfile => {
+        let percentOfSystem: Array<number> = [];
+        let xData = compressorProfile.profileSummaryData.map(data => { return data.timeInterval });
+        let yData = compressorProfile.profileSummaryData.map((data, intervalIndex) => {
+          let power = 0;
+          if (data.order != 0) {
+            percentOfSystem.push(data.percentSystemPower);
+            power = data.power;
+          } else {
+            percentOfSystem.push(0);
+          }
+          powerByInterval[intervalIndex].push(power);
+          return power;
+        });
+
+        let trace = {
+          x: xData,
+          y: yData,
+          customdata: percentOfSystem,
+          type: 'bar',
+          hovertemplate: `%{y:.3r} (%{customdata: .3r}%)`,
+          name: this.getCompressorName(compressorProfile.compressorId),
+          marker: {
+            line: {
+              width: 3
+            },
+            color: this.getCompressorColor(compressorProfile.compressorId)
+          }
+        }
+        traceData.push(trace);
+      });
+      let yAxisRange: Array<number> = this.getYAxisRange(false, this.totalFullLoadPower);
+      let xRangeMax: number = traceData[0].x[traceData[0].x.length - 1];
+      let xRangeMin: number = traceData[0].x[0];
+      if (this.profileSummary[0].profileSummaryData.length == 1) {
+        xRangeMax = 1;
+        xRangeMin = 0;
+      }
+
+      let xRange: Array<number> = [xRangeMin, xRangeMax];
+      var layout = this.getLayout("Power (kW)", xRange, yAxisRange, undefined);
+      var config = {
+        responsive: !this.printView,
+        displaylogo: false
+      };
+      let xData = traceData[0]?.x;
+      if (this.isBaseline !== false || (this.isBaseline === false && this.systemProfileGraphService.showingPowerMax.getValue() === true)) {
+        let maxLineTrace = this.getMaxLineTrace(xData, this.totalFullLoadPower, 'Max Full Load Power');
+        traceData.push(maxLineTrace);
+      }
+
+      let maxPowers = powerByInterval.map(intervalPower => {
+        return _.sum(intervalPower);
+      });
+      let peakPower = Math.max(...maxPowers);
+      let peakTrace = this.getPeakLineTrace(xData, peakPower, 'Peak Power');
+      traceData.push(peakTrace);
+
+      this.plotlyService.newPlot(this.systemPowerGraph.nativeElement, traceData, layout, defaultPlotlyConfig(config, traceData)).then(chart => {
+        this.updateHoverPositionData(chart, 'systemPowerGraph');
+        this.updateLayout(chart, this.systemPowerGraph);
+      });
+    }
+  }
+
+
+  drawCompressorPercentPowerChart() {
+    if (this.profileSummary && this.compressorPowerGraph) {
+      let traceData = new Array();
+      this.profileSummary.forEach(compressorProfile => {
+        let trace = {
+          x: compressorProfile.profileSummaryData.map(data => { return data.timeInterval }),
+          y: compressorProfile.profileSummaryData.map(data => {
+            if (data.order != 0) {
+              return data.percentPower
+            } else {
+              return 0;
+            }
+          }),
+          type: 'scatter',
+          mode: 'lines+markers',
+          hovertemplate: `%{y:.3r}`,
+          name: this.getCompressorName(compressorProfile.compressorId),
+          marker: {
+            line: {
+              width: 3,
+            }
+          },
+          line: {
+            color: this.getCompressorColor(compressorProfile.compressorId)
+          }
+        }
+        traceData.push(trace);
+      });
+      let xRangeMax: number = traceData[0].x[traceData[0].x.length - 1];
+      let xRangeMin: number = traceData[0].x[0];
+      if (this.profileSummary[0].profileSummaryData.length == 1) {
+        xRangeMax = 1;
+        xRangeMin = 0;
+      }
+      var layout = this.getLayout("Compressor Power %", [xRangeMin, xRangeMax], [0, 100], '%');
+      var config = {
+        responsive: !this.printView,
+        displaylogo: false
+      };
+      this.plotlyService.newPlot(this.compressorPowerGraph.nativeElement, traceData, layout, defaultPlotlyConfig(config, traceData)).then(chart => {
+        this.updateHoverPositionData(chart, 'compressorPowerGraph');
+      });
+    }
+  }
+
+
+  getCompressorName(compressorId: string): string {
+    let compressor: CompressorInventoryItem = this.inventoryItems.find(item => { return item.itemId == compressorId });
+    if (compressor && this.selectedDayType) {
+      if (this.compressedAirAssessment.systemInformation.multiCompressorSystemControls == 'baseTrim') {
+        let selection = this.trimSelections.find(selection => { return selection.dayTypeId == this.selectedDayType.dayTypeId && selection.compressorId == compressorId });
+        if (selection != undefined) {
+          return compressor.name + ' (Trim)';
+        } else {
+          return compressor.name;
+        }
+      }
+      return compressor.name
+    } else {
+      return '';
+    }
+  }
+
+  getCompressorColor(compressorId: string): string {
+    let compressor: CompressorInventoryItem = this.inventoryItems.find(item => { return item.itemId == compressorId });
+    if (compressor) {
+      return compressor.color;
+    } else {
+      return '';
+    }
+  }
+
+  getLayout(yAxisTitle: string, xAxisRange: Array<number>, yAxisRange: Array<number>, yAxisTickSuffix: string) {
+    let width: number;
+    if (this.printView) {
+      width = 1000;
+    }
+
+    return {
+      width: width,
+      showlegend: true,
+      barmode: 'stack',
+      xaxis: {
+        autotick: false,
+        range: xAxisRange,
+        //  Uncomment for ticks per interval
+        // tickmode: "linear", 
+        // tick0: xAxisRange[0],
+        // dtick: this.timeInterval,
+        title: {
+          text: 'Hour',
+          font: {
+            size: 16
+          },
+        },
+        automargin: true
+      },
+      yaxis: {
+        range: yAxisRange,
+        ticksuffix: yAxisTickSuffix,
+        title: {
+          text: yAxisTitle,
+          font: {
+            size: 16
+          },
+        },
+        hoverformat: ",.2f",
+      },
+      margin: {
+        t: 20,
+        r: 20
+      },
+      legend: {
+        orientation: "h",
+        y: 1.25
+      },
+      hovermode: 'x unified'
+    };
+  }
+}

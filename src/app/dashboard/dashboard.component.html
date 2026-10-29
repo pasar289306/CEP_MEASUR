@@ -1,0 +1,31 @@
+<div class="d-flex dashboard-content w-100" #dashboardContent>
+    <div class="sidebar-bg" [ngStyle]="{'width.px': sidebarWidth}" *ngIf="!inPrintView">
+        <app-sidebar *ngIf="contentWidth !== undefined"></app-sidebar>
+    </div>
+    <div class="flex-fill skyline" [ngStyle]="{'width.px': contentWidth}"
+        [ngClass]="{'scroll-item dashboard-scroll': useContainerScroll}">
+
+        <div class="spinner-overlay align-items-center w-100 text-center" *ngIf="showExportInProgress">
+            <div class="spinner mt-5 w-75">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+            <div class="importing-text w-75">Data Export In Progress. This may take a few moments depending on the size
+                of
+                your data...</div>
+        </div>
+
+        <router-outlet></router-outlet>
+    </div>
+</div>
+
+
+<app-move-items *ngIf="moveItems"></app-move-items>
+<app-create-assessment-modal *ngIf="createAssessment"></app-create-assessment-modal>
+<app-create-diagram-modal *ngIf="showCreateDiagram"></app-create-diagram-modal>
+<app-create-folder *ngIf="createFolder"></app-create-folder>
+<app-import-modal *ngIf="showImportModal"></app-import-modal>
+<app-export-modal *ngIf="showExportModal"></app-export-modal>
+<app-create-inventory *ngIf="showCreateInventory" [defaultInventoryType]="showCreateInventory"></app-create-inventory>
+<app-copy-items *ngIf="copyItems"></app-copy-items>

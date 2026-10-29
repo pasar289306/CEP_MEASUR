@@ -1,0 +1,176 @@
+.calc-card-item:hover{
+    cursor: pointer;
+    box-shadow: 0px 0px 5px 3px #2E4053
+}
+
+.modal-dialog{
+    top: 0px;
+    min-width: 750px;
+}
+
+.modal-footer .btn.btn-sm{
+    padding: 6px;
+}
+
+
+p{
+    font-size: medium;
+}
+
+a:not([href]):not([tabindex]):hover {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+a:not([href]):not([tabindex]){
+    color: blue;
+}
+.calc-icon-div:hover{
+    cursor: pointer;
+}
+
+.skyline{
+    background-image: url('../../../assets/images/industrial-skyline.svg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: bottom center; 
+    background-size: 100%;
+    min-height: 100%;
+}
+
+.fa.fa-edit.small{
+    font-size:18px;
+}
+
+.map-img-container{
+    width: 125px;
+}
+
+.calc-card-item{
+    width: 300px;
+    height: 350px;
+    padding: 5px;
+    
+}
+
+.opp-sheet-icon-sm{
+    width: 35px;
+}
+
+.save-opportunity{
+    width: 75px;
+}
+
+.calc-icon{
+    height: 90px;
+    width: 90px;
+    border-radius: 15px;
+}
+
+.th-calc-img{
+    height: 52px;
+    width: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.th-calc-img-w{
+    height: auto;
+    width: 52px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.steam-calc-icon, .ca-calc-icon, .ph-calc-icon, .lighting-calc-icon, .motor-calc-icon, .process-cooling-calc-icon, .utility-calc-icon {
+    border-radius: 50%;
+    height: 81px;
+    width: 81px;
+}
+
+.utility-calc-icon{
+    background-image: linear-gradient(to bottom right, #ffffff, #145A32);
+}
+
+.steam-calc-icon{
+    background-image: linear-gradient(to bottom right, #ffffff, #FC5B00);
+}
+
+.ca-calc-icon{
+    background-image: linear-gradient(to bottom right, #ffffff, #6f42c1);
+}
+
+.ph-calc-icon{
+    background-image: linear-gradient(to bottom right, #ffffff, #BF3D00);
+}
+
+.lighting-calc-icon {
+    background: linear-gradient(to bottom right, #e4dbdb57, #007bff57);
+}
+
+.motor-calc-icon {
+    background: linear-gradient(to bottom right, #e4dbdb57, #6b846aa6);
+}
+
+.process-cooling-calc-icon {
+    background: linear-gradient(to bottom right, #e4dbdb57, #ADC8E2);
+  }
+
+.calc-icon-div{
+    box-shadow: none;
+    border: none;
+}
+
+.form-group .form-control,
+.form-group label{
+    font-size: 18px;
+}
+
+@media screen and (max-width: 576px) {
+    .map-img-container{
+        width: 75px;
+    }
+    
+    .calc-card-item{
+        width: 100%;
+        height: 60px;
+        padding: 0px;       
+        margin: 3px; 
+    }
+    .calc-icon{
+        height: 40px;
+        width: 40px;
+        border-radius: 15px;
+    }
+
+    .th-calc-img{
+        height: 23px;
+        width: auto;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .th-calc-img-w{
+        height: auto;
+        width: 23px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .steam-calc-icon, .ca-calc-icon, .ph-calc-icon, .lighting-calc-icon, .motor-calc-icon, .process-cooling-calc-icon, .utility-calc-icon {
+        border-radius: 50%;
+        height: 36px;
+        width: 36px;
+    }
+
+    a {
+        font-size: 12px;
+        padding-left: 3px;
+        padding-top: 3px !important;
+    }
+
+}

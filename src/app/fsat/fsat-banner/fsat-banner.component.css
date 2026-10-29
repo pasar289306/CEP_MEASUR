@@ -1,0 +1,45 @@
+.img-icon{
+    width: 40px;
+}
+
+.h2-name{
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.home-nav-item, .home-nav-item a{
+    color: black;
+    border-color: black !important;
+}
+
+.banner{
+   color: black;
+}
+
+.btn.chevron-btn{
+    border: none !important;
+    width: 20px;
+    height: 28px;
+    color: black;
+    box-shadow: none !important;
+}
+
+.fa.fa-chevron-right,
+.fa.fa-chevron-left {
+    font-size: 28px;
+}
+
+span.fa.fa-download{
+    padding: 0px !important;
+}
+
+.download-nav-item .fa.fa-download{
+    border: none !important;
+    background-color: inherit;
+    opacity: 1;
+}
+
+.download-nav-item{
+    border: none !important;
+    background-color: #FFE400;
+}

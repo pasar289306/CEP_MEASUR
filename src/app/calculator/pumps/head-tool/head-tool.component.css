@@ -1,0 +1,31 @@
+.head-tool-toggle-switch{
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.button-row{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: #2980b9;
+}
+
+.save-button{
+    background: white;
+    color: black;
+}
+
+.btn-group {
+    display: block;
+    text-align: center;
+}
+
+.btn-group .btn-sm {
+    font-size: small !important;
+}
+
+.btn-margin-10 {
+    margin: 10px 0px;
+}
+.btn-form {
+  border-radius: 4px !important;
+}

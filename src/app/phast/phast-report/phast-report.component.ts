@@ -1,0 +1,146 @@
+import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, SimpleChanges } from '@angular/core';
+import { PHAST } from '../../shared/models/phast/phast';
+import { Settings } from '../../shared/models/settings';
+import { Assessment } from '../../shared/models/assessment';
+import { Directory } from '../../shared/models/directory';
+import { SettingsService } from '../../settings/settings.service';
+import { SettingsDbService } from '../../indexedDb/settings-db.service';
+import { DirectoryDbService } from '../../indexedDb/directory-db.service';
+import { Observable } from 'rxjs';
+import { PhastValidService } from '../phast-valid.service';
+import { ReportDocument, ReportSectionGroup } from '../../shared/report-builder/models/report-document.model';
+import { PhastReportAdapter, PHAST_SECTION_GROUPS } from './phast-report.adapter';
+
+@Component({
+  selector: 'app-phast-report',
+  templateUrl: './phast-report.component.html',
+  styleUrls: ['./phast-report.component.css'],
+  standalone: false
+})
+export class PhastReportComponent implements OnInit {
+
+  @Input()
+  settings: Settings;
+  @Input()
+  phast: PHAST;
+  @Input()
+  inPhast: boolean;
+  @Input()
+  assessment: Assessment;
+  @Input()
+  inRollup: boolean;
+  @Input()
+  quickReport: boolean;
+  @Input()
+  containerHeight: number;
+
+  @ViewChild('reportTemplate', { static: false }) reportTemplate: TemplateRef<any>;
+  @ViewChild('reportBtns', { static: false }) reportBtns: ElementRef;
+  @ViewChild('reportHeader', { static: false }) reportHeader: ElementRef;
+
+  currentTab: string = 'energy-used';
+  assessmentDirectories: Array<Directory>;
+  createdDate: Date;
+
+  reportContainerHeight: number;
+  tabsCollapsed: boolean = true;
+
+  reportDocument$: Observable<ReportDocument>;
+  readonly sectionGroups: ReportSectionGroup[] = PHAST_SECTION_GROUPS;
+
+  constructor(private settingsDbService: SettingsDbService,
+    private directoryDbService: DirectoryDbService,
+    private phastValidService: PhastValidService,
+    private settingsService: SettingsService,
+    private reportAdapter: PhastReportAdapter) { }
+
+  ngOnInit() {
+    this.createdDate = new Date();
+    if (this.settings) {
+      if (!this.settings.energyResultUnit) {
+        this.settings = this.settingsService.setEnergyResultUnitSetting(this.settings);
+      }
+    }
+    if (this.assessment.phast && this.settings && !this.phast) {
+      this.phast = this.assessment.phast;
+    } else if (this.assessment.phast && !this.settings) {
+      this.getSettings();
+    }
+
+    if (this.assessment) {
+      this.assessmentDirectories = new Array<Directory>();
+      this.getDirectoryList(this.assessment.directoryId);
+    }
+    if (!this.inPhast) {
+      this.currentTab = 'executive-summary';
+    }
+
+    if (!this.phast.operatingHours.hoursPerYear) {
+      this.phast.operatingHours.hoursPerYear = 8760;
+    }
+
+    this.setPhastValidity();
+
+    this.reportDocument$ = this.reportAdapter.buildDocument(this.assessment);
+  }
+
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.containerHeight && !changes.containerHeight.firstChange) {
+      this.getContainerHeight();
+    }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.getContainerHeight();
+    }, 100);
+  }
+
+  getContainerHeight() {
+    if (this.reportBtns && this.reportHeader) {
+      let btnHeight: number = this.reportBtns.nativeElement.clientHeight;
+      let headerHeight: number = this.reportHeader.nativeElement.clientHeight;
+      this.reportContainerHeight = this.containerHeight - btnHeight - headerHeight - 2;
+    }
+  }
+
+  setTab(str: string): void {
+    this.currentTab = str;
+    this.collapseTabs();
+  }
+
+  setPhastValidity() {
+    this.phast.valid = this.phastValidService.checkValid(this.phast, this.settings);
+    this.phast.modifications.forEach(modification => {
+      modification.phast.valid = this.phastValidService.checkValid(modification.phast, this.settings);
+    });
+  }
+
+
+  getSettings(): void {
+    let tmpSettings: Settings = this.settingsDbService.getByAssessmentId(this.assessment);
+    if (tmpSettings) {
+      if (!tmpSettings.energyResultUnit) {
+        tmpSettings = this.settingsService.setEnergyResultUnitSetting(tmpSettings);
+      }
+      this.settings = tmpSettings;
+    }
+  }
+
+  getDirectoryList(id: number): void {
+    if (id && id !== 1) {
+      let tmpDir: Directory = this.directoryDbService.getById(id);
+      if (tmpDir) {
+        this.assessmentDirectories.push(tmpDir);
+        if (tmpDir.parentDirectoryId !== 1) {
+          this.getDirectoryList(tmpDir.parentDirectoryId);
+        }
+      }
+    }
+  }
+
+  collapseTabs() {
+    this.tabsCollapsed = !this.tabsCollapsed;
+  }
+}

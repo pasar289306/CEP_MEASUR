@@ -1,0 +1,327 @@
+<div class="card summary-card">
+  <div class="card-header" (click)="toggleCollapse()">
+    <h5>Operation Data
+    <span class="pull-right fa hide-print" [ngClass]="{'fa-chevron-up': collapse, 'fa-chevron-down': !collapse}"></span>
+    </h5>
+  </div>
+
+  <div *ngIf="!collapse || printView">
+    <div #copyTable class="card-body">
+      <div class="output-summary">
+        <table class="table table-hover table-striped">
+          <thead>
+          <tr>
+            <th [ngStyle]="{'width.%': 100 /(numMods+2)}"></th>
+            <th [ngStyle]="{'width.%': 100 /(numMods+2)}">
+              Baseline
+            </th>
+            <th [ngStyle]="{'width.%': 100 /(numMods+2)}" *ngFor="let mod of phast.modifications">
+              <div class="alert-danger" *ngIf="!mod.phast.valid.operationsValid">
+                Invalid Modification<br>
+                <span>Errors found in Operations<br></span>
+              </div>
+              {{mod.phast.name}}
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>
+              Energy Source Type
+            </td>
+            <td>
+              {{settings.energySourceType}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{settings.energySourceType}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Furnace Type
+            </td>
+            <td>
+              {{settings.furnaceType}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{settings.furnaceType}}
+            </td>
+          </tr>
+          <tr *ngIf="settings.customFurnaceName">
+            <td>
+              Furnace Name
+            </td>
+            <td>
+              {{settings.customFurnaceName}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{settings.customFurnaceName}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Operating Hours
+            </td>
+            <td>
+              {{phast.operatingHours.hoursPerYear}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{mod.phast.operatingHours.hoursPerYear}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Fuel
+              <span *ngIf="settings.unitsOfMeasure == 'Imperial'">($/MMBtu)</span>
+              <span *ngIf="settings.unitsOfMeasure == 'Metric'">($/GJ)</span>
+            </td>
+            <td>
+              {{phast.operatingCosts.fuelCost}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{mod.phast.operatingCosts.fuelCost}}
+            </td>
+          </tr>
+          <ng-container *ngIf="settings.furnaceType === 'Electric Arc Furnace (EAF)'">
+            <tr>
+              <td>
+                Coal Carbon
+                <span *ngIf="settings.unitsOfMeasure == 'Imperial'">$/lb</span>
+                <span *ngIf="settings.unitsOfMeasure != 'Imperial'">$/kg</span>
+              </td>
+              <td>
+                {{phast.operatingCosts.coalCarbonCost}}
+              </td>
+              <td *ngFor="let mod of phast.modifications">
+                {{mod.phast.operatingCosts.coalCarbonCost}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Electrode 
+                <span *ngIf="settings.unitsOfMeasure == 'Imperial'">$/lb</span>
+                <span *ngIf="settings.unitsOfMeasure != 'Imperial'">$/kg</span>
+              </td>
+              <td>
+                {{phast.operatingCosts.electrodeCost}}
+              </td>
+              <td *ngFor="let mod of phast.modifications">
+                {{mod.phast.operatingCosts.electrodeCost}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Other Fuel
+                <span *ngIf="settings.unitsOfMeasure == 'Imperial'">$/MMBtu</span>
+                <span *ngIf="settings.unitsOfMeasure != 'Imperial'">$/GJ</span>
+              </td>
+              <td>
+                {{phast.operatingCosts.coalCarbonCost}}
+              </td>
+              <td *ngFor="let mod of phast.modifications">
+                {{mod.phast.operatingCosts.coalCarbonCost}}
+              </td>
+            </tr>
+          </ng-container>
+          <tr>
+            <td>
+              Steam
+              <span *ngIf="settings.unitsOfMeasure == 'Imperial'">($/MMBtu)</span>
+              <span *ngIf="settings.unitsOfMeasure == 'Metric'">($/GJ)</span>
+            </td>
+            <td>
+              {{phast.operatingCosts.steamCost}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{mod.phast.operatingCosts.steamCost}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Electricity
+              <span>($/kWh)</span>
+            </td>
+            <td>
+              {{phast.operatingCosts.electricityCost}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{mod.phast.operatingCosts.electricityCost}}
+            </td>
+          </tr>
+
+          @if (showOperationalImpacts()) {
+          <tr>
+          <td class="bold">
+            Carbon Emissions
+          </td>
+          <td>
+          </td>
+          <td *ngFor="let mod of phast.modifications">
+          </td>
+          </tr>
+
+      <ng-container *ngIf="settings.furnaceType !== 'Electric Arc Furnace (EAF)'">
+          <tr>
+            <td>
+              Energy Source
+            </td>
+            <td>
+              {{phast.co2SavingsData.energySource}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{mod.phast.co2SavingsData.energySource}}
+            </td>
+          </tr>
+          <tr *ngIf="phast.co2SavingsData.energySource != 'Mixed Fuels'">
+            <td>
+              Fuel Type
+            </td>
+            <td>
+              {{phast.co2SavingsData.fuelType}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{mod.phast.co2SavingsData.fuelType}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Total Fuel Emission Output Rate
+              (<span *ngIf="settings.unitsOfMeasure == 'Imperial'">kg
+                CO<sub>2</sub>/MMBtu</span>
+              <span *ngIf="settings.unitsOfMeasure != 'Imperial'">kg
+                CO<sub>2</sub>/GJ</span>)
+            </td>
+            <td>
+              {{phast.co2SavingsData.totalFuelEmissionOutputRate | number:'1.0-2'}}
+            </td>
+            <td *ngFor="let mod of phast.modifications">
+              {{mod.phast.co2SavingsData.totalFuelEmissionOutputRate | number:'1.0-2'}}
+            </td>
+          </tr>
+        </ng-container>
+
+
+    <ng-container *ngIf="settings.furnaceType === 'Electric Arc Furnace (EAF)'">
+      <tr>
+        <td>
+          Natural Gas Emission Output Rate
+          <span *ngIf="settings.unitsOfMeasure == 'Imperial'">kg
+            CO<sub>2</sub>/MMBtu</span>
+          <span *ngIf="settings.unitsOfMeasure != 'Imperial'">kg
+            CO<sub>2</sub>/GJ</span>
+        </td>
+        <td>
+          {{phast.co2SavingsData.totalNaturalGasEmissionOutputRate | number:'1.0-2'}}
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+          {{mod.phast.co2SavingsData.totalNaturalGasEmissionOutputRate | number:'1.0-2'}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+         Coal Carbon Fuel Type
+        </td>
+        <td>
+          {{phast.co2SavingsData.coalFuelType}}
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+          {{mod.phast.co2SavingsData.coalFuelType}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Coal Carbon Emission Output Rate
+          (<span *ngIf="settings.unitsOfMeasure == 'Imperial'">kg
+            CO<sub>2</sub>/MMBtu</span>
+          <span *ngIf="settings.unitsOfMeasure != 'Imperial'">kg
+            CO<sub>2</sub>/GJ</span>)
+        </td>
+        <td>
+          {{phast.co2SavingsData.totalCoalEmissionOutputRate | number:'1.0-2'}}
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+          {{mod.phast.co2SavingsData.totalCoalEmissionOutputRate | number:'1.0-2'}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Other Fuel Energy Source
+        </td>
+        <td>
+          {{phast.co2SavingsData.eafOtherFuelSource}}
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+          {{mod.phast.co2SavingsData.eafOtherFuelSource}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+         Other Fuel Type
+        </td>
+        <td>
+          <span *ngIf="phast.co2SavingsData.eafOtherFuelSource != 'Mixed Fuels' && phast.co2SavingsData.eafOtherFuelSource != 'None'">
+            {{phast.co2SavingsData.otherFuelType}}
+          </span>
+          <span *ngIf="phast.co2SavingsData.eafOtherFuelSource == 'Mixed Fuels' || phast.co2SavingsData.eafOtherFuelSource == 'None'">
+            &mdash;
+          </span>
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+          <span *ngIf="mod && mod.phast.co2SavingsData.eafOtherFuelSource != 'Mixed Fuels' && mod.phast.co2SavingsData.eafOtherFuelSource != 'None'">
+            {{mod.phast.co2SavingsData.otherFuelType}}
+          </span>
+          <span *ngIf="mod && mod.phast.co2SavingsData.eafOtherFuelSource == 'Mixed Fuels' || mod.phast.co2SavingsData.eafOtherFuelSource == 'None'">
+            &mdash;
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Other Fuel Emission Output Rate
+          (<span *ngIf="settings.unitsOfMeasure == 'Imperial'">kg
+            CO<sub>2</sub>/MMBtu</span>
+          <span *ngIf="settings.unitsOfMeasure != 'Imperial'">kg
+            CO<sub>2</sub>/GJ</span>)
+        </td>
+        <td>
+          {{phast.co2SavingsData.totalOtherEmissionOutputRate | number:'1.0-2'}}
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+          {{mod.phast.co2SavingsData.totalOtherEmissionOutputRate | number:'1.0-2'}}
+        </td>
+      </tr>
+    </ng-container>
+          
+
+    <ng-container *ngIf="settings.energySourceType == 'Electricity'">
+      <tr>
+        <td class="bold">
+          Carbon Emissions From Electricity
+        </td>
+        <td>
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+        </td>
+        </tr>
+      <tr>
+        <td>
+          Total Emission Output Rate
+          <span>(kg CO<sub>2</sub>/MWh)</span>
+        </td>
+        <td>
+          {{phast.co2SavingsData.totalEmissionOutputRate | number:'1.0-2'}}
+        </td>
+        <td *ngFor="let mod of phast.modifications">
+          {{mod.phast.co2SavingsData.totalEmissionOutputRate | number:'1.0-2'}}
+        </td>
+      </tr>
+    </ng-container>
+          }
+        </tbody>
+        </table>
+      </div>
+    </div>
+    <app-exportable-results-table [tableString]="copyTableString"
+      (updateTableString)="updateCopyTableString()"></app-exportable-results-table>
+  </div>
+</div>

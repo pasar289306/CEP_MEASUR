@@ -1,0 +1,144 @@
+import { Component, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { DashboardService } from '../../dashboard/dashboard.service';
+import { EmailMeasurDataService } from '../../shared/email-measur-data/email-measur-data.service';
+import { Assessment } from '../../shared/models/assessment';
+import { ModalDialogService } from '../../shared/modal-dialog.service';
+import { SecurityAndPrivacyItemComponent } from '../../shared/security-and-privacy/security-and-privacy-item/security-and-privacy-item.component';
+import { WaterAssessmentService, WaterMainTabString } from '../water-assessment.service';
+import { Modification, WaterAssessment } from 'process-flow-lib';
+
+@Component({
+  selector: 'app-water-banner',
+  standalone: false,
+  templateUrl: './water-banner.component.html',
+  styleUrl: './water-banner.component.css'
+})
+export class WaterBannerComponent {
+  @Input()
+  assessment: Assessment;
+
+  isBaselineValid: boolean = false;
+  mainTab: string;
+  mainTabSub: Subscription;
+  selectedModificationSub: Subscription;
+  selectedModification: Modification;
+  assessmentTab: string;
+  assessmentTabSub: Subscription;
+  secondaryAssessmentTabSub: Subscription;
+  secondaryAssessmentTab: string;
+  waterAssessmentSub: Subscription;
+  bannerCollapsed: boolean = true;
+  constructor(private waterAssessmentService: WaterAssessmentService,
+    private emailMeasurDataService: EmailMeasurDataService,
+    private dashboardService: DashboardService,  private modalDialogService: ModalDialogService) { }
+
+  ngOnInit(): void {
+    this.mainTabSub = this.waterAssessmentService.mainTab.subscribe(val => {
+      this.mainTab = val;
+    });
+
+    this.selectedModificationSub = this.waterAssessmentService.selectedModificationId.subscribe(selectedModificationId => {
+      let waterAssessment: WaterAssessment = this.waterAssessmentService.waterAssessment.getValue();
+      if (!selectedModificationId && this.secondaryAssessmentTab && this.secondaryAssessmentTab != 'modifications') {
+        this.changeSecondaryAssessmentTab('modifications');
+      }
+      
+      if (waterAssessment) {
+        this.selectedModification = waterAssessment.modifications.find(modification => { return modification.modificationId == selectedModificationId });
+      }
+    });
+
+    this.assessmentTabSub = this.waterAssessmentService.assessmentTab.subscribe(val => {
+      this.assessmentTab = val;
+    });
+
+    this.secondaryAssessmentTabSub = this.waterAssessmentService.secondaryAssessmentTab.subscribe(val => {
+      this.secondaryAssessmentTab = val;
+    });
+
+    this.waterAssessmentSub = this.waterAssessmentService.waterAssessment.subscribe(val => {
+      if (val) {
+        this.isBaselineValid = false;
+        // this.isBaselineValid = val.setupDone;
+      }
+    });
+  }
+
+  collapseBanner() {
+    this.bannerCollapsed = !this.bannerCollapsed;
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  back(){
+    this.waterAssessmentService.backMainTab();
+  }
+
+  continue() {
+    this.waterAssessmentService.continueMainTab();
+  }
+
+  ngOnDestroy() {
+    this.mainTabSub.unsubscribe();
+    this.selectedModificationSub.unsubscribe();
+    this.assessmentTabSub.unsubscribe();
+    this.secondaryAssessmentTabSub.unsubscribe();
+    this.waterAssessmentSub.unsubscribe();
+  }
+
+  navigateHome() {
+    this.dashboardService.navigateWithSidebarOptions('/landing-screen', {shouldCollapse: false});
+  }
+
+  showSecurityAndPrivacyModal() {
+    // Collapse banner to prevent it from reopening the modal on mobile when dismissed
+    this.bannerCollapsed = true;
+    this.modalDialogService.openModal(
+      SecurityAndPrivacyItemComponent,
+      SecurityAndPrivacyItemComponent.getDialogConfig()
+    );
+  }
+
+  changeTab(str: WaterMainTabString) {
+    if (str == 'baseline' || str == 'diagram' || str == 'report') {
+      this.waterAssessmentService.goToMainTab(str);
+    }
+    this.collapseBanner();
+  }
+
+  selectModification() {
+    this.waterAssessmentService.showModificationListModal.next(true);
+  }
+
+  changeAssessmentTab(str: string) {
+    this.waterAssessmentService.assessmentTab.next(str);
+  }
+
+  changeSecondaryAssessmentTab(str: string) {
+    if (this.selectedModification) {
+      this.waterAssessmentService.secondaryAssessmentTab.next(str);
+    }
+  }
+
+  backAssessmentTab(){
+   this.waterAssessmentService.backMainTab();
+  }
+
+  continueAssessmentTab() {
+   this.waterAssessmentService.continueMainTab();
+  }
+
+  openExportModal(){
+    this.waterAssessmentService.showExportModal.next(true);
+  }
+
+  emailAssessmentData() {
+    this.emailMeasurDataService.measurItemAttachment = {
+      itemType: 'assessment',
+      itemName: this.assessment.name,
+      itemData: this.assessment
+    }
+    this.emailMeasurDataService.emailItemType.next('Water');
+    this.emailMeasurDataService.showEmailMeasurDataModal.next(true);
+  }
+}

@@ -1,0 +1,336 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CompressedAirAssessmentComponent } from './compressed-air-assessment.component';
+import { CompressedAirBannerComponent } from './compressed-air-banner/compressed-air-banner.component';
+import { CompressedAirAssessmentService } from './compressed-air-assessment.service';
+import { RouterModule } from '@angular/router';
+import { SystemBasicsComponent } from './baseline-tab-content/system-basics/system-basics.component';
+import { SettingsModule } from '../settings/settings.module';
+import { SetupTabsComponent } from './compressed-air-banner/setup-tabs/setup-tabs.component';
+import { SystemInformationComponent } from './baseline-tab-content/system-information/system-information.component';
+import { DayTypesComponent } from './baseline-tab-content/day-types-setup/day-types/day-types.component';
+import { InventoryComponent } from './baseline-tab-content/inventory-setup/inventory/inventory.component';
+import { SystemProfileSetupComponent } from './baseline-tab-content/baseline-system-profile-setup/system-profile-setup/system-profile-setup.component';
+import { SystemProfileSummaryComponent } from './baseline-tab-content/baseline-system-profile-setup/system-profile-summary/system-profile-summary.component';
+import { SystemProfileGraphsModule } from './system-profile-graphs/system-profile-graphs.module';
+import { SystemBasicsFormService } from './baseline-tab-content/system-basics/system-basics-form.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SystemInformationFormService } from './baseline-tab-content/system-information/system-information-form/system-information-form.service';
+import { NameplateDataComponent } from './baseline-tab-content/inventory-setup/inventory/nameplate-data/nameplate-data.component';
+import { ControlDataComponent } from './baseline-tab-content/inventory-setup/inventory/control-data/control-data.component';
+import { DesignDetailsComponent } from './baseline-tab-content/inventory-setup/inventory/design-details/design-details.component';
+import { InventoryService } from './baseline-tab-content/inventory-setup/inventory/inventory.service';
+import { InventoryTableComponent } from './baseline-tab-content/inventory-setup/inventory-table/inventory-table.component';
+import { ProfileSetupFormComponent } from './baseline-tab-content/baseline-system-profile-setup/profile-setup-form/profile-setup-form.component';
+import { CompressorOrderingTableComponent } from './baseline-tab-content/baseline-system-profile-setup/system-profile-setup/compressor-ordering-table/compressor-ordering-table.component';
+import { OperatingProfileTableComponent } from './baseline-tab-content/baseline-system-profile-setup/system-profile-setup/operating-profile-table/operating-profile-table.component';
+import { SystemProfileService } from './baseline-tab-content/baseline-system-profile-setup/system-profile.service';
+import { CentrifugalSpecificsComponent } from './baseline-tab-content/inventory-setup/inventory/centrifugal-specifics/centrifugal-specifics.component';
+import { CompressedAirCalculationService } from './compressed-air-calculation.service';
+import { PerformancePointsComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/performance-points.component';
+import { FullLoadComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/full-load/full-load.component';
+import { MaxFullFlowComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/max-full-flow/max-full-flow.component';
+import { NoLoadComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/no-load/no-load.component';
+import { UnloadPointComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/unload-point/unload-point.component';
+import { BlowoffComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/blowoff/blowoff.component';
+import { GenericCompressorModalComponent } from './baseline-tab-content/inventory-setup/inventory/generic-compressor-modal/generic-compressor-modal.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { CompressorOptionsTableComponent } from './baseline-tab-content/inventory-setup/inventory/generic-compressor-modal/compressor-options-table/compressor-options-table.component';
+import { FilterCompressorsComponent } from './baseline-tab-content/inventory-setup/inventory/generic-compressor-modal/filter-compressors/filter-compressors.component';
+import { FilterCompressorsPipe } from './baseline-tab-content/inventory-setup/inventory/generic-compressor-modal/filter-compressors.pipe';
+import { DayTypeFilterPipe } from './baseline-tab-content/baseline-system-profile-setup/day-type-filter.pipe';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SystemBasicsHelpComponent } from './baseline-tab-content/system-basics/system-basics-help/system-basics-help.component';
+import { SystemInformationHelpComponent } from './baseline-tab-content/system-information/system-information-help/system-information-help.component';
+import { InventoryHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/inventory-help.component';
+import { NameplateDataHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/nameplate-data-help/nameplate-data-help.component';
+import { ControlDataHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/control-data-help/control-data-help.component';
+import { DesignDetailsHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/design-details-help/design-details-help.component';
+import { CentrifugalSpecificsHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/centrifugal-specifics-help/centrifugal-specifics-help.component';
+import { PerformancePointsHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/performance-points-help/performance-points-help.component';
+import { NoLoadHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/performance-points-help/no-load-help/no-load-help.component';
+import { UnloadPointHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/performance-points-help/unload-point-help/unload-point-help.component';
+import { BlowoffHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/performance-points-help/blowoff-help/blowoff-help.component';
+import { FullLoadHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/performance-points-help/full-load-help/full-load-help.component';
+import { MaxFullFlowHelpComponent } from './baseline-tab-content/inventory-setup/inventory-help/performance-points-help/max-full-flow-help/max-full-flow-help.component';
+import { DayTypesHelpComponent } from './baseline-tab-content/day-types-setup/day-types-help/day-types-help.component';
+import { CompressedAirCalculatorsComponent } from './compressed-air-calculators/compressed-air-calculators.component';
+import { CalculatorTabsComponent } from './compressed-air-calculators/calculator-tabs/calculator-tabs.component';
+import { AirFlowConversionModule } from '../calculator/compressed-air/air-flow-conversion/air-flow-conversion.module';
+import { ReceiverTankModule } from '../calculator/compressed-air/receiver-tank/receiver-tank.module';
+import { PipeSizingModule } from '../calculator/compressed-air/pipe-sizing/pipe-sizing.module';
+import { CompressedAirPressureReductionModule } from '../calculator/compressed-air/compressed-air-pressure-reduction/compressed-air-pressure-reduction.module';
+import { AirVelocityModule } from '../calculator/compressed-air/air-velocity/air-velocity.module';
+import { PerformancePointsFormService } from './baseline-tab-content/inventory-setup/inventory/performance-points/performance-points-form.service';
+import { SystemCapacityModalComponent } from './baseline-tab-content/system-information/system-capacity-modal/system-capacity-modal.component';
+import { SystemCapacityModule } from '../calculator/compressed-air/system-capacity/system-capacity.module';
+import { ExploreOpportunitiesComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities.component';
+import { ReduceAirLeaksComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/reduce-air-leaks/reduce-air-leaks.component';
+import { ImproveEndUseEfficiencyComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/improve-end-use-efficiency/improve-end-use-efficiency.component';
+import { ReduceSystemAirPressureComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/reduce-system-air-pressure/reduce-system-air-pressure.component';
+import { AdjustCascadingSetPointsComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/adjust-cascading-set-points/adjust-cascading-set-points.component';
+import { UseAutomaticSequencerComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/use-automatic-sequencer/use-automatic-sequencer.component';
+import { ReduceRunTimeComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/reduce-run-time/reduce-run-time.component';
+import { AddReceiverVolumeComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/add-receiver-volume/add-receiver-volume.component';
+import { ExploreOpportunitiesService } from './assessment-tab-content/explore-opportunities/explore-opportunities.service';
+import { ConfirmDeleteModalModule } from '../shared/confirm-delete-modal/confirm-delete-modal.module';
+import { CompressedAirDiagramComponent } from './compressed-air-diagram/compressed-air-diagram.component';
+import { ExploreOpportunitiesResultsComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/explore-opportunities-results/explore-opportunities-results.component';
+import { DayTypeService } from './baseline-tab-content/day-types-setup/day-types/day-type.service';
+import { FullLoadAmpsModule } from '../calculator/motors/full-load-amps/full-load-amps.module';
+import { AltitudeCorrectionModule } from '../calculator/utilities/altitude-correction/altitude-correction.module';
+import { CompressedAirDataManagementService } from './compressed-air-data-management.service';
+import { CompressedAirAssessmentResultsService } from './compressed-air-assessment-results.service';
+import { PercentGraphModule } from '../shared/percent-graph/percent-graph.module';
+
+import { ConvertCompressedAirService } from './convert-compressed-air.service';
+import { SystemProfileAnnualSummaryComponent } from './baseline-tab-content/baseline-system-profile-setup/system-profile-annual-summary/system-profile-annual-summary.component';
+import { UpdateUnitsModalModule } from '../shared/update-units-modal/update-units-modal.module';
+import { AdjustSequencerProfileComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/use-automatic-sequencer/adjust-sequencer-profile/adjust-sequencer-profile.component';
+import { SharedPipesModule } from '../shared/shared-pipes/shared-pipes.module';
+import { FacilityInfoSummaryModule } from '../shared/facility-info-summary/facility-info-summary.module';
+import { SystemProfileGraphsService } from './system-profile-graphs/system-profile-graphs.service'; 
+import { ExportableResultsTableModule } from '../shared/exportable-results-table/exportable-results-table.module';
+import { AssessmentNotesComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-notes/assessment-notes.component';
+import { AddReceiverVolumeService } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/add-receiver-volume/add-receiver-volume.service';
+import { ReduceAirLeaksService } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/reduce-air-leaks/reduce-air-leaks.service';
+import { ReduceSystemAirPressureService } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/reduce-system-air-pressure/reduce-system-air-pressure.service';
+import { ImproveEndUseEfficiencyItemComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/improve-end-use-efficiency/improve-end-use-efficiency-item/improve-end-use-efficiency-item.component';
+import { ImproveEndUseEfficiencyService } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/improve-end-use-efficiency/improve-end-use-efficiency.service';
+import { UseAutomaticSequencerService } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/use-automatic-sequencer/use-automatic-sequencer.service';
+import { AdjustCascadingSetPointsService } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/adjust-cascading-set-points/adjust-cascading-set-points.service';
+import { ReduceRunTimeService } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/reduce-run-time/reduce-run-time.service';
+import { ExploreOpportunitiesValidationService } from './compressed-air-assessment-validation/explore-opportunities-validation.service';
+import { CompressedAirReportModule } from './compressed-air-report/compressed-air-report.module';
+import { ProfileSummaryTableModule } from './profile-summary-table/profile-summary-table.module';
+import { SharedCompressorPipesModule } from './shared-compressor-pipes/shared-compressor-pipes.module';
+import { AssessmentCo2SavingsModule } from '../shared/assessment-co2-savings/assessment-co2-savings.module';
+import { CompressorSummaryTableModule } from './compressor-summary-table/compressor-summary-table.module';
+import { CompressorSummaryComponent } from './baseline-tab-content/baseline-system-profile-setup/compressor-summary/compressor-summary.component';
+import { InventoryPerformanceProfileModule } from './inventory-performance-profile/inventory-performance-profile.module';
+import { WelcomeScreenComponent } from './welcome-screen/welcome-screen.component';
+import { Co2HelpTextModule } from '../shared/co2-help-text/co2-help-text.module';
+import { CentrifugalGraphModule } from './centrifugal-graph/centrifugal-graph.module';
+import { BleedTestModule } from '../calculator/compressed-air/bleed-test/bleed-test.module';
+import { TurndownComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/turndown/turndown.component';
+import { MidTurndownComponent } from './baseline-tab-content/inventory-setup/inventory/performance-points/mid-turndown/mid-turndown.component';
+import { FlaModalComponent } from './baseline-tab-content/inventory-setup/inventory/nameplate-data/fla-modal/fla-modal.component';
+import { EndUseTableComponent } from './baseline-tab-content/end-uses-setup/end-use-table/end-use-table.component';
+import { EndUseChartComponent } from './baseline-tab-content/end-uses-setup/end-use-chart/end-use-chart.component';
+import { EndUseHelpComponent } from './baseline-tab-content/end-uses-setup/end-use-help/end-use-help.component';
+import { ImportExportModule } from '../shared/import-export/import-export.module';
+import { BaselineTabContentComponent } from './baseline-tab-content/baseline-tab-content';
+import { SystemBasicsFormComponent } from './baseline-tab-content/system-basics/system-basics-form/system-basics-form';
+import { BaselineFooterNavButtonsComponent } from './baseline-tab-content/baseline-footer-nav-buttons/baseline-footer-nav-buttons';
+import { SystemInformationFormComponent } from './baseline-tab-content/system-information/system-information-form/system-information-form.component';
+import { InventorySetupComponent } from './baseline-tab-content/inventory-setup/inventory-setup.component';
+import { DayTypesSetupComponent } from './baseline-tab-content/day-types-setup/day-types-setup.component';
+import { BaselineSystemProfileSetupComponent } from './baseline-tab-content/baseline-system-profile-setup/baseline-system-profile-setup.component';
+import { SystemProfileSetupTabsComponent } from './compressed-air-banner/setup-tabs/system-profile-setup-tabs/system-profile-setup-tabs.component';
+import { EndUsesSetupComponent } from './baseline-tab-content/end-uses-setup/end-uses-setup.component';
+import { EndUsesFormComponent } from './baseline-tab-content/end-uses-setup/end-uses-form/end-uses-form.component';
+import { DayTypeUseFormComponent } from './baseline-tab-content/end-uses-setup/end-uses-form/day-type-use-form/day-type-use-form.component';
+import { EndUsesFormService } from './baseline-tab-content/end-uses-setup/end-uses-form/end-uses-form.service';
+import { DayTypeUseFormService } from './baseline-tab-content/end-uses-setup/end-uses-form/day-type-use-form/day-type-use-form.service';
+import { EndUseDayTypeSetupModule } from './baseline-tab-content/end-uses-setup/end-uses-form/day-type-setup-form/end-use-day-type-setup.module';
+import { CompressedAirSankeyModule } from './compressed-air-sankey/compressed-air-sankey.module';
+import { AssessmentTabsComponent } from './compressed-air-banner/assessment-tabs/assessment-tabs.component';
+import { AssessmentTabContentComponent } from './assessment-tab-content/assessment-tab-content.component';
+import { ImproveEndUseFormControlsPipe } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/improve-end-use-efficiency/improve-end-use-efficiency-item/improve-end-use-form-controls.pipe';
+import { ReplaceCompressorComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/replace-compressor/replace-compressor.component';
+import { ExploreOpportunitiesFormComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-form/explore-opportunities-form.component';
+import { ExploreOpportunitiesSidePanelComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/explore-opportunities-side-panel.component';
+import { AssessmentHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/assessment-help.component';
+import { ReduceAirLeaksHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/reduce-air-leaks-help/reduce-air-leaks-help.component';
+import { ImproveEndUseEfficiencyHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/improve-end-use-efficiency-help/improve-end-use-efficiency-help.component';
+import { ReduceSystemAirPressureHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/reduce-system-air-pressure-help/reduce-system-air-pressure-help.component';
+import { UseAutomaticSequencerHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/use-automatic-sequencer-help/use-automatic-sequencer-help.component';
+import { ReduceRunTimeHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/reduce-run-time-help/reduce-run-time-help.component';
+import { AddReceiverVolumeHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/add-receiver-volume-help/add-receiver-volume-help.component';
+import { AdjustCascadingSetPointsHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/adjust-cascading-set-points-help/adjust-cascading-set-points-help.component';
+import { CaDisableNextButtonPipe } from './baseline-tab-content/baseline-footer-nav-buttons/ca-disable-next-button-pipe';
+import { ConnectedInventoryModule } from '../shared/connected-inventory/connected-inventory-module';
+import { IntegrateCompressedAirInventoryComponent } from './baseline-tab-content/system-basics/integrate-compressed-air-inventory/integrate-compressed-air-inventory.component';
+
+import { BannerTooltipsModule } from '../shared/app-banner-tooltips/app-banner-tooltips.module';
+import { AssessmentProfileSummaryTableComponent } from './assessment-tab-content/assessment-profile-summary-table/assessment-profile-summary-table.component';
+import { AssessmentProfileSummaryGraphsComponent } from './assessment-tab-content/assessment-profile-summary-graphs/assessment-profile-summary-graphs.component';
+import { ModificationListModalComponent } from './assessment-tab-content/modification-list-modal/modification-list-modal.component';
+import { AddModificationModalComponent } from './assessment-tab-content/add-modification-modal/add-modification-modal.component';
+import { CompressorPressureMinMaxPipe } from './shared-compressor-pipes/compressor-pressure-min-max.pipe';
+import { GenericCompressorDbService } from '../shared/generic-compressor-db.service';
+import { ReplaceCompressorHelpComponent } from './assessment-tab-content/explore-opportunities/explore-opportunities-side-panel/assessment-help/replace-compressor-help/replace-compressor-help.component';
+import { AirLeakSurveyModule } from '../calculator/compressed-air/air-leak-survey/air-leak-survey.module';
+
+
+@NgModule({
+  declarations: [
+    CompressedAirAssessmentComponent,
+    CompressedAirBannerComponent,
+    SystemBasicsComponent,
+    SetupTabsComponent,
+    SystemInformationComponent,
+    DayTypesComponent,
+    InventoryComponent,
+    SystemProfileSetupComponent,
+    SystemProfileSummaryComponent,
+    NameplateDataComponent,
+    ControlDataComponent,
+    DesignDetailsComponent,
+    InventoryTableComponent,
+    ProfileSetupFormComponent,
+    CompressorOrderingTableComponent,
+    OperatingProfileTableComponent,
+    CentrifugalSpecificsComponent,
+    PerformancePointsComponent,
+    FullLoadComponent,
+    MaxFullFlowComponent,
+    NoLoadComponent,
+    UnloadPointComponent,
+    BlowoffComponent,
+    GenericCompressorModalComponent,
+    CompressorOptionsTableComponent,
+    FilterCompressorsComponent,
+    FilterCompressorsPipe,
+    DayTypeFilterPipe,
+    SystemCapacityModalComponent,
+    SystemBasicsHelpComponent,
+    SystemInformationHelpComponent,
+    InventoryHelpComponent,
+    NameplateDataHelpComponent,
+    ControlDataHelpComponent,
+    DesignDetailsHelpComponent,
+    CentrifugalSpecificsHelpComponent,
+    PerformancePointsHelpComponent,
+    NoLoadHelpComponent,
+    UnloadPointHelpComponent,
+    BlowoffHelpComponent,
+    FullLoadHelpComponent,
+    MaxFullFlowHelpComponent,
+    DayTypesHelpComponent,
+    CompressedAirCalculatorsComponent,
+    CalculatorTabsComponent,
+    ExploreOpportunitiesComponent,
+    ReduceAirLeaksComponent,
+    ImproveEndUseEfficiencyComponent,
+    ReduceSystemAirPressureComponent,
+    AdjustCascadingSetPointsComponent,
+    UseAutomaticSequencerComponent,
+    ReduceRunTimeComponent,
+    AddReceiverVolumeComponent,
+    CompressedAirDiagramComponent,
+    ExploreOpportunitiesResultsComponent,
+    ModificationListModalComponent,
+    AddModificationModalComponent,
+    AssessmentHelpComponent,
+    ReduceAirLeaksHelpComponent,
+    ImproveEndUseEfficiencyHelpComponent,
+    ReduceSystemAirPressureHelpComponent,
+    UseAutomaticSequencerHelpComponent,
+    ReduceRunTimeHelpComponent,
+    AddReceiverVolumeHelpComponent,
+    SystemProfileAnnualSummaryComponent,
+    AdjustSequencerProfileComponent,
+    AdjustCascadingSetPointsHelpComponent,
+    AssessmentNotesComponent,
+    ImproveEndUseEfficiencyItemComponent,
+    CompressorSummaryComponent,
+    WelcomeScreenComponent,
+    FlaModalComponent,
+    EndUseTableComponent,
+    EndUseChartComponent,
+    DayTypeUseFormComponent,
+    ImproveEndUseFormControlsPipe,
+    TurndownComponent,
+    MidTurndownComponent,
+    EndUseHelpComponent,
+    ReplaceCompressorComponent,
+    BaselineTabContentComponent,
+    SystemBasicsFormComponent,
+    BaselineFooterNavButtonsComponent,
+    SystemInformationFormComponent,
+    InventorySetupComponent,
+    DayTypesSetupComponent,
+    BaselineSystemProfileSetupComponent,
+    SystemProfileSetupTabsComponent,
+    EndUsesSetupComponent,
+    EndUsesFormComponent,
+    AssessmentTabsComponent,
+    AssessmentTabContentComponent,
+    ExploreOpportunitiesFormComponent,
+    ExploreOpportunitiesSidePanelComponent,
+    CaDisableNextButtonPipe,
+    IntegrateCompressedAirInventoryComponent,
+    AssessmentProfileSummaryTableComponent,
+    AssessmentProfileSummaryGraphsComponent,
+    CompressorPressureMinMaxPipe,
+    ReplaceCompressorHelpComponent
+  ],
+  imports: [
+    CommonModule,
+    RouterModule,
+    SettingsModule,
+    ReactiveFormsModule,
+    AirFlowConversionModule,
+    ReceiverTankModule,
+    AirLeakSurveyModule,
+    SystemCapacityModule,
+    PipeSizingModule,
+    CompressedAirPressureReductionModule,
+    AirVelocityModule,
+    FormsModule,
+    ModalModule,
+    NgbModule,
+    ConfirmDeleteModalModule, 
+    FullLoadAmpsModule,
+    AltitudeCorrectionModule,
+    PercentGraphModule,
+    UpdateUnitsModalModule,
+    SharedPipesModule,
+    FacilityInfoSummaryModule,
+    ExportableResultsTableModule,
+    CompressedAirReportModule,
+    ProfileSummaryTableModule,
+    AssessmentCo2SavingsModule,
+    SharedCompressorPipesModule,
+    CompressorSummaryTableModule,
+    SystemProfileGraphsModule,
+    InventoryPerformanceProfileModule,
+    Co2HelpTextModule,
+    CentrifugalGraphModule,
+    BleedTestModule,
+    ImportExportModule,
+    EndUseDayTypeSetupModule,
+    CompressedAirSankeyModule,
+    ImportExportModule,
+    ConnectedInventoryModule,    
+    BannerTooltipsModule
+  ],
+  providers: [
+    CompressedAirAssessmentService,
+    SystemBasicsFormService,
+    SystemInformationFormService,
+    InventoryService,
+    SystemProfileService,
+    CompressedAirCalculationService,
+    GenericCompressorDbService,
+    PerformancePointsFormService,
+    ExploreOpportunitiesService,
+    DayTypeService,
+    CompressedAirDataManagementService,
+    CompressedAirAssessmentResultsService,
+    ConvertCompressedAirService,
+    SystemProfileGraphsService,
+    AddReceiverVolumeService,
+    ReduceAirLeaksService,
+    ReduceSystemAirPressureService,
+    ImproveEndUseEfficiencyService,
+    UseAutomaticSequencerService,
+    AdjustCascadingSetPointsService,
+    ReduceRunTimeService,
+    ExploreOpportunitiesValidationService,
+    EndUsesFormService,
+    DayTypeUseFormService
+  ],
+})
+export class CompressedAirAssessmentModule { }

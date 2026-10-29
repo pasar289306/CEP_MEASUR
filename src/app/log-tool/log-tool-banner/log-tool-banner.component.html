@@ -1,0 +1,128 @@
+<nav class="log-tool navbar banner d-flex mr-auto pt-2 pb-2 pl-0 pr-0 flex-nowrap">
+    <div class="d-none d-lg-flex align-items-center p-1">
+        <div class="img-col col-sm-auto col-md-auto col-lg-auto">
+            <img class="img-icon" src="assets/images/data-explorer-icon.png">
+        </div>
+        <div class="d-flex flex-column pl-2">
+            <div class="h2-name">
+                Data Exploration
+            </div>
+        </div>
+    </div>
+    <div class="d-block d-lg-none align-items-center p-1">
+        <div class="img-col col-sm-auto col-md-auto col-lg-auto" [ngClass]="{'collapse': bannerCollapsed}">
+            <img class="img-icon" src="assets/images/data-explorer-icon.png">
+        </div>
+        <div class="d-flex flex-column pl-2">
+            <div class="h2-name">
+                Data Exploration
+            </div>
+        </div>
+    </div>
+    <div class="d-flex nav-pills nav-fill flex-wrap mx-auto d-none d-lg-inline-block">
+        <div class="nav-item d-none d-lg-inline-block">
+            <a class="nav-link" [routerLink]="['/log-tool/data-setup']" routerLinkActive="active">Setup</a>
+        </div>
+        <div class="nav-item d-none d-lg-inline-block">
+            <a class="nav-link" [routerLink]="['/log-tool/day-type-analysis']" 
+                [ngClass]="{'disabled': !explorerData.isSetupDone || !explorerData.canRunDayTypeAnalysis}"
+                routerLinkActive="active">Day Type Analysis</a>
+        </div>
+        <div class="nav-item d-none d-lg-inline-block">
+            <a class="nav-link" 
+            [routerLink]="['/log-tool/visualize']"
+            [ngClass]="{'disabled': !explorerData.isSetupDone}"
+                routerLinkActive="active">Visualization</a>
+        </div>
+        
+    </div>
+
+    <div *ngIf="!bannerCollapsed" class="d-block d-lg-none align-items-center nav-pills nav-fill mx-auto">
+        <div class="nav-item">
+            <a class="nav-link" [routerLink]="['/log-tool/data-setup']" routerLinkActive="active">Setup</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" [routerLink]="['/log-tool/day-type-analysis']" 
+                [ngClass]="{'disabled': !explorerData.isSetupDone || !explorerData.canRunDayTypeAnalysis}"
+                routerLinkActive="active">Day Type Analysis</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" 
+            [routerLink]="['/log-tool/visualize']"
+            [ngClass]="{'disabled': !explorerData.isSetupDone}"
+                routerLinkActive="active">Visualization</a>
+        </div>
+        
+    </div>
+
+    <div class="d-flex ml-auto pr-2 h-100 d-none d-lg-inline-block">
+        <!-- <div class="pl-2 pr-2 home-nav-item d-none d-lg-inline-block" (click)="emailTreasureHuntData()">
+			<span class="fa fa-share-square-o"></span>
+		</div> -->
+        <div class="pl-2 pr-2 home-nav-item d-none d-lg-inline-block" (click)="showSecurityAndPrivacyModal()">
+            <app-banner-tooltips [message]="'Security & Privacy'" [adjustLeft]="20">
+                <span class="fa fa-lock"></span>
+            </app-banner-tooltips>
+        </div>
+        <div [ngClass]="{'disabled': !explorerData.isSetupDone}" class="pl-2 pr-2 download-nav-item home-nav-item d-none d-lg-inline-block"
+            (click)="openExportData()">
+            <app-banner-tooltips [message]="'Export'" [adjustLeft]="20">
+                <span class="fa fa-download"></span>
+            </app-banner-tooltips>
+        </div>
+		<div class="pl-2 pr-2 home-nav-item d-none d-lg-inline-block">
+            <app-banner-tooltips [message]="'Manual'" [adjustLeft]="20">
+                <a class="user-manual" href="https://industrialresources.ornl.gov/measur/user-guides/view-guide/Data-Explorer-User-Manual" target="_blank">
+                    <span class="fa fa-book"></span>
+                </a>
+            </app-banner-tooltips>
+		</div>
+        <div class="pl-2 pr-2 home-nav-item d-none d-lg-inline-block" [routerLink]="['/landing-screen']">
+            <app-banner-tooltips [message]="'Home'" [adjustLeft]="-20">
+                <span class="fa fa-home"></span>
+            </app-banner-tooltips>
+        </div>
+    </div>
+
+    <div *ngIf="bannerCollapsed" class="d-block d-lg-none ml-2 pr-2 h-100 flex-wrap">
+		<div class="pl-2 border-left home-nav-item d-block" (click)="collapseBanner()">
+            <app-banner-tooltips [message]="'Collapse'" [adjustLeft]="20">
+                <span class="fa fa-bars"></span>
+            </app-banner-tooltips>
+        </div>
+	</div>
+
+    <div *ngIf="!bannerCollapsed" class="d-block d-lg-none ml-auto pr-2 h-100 flex-wrap">
+        <div class="pl-2 pr-2 home-nav-item d-block" (click)="collapseBanner()">
+            <app-banner-tooltips [message]="'Collapse'" [adjustLeft]="20">
+                <span class="fa fa-bars"></span>
+            </app-banner-tooltips>
+        </div>
+        <!-- <div class="pl-2 pr-2 home-nav-item d-block" (click)="emailTreasureHuntData()">
+			<span class="fa fa-share-square-o"></span>
+		</div> -->
+        <div class="pl-2 pr-2 home-nav-item" (click)="showSecurityAndPrivacyModal()">
+            <app-banner-tooltips [message]="'Security & Privacy'" [adjustLeft]="20">
+                <span class="fa fa-lock"></span>
+            </app-banner-tooltips>
+        </div>
+        <div [ngClass]="{'disabled': !explorerData.isSetupDone}" class="pl-2 pr-2 download-nav-item home-nav-item"
+            (click)="openExportData()">
+            <app-banner-tooltips [message]="'Export'" [adjustLeft]="20">
+                <span class="fa fa-download"></span>
+            </app-banner-tooltips>
+        </div>
+		<div class="pl-2 pr-2 home-nav-item">
+            <app-banner-tooltips [message]="'Manual'" [adjustLeft]="20">
+                <a class="user-manual" href="https://industrialresources.ornl.gov/measur/user-guides/view-guide/Data-Explorer-User-Manual" target="_blank">
+                    <span class="fa fa-book"></span>
+                </a>
+            </app-banner-tooltips>
+		</div>
+        <div class="pl-2 pr-2 home-nav-item" [routerLink]="['/landing-screen']">
+            <app-banner-tooltips [message]="'Home'" [adjustLeft]="-20">
+                <span class="fa fa-home"></span>
+            </app-banner-tooltips>
+        </div>
+    </div>
+</nav>

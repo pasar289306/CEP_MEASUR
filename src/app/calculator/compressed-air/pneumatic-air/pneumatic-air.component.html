@@ -1,0 +1,151 @@
+<div #contentContainer class="calculator-container modify-conditions compressed-air standalone-calculator">
+  <div #leftPanelHeader class="d-flex header mr-2 ml-2 pb-1 pt-1 align-items-center">
+    <div class="calc-icon-header icon-compressed-air">
+      <img src="assets/images/calculator-icons/compressed-air-icons/pneumatic-air-requirement.png">
+    </div>
+    <div class="pl-2">
+      <h3>Pneumatic Air Requirement</h3>
+    </div>
+  </div>
+
+  <div class="small-tab-select nav-pills nav-fill" #smallTabSelect>
+    <div class="nav-item" (click)="setSmallScreenTab('form')"
+      [ngClass]="{'small-screen-active': smallScreenTab === 'form'}">
+      <a class="nav-link">Pneumatic Air Data</a>
+    </div>
+    <div class="nav-item" (click)="setSmallScreenTab('details')"
+      [ngClass]="{'small-screen-active': smallScreenTab === 'details'}">
+      <a class="nav-link">Details</a>
+    </div>
+  </div>
+
+  <div class="panel-group">
+    <div class="calculator-panel-container modification" [ngStyle]="{'height.px': containerHeight}"
+      [ngClass]="{'small-screen-tab': smallScreenTab === 'form'}">
+      <div class="d-flex flex-column m-4">
+        <app-pneumatic-air-form [settings]="settings" [inputs]="inputs" [outputs]="outputs"
+          (calculate)="calculatePneumaticAirRequirement($event)" (emitChangeField)="setField($event)">
+        </app-pneumatic-air-form>
+        <div class="w-100 justify-content-center btn-group btn-group-sm">
+          <button type="button" class="btn btn-danger pull-right btn-sm m-2 btn-form" (click)="btnResetData()">
+            Reset Data
+          </button>
+          <!-- add "Generate Example" button. Make sure to use 'btn-primary' instead of 'btn-danger' for styling. -->
+          <button type="button" class="btn btn-primary pull-right btn-sm m-2 btn-form" (click)="btnGenerateExample()">
+            Generate Example
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="calculator-panel-container help-panel" [ngStyle]="{'height.px': containerHeight}"
+      [ngClass]="{'small-screen-tab': smallScreenTab === 'details'}">
+      <div class="d-flex flex-wrap tabs primary sticky-top">
+        <div class="flex-fill panel-tab-item h-100 active">
+          <a class="h-100 d-flex justify-content-center align-items-center">
+            <div>Help</div>
+          </a>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="p-4 pt-2 d-flex flex-column help-info">
+          <h5>
+            Pneumatic Air Requirement Help
+            <br>
+            <small class="text-muted">
+              This calculator determines the volume of compressed air consumed per minute by a pneumatic cylinder.
+              Select the piston configuration (single-acting or double-acting), enter the cylinder dimensions,
+              operating pressure, and cycle rate to compute the free-air equivalent consumption.
+            </small>
+          </h5>
+          <hr class="my-1 hr-spacer">
+
+          <div class="my-2" *ngIf="currentField == 'pistonType'">
+            <h6>
+              Piston Type
+              <br>
+              <small class="text-muted">
+                Select either <strong>Single Acting</strong> or <strong>Double Acting</strong> depending on the type of
+                pneumatic cylinder.
+                A single-acting cylinder uses compressed air on one side of the piston only — the return stroke is
+                driven by a spring or gravity.
+                A double-acting cylinder uses compressed air on both sides of the piston, providing powered motion in
+                both directions.
+                <hr>
+              </small>
+            </h6>
+          </div>
+
+          <div class="my-2" *ngIf="currentField == 'cylinderDiameter'">
+            <h6>
+              Cylinder Diameter
+              <br>
+              <small class="text-muted">
+                Inner bore diameter of the cylinder. This is the inside diameter of the cylinder barrel through which
+                the piston travels.
+                <hr>
+              </small>
+            </h6>
+          </div>
+
+          <div class="my-2" *ngIf="currentField == 'cylinderStroke'">
+            <h6>
+              Cylinder Stroke
+              <br>
+              <small class="text-muted">
+                Piston travel distance per stroke — the distance the piston moves from one end of its travel to the
+                other.
+                <hr>
+              </small>
+            </h6>
+          </div>
+
+          <div class="my-2" *ngIf="currentField == 'pistonRodDiameter'">
+            <h6>
+              Piston Rod Diameter
+              <br>
+              <small class="text-muted">
+                Diameter of the piston rod (required only for a double-acting cylinder).
+                The rod-side stroke has a smaller effective piston area because the piston rod occupies part of the bore
+                cross-section.
+                <hr>
+              </small>
+            </h6>
+          </div>
+
+          <div class="my-2" *ngIf="currentField == 'airPressure'">
+            <h6>
+              Air Pressure
+              <br>
+              <small class="text-muted">
+                Operating gauge pressure at the cylinder inlet. This is the pressure of the compressed air supplied to
+                the cylinder.
+                <hr>
+              </small>
+            </h6>
+          </div>
+
+          <div class="my-2" *ngIf="currentField == 'cyclesPerMinute'">
+            <h6>
+              Cycles Per Minute
+              <br>
+              <small class="text-muted">
+                Number of complete cycles per minute. One complete cycle consists of the piston traveling in both
+                directions (extend and retract).
+                <hr>
+              </small>
+            </h6>
+          </div>
+          <div class="my-2">
+            <a class="click-link" [href]="docsLink + 'group__pneumatic__air__requirement__calculator'" target="_blank">
+              <span class="fa fa-external-link"></span>
+              <span class="pl-1">How is Pneumatic Air Requirement calculated?</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

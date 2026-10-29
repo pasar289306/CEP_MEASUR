@@ -1,0 +1,219 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { Subscription, BehaviorSubject } from 'rxjs';
+import { MotorInventoryService } from '../motor-inventory.service';
+import { MotorCatalogService } from '../motor-inventory-setup/motor-catalog/motor-catalog.service';
+import { MotorInventoryData } from '../motor-inventory';
+import { InventoryItem } from '../../shared/models/inventory/inventory';
+import { ModalDialogService } from '../../shared/modal-dialog.service';
+import { SecurityAndPrivacyItemComponent } from '../../shared/security-and-privacy/security-and-privacy-item/security-and-privacy-item.component';
+import { DashboardService } from '../../dashboard/dashboard.service';
+import _ from 'lodash';
+import { EmailMeasurDataService } from '../../shared/email-measur-data/email-measur-data.service';
+import { MotorInventoryMainView } from '../motor-inventory.routing';
+
+@Component({
+    selector: 'app-motor-inventory-banner',
+    templateUrl: './motor-inventory-banner.component.html',
+    styleUrls: ['./motor-inventory-banner.component.css'],
+    standalone: false
+})
+export class MotorInventoryBannerComponent implements OnInit {
+  @Input()
+  motorInventoryItem: InventoryItem;
+  
+  setupTab: string;
+  setupTabSub: Subscription;
+  summaryTab: string;
+  summaryTabSub: Subscription;
+  mainTab: string;
+  mainTabSub: Subscription;
+  motorInventoryData: MotorInventoryData;
+  motorInventoryDataSub: Subscription;
+  selectedTab: string;
+  selectedDepartmentIdSub: Subscription;
+  bannerCollapsed: boolean = true;
+  isSelected: boolean = false;
+  showMotorProperties: BehaviorSubject<boolean>;
+  constructor(private motorInventoryService: MotorInventoryService, 
+    private emailMeasurDataService: EmailMeasurDataService,
+    private dashboardService: DashboardService, private motorCatalogService: MotorCatalogService, private modalDialogService: ModalDialogService ) { }
+
+  ngOnInit(): void {
+    this.mainTabSub = this.motorInventoryService.mainTab.subscribe(val => {
+      this.mainTab = val;
+    });
+
+    this.setupTabSub = this.motorInventoryService.setupTab.subscribe(val => {
+      this.setupTab = val;
+    });
+
+    this.motorInventoryDataSub = this.motorInventoryService.motorInventoryData.subscribe(val => {
+      this.motorInventoryData = val;
+    });
+
+    this.selectedDepartmentIdSub = this.motorCatalogService.selectedDepartmentId.subscribe(val => {
+      if (val && val !== 'motor-properties') {
+        this.selectedTab = val;
+      } else if (val === 'motor-properties') {
+        this.selectedTab = 'motor-properties';
+      }
+    });
+
+    this.summaryTabSub = this.motorInventoryService.summaryTab.subscribe(val => {
+      this.summaryTab = val;
+    });
+  }
+
+  showSecurityAndPrivacyModal() {
+    // Collapse banner to prevent it from reopening the modal on mobile when dismissed
+    this.bannerCollapsed = true;
+    this.modalDialogService.openModal(
+      SecurityAndPrivacyItemComponent,
+      SecurityAndPrivacyItemComponent.getDialogConfig()
+    );
+  }
+
+  ngOnDestroy() {
+    this.setupTabSub.unsubscribe();
+    this.motorInventoryDataSub.unsubscribe();
+    this.selectedDepartmentIdSub.unsubscribe();
+    this.mainTabSub.unsubscribe();
+    this.summaryTabSub.unsubscribe();
+  }
+
+  setSetupTab(str: string) {
+    this.motorInventoryService.setupTab.next(str);
+  }
+  
+  navigateHome() {
+    this.dashboardService.navigateWithSidebarOptions('/landing-screen', {shouldCollapse: false});
+  }
+
+  // selectedDepartment(departmentId: string) {
+  //   this.motorCatalogService.selectedDepartmentId.next(departmentId);
+  // }
+  selectTab(tabId: string) {
+    this.selectedTab = tabId;
+    if (tabId === 'motor-properties') {
+      this.isSelected = true;
+      this.motorCatalogService.showMotorProperties.next(true);
+      this.motorCatalogService.selectedDepartmentId.next('');
+    } else {
+      this.isSelected = false;
+      this.motorCatalogService.showMotorProperties.next(false);
+      this.motorCatalogService.selectedDepartmentId.next(tabId);
+    }
+  }
+
+
+  setMainTab(str: MotorInventoryMainView) {
+    this.motorInventoryService.goToMainTab(str);
+    this.collapseBanner();
+  }
+
+  setSummaryTab(str: string) {
+    this.motorInventoryService.summaryTab.next(str);
+  }
+
+  collapseBanner() {
+    this.bannerCollapsed = !this.bannerCollapsed;
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  back(){
+    this.motorInventoryService.backMainTab();
+  }
+
+  continue() {
+    this.motorInventoryService.continueMainTab();
+  }
+
+  backSetupTabs(){
+    if (this.setupTab == 'motor-catalog') {
+      this.motorInventoryService.setupTab.next('department-setup');
+    } else if (this.setupTab == 'department-setup') {
+      this.motorInventoryService.setupTab.next('plant-setup');
+    } 
+  }
+
+  continueSetupTabs(){
+    if (this.setupTab == 'plant-setup') {
+      this.motorInventoryService.setupTab.next('department-setup');
+    } else if (this.setupTab == 'department-setup') {
+      this.motorInventoryService.setupTab.next('motor-catalog');
+    } 
+  }
+
+  continueMotorCatalogTabs(){
+    if (!this.motorInventoryData?.departments || this.motorInventoryData.departments.length === 0) {
+      return;
+    }
+    let currentIndex: number = _.findIndex(this.motorInventoryData.departments, (department) => {return department.id == this.selectedTab});
+    if (currentIndex != this.motorInventoryData.departments.length - 1) {
+      let nextID: string = this.motorInventoryData.departments[currentIndex + 1].id;
+      this.motorCatalogService.selectedDepartmentId.next(nextID);      
+    }
+  }
+
+  backMotorCatalogTabs(){
+    if (!this.motorInventoryData?.departments || this.motorInventoryData.departments.length === 0) {
+      return;
+    }
+    let currentIndex: number = _.findIndex(this.motorInventoryData.departments, (department) => {return department.id == this.selectedTab});
+    if (currentIndex != 0) {
+      let nextID: string = this.motorInventoryData.departments[currentIndex - 1].id;
+      this.motorCatalogService.selectedDepartmentId.next(nextID);      
+    }
+  }
+
+  mobileBackMotorCatalogTabs() {
+    if (this.selectedTab === this.motorInventoryData.departments[0]?.id) {
+      this.selectTab('motor-properties');
+    } else if (this.selectedTab !== 'motor-properties') {
+      this.backMotorCatalogTabs();
+    }
+  }
+
+  mobileContinueMotorCatalogTabs() {
+    if (this.selectedTab === 'motor-properties' && this.motorInventoryData.departments.length > 0) {
+      this.selectTab(this.motorInventoryData.departments[0].id);
+    } else if (this.selectedTab !== 'motor-properties') {
+      this.continueMotorCatalogTabs();
+    }
+  }
+
+  continueSummaryTabs(){
+    if (this.summaryTab == 'overview') {
+      this.motorInventoryService.summaryTab.next('graphs');
+    } else if (this.summaryTab == 'graphs') {
+      this.motorInventoryService.summaryTab.next('table');
+    } else if (this.summaryTab == 'table') {
+      this.motorInventoryService.summaryTab.next('motor-details');
+    }
+  }
+
+  backSummaryTabs(){
+    if (this.summaryTab == 'motor-details') {
+      this.motorInventoryService.summaryTab.next('table');
+    } else if (this.summaryTab == 'table') {
+      this.motorInventoryService.summaryTab.next('graphs');
+    } else if (this.summaryTab == 'graphs') {
+      this.motorInventoryService.summaryTab.next('overview');
+    }
+  }
+  
+  openExportModal(){
+    this.motorInventoryService.showExportModal.next(true);
+  }
+
+  emailTreasureHuntData() {
+    this.emailMeasurDataService.measurItemAttachment = {
+      itemType: 'inventory',
+      itemName: this.motorInventoryItem.name,
+      itemData: this.motorInventoryItem
+    }
+    this.emailMeasurDataService.emailItemType.next('MOTOR-inventory');
+    this.emailMeasurDataService.showEmailMeasurDataModal.next(true);
+  }
+
+}

@@ -1,0 +1,275 @@
+import { configureStore, createListenerMiddleware, createSelector, isAnyOf } from '@reduxjs/toolkit'
+import diagramReducer, { connectEdge, diagramSlice, DiagramActionType, DiagramSaveExtra, edgesChangeFromPropagation, recomputeNodeErrors, RECOMPUTES_DIAGRAM_ERRORS, saveDiagramState } from './diagramReducer'
+import { DIAGRAM_SAVE_DEBOUNCE_MS, isPersistableChange } from './diagramPersistence';
+import uiReducer, { diagramAlertChange } from './uiSlice';
+import { Edge, Node } from '@xyflow/react';
+import { getNodeSourceEdges, getNodeTargetEdges, getNodeTotalFlow } from './FlowUtils';
+import { createGraphIndex, CustomEdgeData, DiagramAlertMessages, DiagramCalculatedData, DiagramMetaData, FlowDiagramData, getWaterUsingSystem, NodeFlowData, ProcessFlowPart, WaterDiagram, WaterProcessComponent } from 'process-flow-lib';
+
+/**
+ * Builds the `isAnyOf` matcher for the "recompute diagram errors" listener below,
+ * from the `true` entries in `RECOMPUTES_DIAGRAM_ERRORS` — so the matcher can never
+ * drift out of sync with that map.
+ *
+ * This has to be a function called lazily on first use, not a plain module-level
+ * constant. `store.ts` and `diagramReducer.ts` import from each other indirectly
+ * (through component files each also imports), forming a circular import. If this
+ * matcher were built at module-load time, `diagramSlice.actions` could still be
+ * `undefined` depending on which module finishes loading first. Calling this function
+ * later, after everything has finished loading, sidesteps that ordering problem.
+ */
+let structuralDiagramActionMatcherCache: ReturnType<typeof isAnyOf> | undefined;
+export function getStructuralDiagramActionMatcher() {
+  if (!structuralDiagramActionMatcherCache) {
+    const structuralActions = Object.entries(RECOMPUTES_DIAGRAM_ERRORS)
+      .filter(([, isStructural]) => isStructural)
+      .map(([actionName]) => diagramSlice.actions[actionName as DiagramActionType]);
+    structuralDiagramActionMatcherCache = isAnyOf(...structuralActions);
+  }
+  return structuralDiagramActionMatcherCache;
+}
+
+export function configureAppStore(waterDiagram: WaterDiagram, saveFlowDiagramData: (flowDiagramData: FlowDiagramData) => void) {
+  const preloadedMeta: DiagramMetaData = waterDiagram.flowDiagramData.meta ?? { version: '0.0.0', upgrades: [] };
+  // * upgradeDiagram mutates this same meta object on hydration, so capture the version before that happens
+  const loadedVersion = preloadedMeta.version;
+  const saveExtra: DiagramSaveExtra = { saveFlowDiagramData, hasPendingSave: false };
+  const store = configureStore({
+    reducer: { diagram: diagramReducer, ui: uiReducer },
+    preloadedState: {
+      // diagram: getResetData(),
+      diagram: {
+        name: waterDiagram.flowDiagramData.name,
+        meta: preloadedMeta,
+        nodes: [],
+        edges: [],
+        composedNodeData: [],
+        settings: {},
+        diagramOptions: {},
+        selectedDataId: undefined,
+        calculatedData: {nodes: {}},
+        diagramFlowErrors: {},
+        recentEdgeColors: [],
+        recentNodeColors: [],
+        diagramParentDimensions: {
+          height: undefined,
+          headerHeight: undefined,
+          footerHeight: undefined
+        },
+        assessmentId: undefined,
+        diagramNotes: waterDiagram.flowDiagramData.diagramNotes,
+        isInitialized: false
+      }
+    },
+    middleware: (getDefaultMiddleware) => {
+      const listenerMiddleware = createListenerMiddleware();
+      listenerMiddleware.startListening({
+        predicate: (action, currentState, previousState) => isPersistableChange(action, currentState, previousState, loadedVersion),
+        effect: async (_, listenerApi) => {
+          saveExtra.hasPendingSave = true;
+          listenerApi.cancelActiveListeners();
+          await listenerApi.delay(DIAGRAM_SAVE_DEBOUNCE_MS);
+          listenerApi.dispatch(saveDiagramState());
+        },
+      });
+
+      listenerMiddleware.startListening({
+        matcher: getStructuralDiagramActionMatcher(),
+        effect: async (_, listenerApi) => {
+          listenerApi.cancelActiveListeners();
+          await listenerApi.delay(150);
+          listenerApi.dispatch(recomputeNodeErrors());
+        },
+      });
+
+      // * the edge-connection-limit warning depends on the resulting edge list (state.diagram.edges),
+      // * which a plain ui-slice reducer/extraReducer can't read (only its own state + the action) -
+      // * moved here from connectEdgeReducer, which used to write diagramAlert directly
+      listenerMiddleware.startListening({
+        actionCreator: connectEdge,
+        effect: async (action, listenerApi) => {
+          const { source, sourceHandle, target, targetHandle } = action.payload;
+          const edges = (listenerApi.getState() as { diagram: { edges: Edge<CustomEdgeData>[] } }).diagram.edges;
+          let connectedToSameTarget = 0;
+          let connectedToSameSource = 0;
+          edges.forEach((edge) => {
+            if (edge.target === target && edge.targetHandle === targetHandle) {
+              connectedToSameTarget++;
+            }
+            if (edge.source === source && edge.sourceHandle === sourceHandle) {
+              connectedToSameSource++;
+            }
+          });
+          if (connectedToSameTarget > 2 || connectedToSameSource > 2) {
+            listenerApi.dispatch(diagramAlertChange({
+              open: true,
+              alertMessage: DiagramAlertMessages.EdgeConnectionLimit,
+              alertSeverity: 'warning',
+              dismissMS: 6000,
+            }));
+          }
+        },
+      });
+
+      // * the cascade's success banner needs the target node's display name (state.diagram.nodes),
+      // * same reasoning as above - moved here from edgesChangeFromPropagationReducer
+      listenerMiddleware.startListening({
+        actionCreator: edgesChangeFromPropagation,
+        effect: async (action, listenerApi) => {
+          const { flowUpdates, startingNodeId } = action.payload;
+          if (flowUpdates) {
+            const nodes = (listenerApi.getState() as { diagram: { nodes: Node<ProcessFlowPart>[] } }).diagram.nodes;
+            const sourceNode = nodes.find((node) => node.id === startingNodeId);
+            const initialValue: number = Object.entries(flowUpdates)[0][1];
+            listenerApi.dispatch(diagramAlertChange({
+              open: true,
+              alertMessage: `Successfully cascaded value from ${sourceNode?.data.name || sourceNode.id} (${initialValue} Mgal) to downstream flows`,
+              alertSeverity: 'success',
+              dismissMS: 10000,
+            }));
+          }
+        },
+      });
+
+      return getDefaultMiddleware({
+        thunk: { extraArgument: saveExtra },
+        // convertValueFn is transient (never stored in state); meta.arg/meta.baseQueryMeta are RTK's own defaults, restated here since this option replaces rather than merges with them.
+        serializableCheck: {
+          ignoredActionPaths: ['meta.arg', 'meta.baseQueryMeta', 'payload.convertValueFn'],
+        },
+      }).prepend(listenerMiddleware.middleware);
+    },
+  });
+
+  return store;
+}
+
+export type AppStore = ReturnType<typeof configureAppStore>
+// Infer the type of `store`
+export type RootState = ReturnType<AppStore['getState']>
+// Infer the `AppDispatch` type from the store itself
+export type AppDispatch = AppStore['dispatch']
+
+// * memoize selectors only if deriving results (returning new references, i.e. .map())
+// * may also use globalized selectors
+export const selectEdges = (state: RootState) => state.diagram.edges as Edge<CustomEdgeData>[];
+export const selectNodes = (state: RootState) => state.diagram.nodes;
+export const selectDiagramFlowErrors = (state: RootState) => state.diagram.diagramFlowErrors;
+export const selectIsModalOpen = (state: RootState) => state.ui.isModalOpen;
+export const selectHasAssessment = (state: RootState) => state.diagram.assessmentId !== undefined;
+export const selectFlowConfidenceEnabled = (state: RootState) => state.diagram.diagramOptions.flowConfidenceEnabled !== false;
+export const selectColorEdgesByConfidence = (state: RootState) => selectFlowConfidenceEnabled(state) && state.diagram.diagramOptions.colorEdgesByConfidence === true;
+export const selectShowFlowConfidenceOnLabel = (state: RootState) => selectFlowConfidenceEnabled(state) && state.diagram.diagramOptions.showFlowConfidenceOnLabel !== false;
+export const selectCurrentNode = (state: RootState) => state.diagram.nodes.find((node: Node<ProcessFlowPart>) => node.id === state.diagram.selectedDataId) as Node<ProcessFlowPart>;
+export const selectCalculatedData = (state: RootState) => state.diagram.calculatedData;
+export const selectNodeValidation = (state: RootState) => {
+  return state.diagram.diagramFlowErrors[state.diagram.selectedDataId]
+};
+
+export const selectNodeCalculatedFlowData = (state: RootState, nodeId: string): NodeFlowData => {
+  return state.diagram.calculatedData.nodes[nodeId];
+};
+
+export const selectNodeId = (state: RootState, nodeId?: string) => {
+  return nodeId ? nodeId : state.diagram.selectedDataId;
+}
+
+export const selectCurrentDataId = (state: RootState, selectedId?: string) => {
+  return state.diagram.selectedDataId;
+} 
+
+// * MEMOIZED SELECTORS
+// export const selectNodesMemo = createSelector(
+//   [selectNodes],
+//   (nodes) => [...nodes]
+// );
+
+
+export const selectedDataColor = createSelector(selectNodes, selectEdges, selectCurrentDataId,
+  (nodes: Node<ProcessFlowPart>[], edges: Edge<CustomEdgeData>[], selectedDataId: string) => {
+    const node: Node<ProcessFlowPart> = nodes.find((n: Node<ProcessFlowPart>) => n.id === selectedDataId) as Node<ProcessFlowPart>;
+    const edge = edges.find((e: Edge<CustomEdgeData>) => e.id === selectedDataId);
+    if (node) {
+      return node.style?.backgroundColor;
+    } else if (edge) {
+      return edge.style?.stroke;
+    } else {
+      return undefined;
+    }
+  });
+
+export const selectGraphIndex = createSelector(
+  [selectNodes, selectEdges],
+  (nodes, edges) => createGraphIndex(nodes, edges)
+);
+
+export const selectNodeSourceEdges = createSelector([selectEdges, selectNodeId], (edges: Edge[], nodeId?: string) => {
+  return getNodeSourceEdges(edges, nodeId);
+});
+
+export const selectNodeTargetEdges = createSelector([selectEdges, selectNodeId], (edges: Edge[], nodeId?: string) => {
+  return getNodeTargetEdges(edges, nodeId);
+});
+
+export const selectCalculatedNodeData = createSelector([selectCalculatedData, selectNodeId], (data: DiagramCalculatedData, nodeId?: string): NodeFlowData => {
+  return data.nodes[nodeId];
+});
+
+export const selectTotalSourceFlow = createSelector([selectCalculatedNodeData, selectNodes, selectNodeId], (calculatedNode: NodeFlowData, nodes: Node<ProcessFlowPart>[], nodeId?: string) => {
+  const nodeTotalFlow = getNodeTotalFlow('totalSourceFlow', calculatedNode, nodes, nodeId);
+  return nodeTotalFlow;
+});
+
+export const selectTotalDischargeFlow = createSelector([selectCalculatedNodeData, selectNodes, selectNodeId], (calculatedNode: NodeFlowData, nodes: Node<ProcessFlowPart>[], nodeId?: string) => {
+  let nodeTotalFlow = getNodeTotalFlow('totalDischargeFlow', calculatedNode, nodes, nodeId);
+  return nodeTotalFlow;
+});
+
+export const selectDiagramNotes = createSelector(
+  (state: RootState) => state.diagram.diagramNotes,
+  (diagramNotes) => diagramNotes
+);
+
+export const selectIntakeSourceNodes = createSelector(
+  [selectNodes],
+  (nodes: Node<ProcessFlowPart>[]) => {
+    return nodes
+    .filter((node: Node<ProcessFlowPart>) => node.data.processComponentType === 'water-intake')
+  }
+);
+
+export const selectDischargeOutletNodes = createSelector(
+  [selectNodes],
+  (nodes: Node<ProcessFlowPart>[]) => {
+    return nodes
+    .filter((node: Node<ProcessFlowPart>) => node.data.processComponentType === 'water-discharge')
+  }
+);
+
+export const selectNodesAsWaterUsingSystems = createSelector(
+  [selectNodes],
+  (nodes: Node<ProcessFlowPart>[]) => {
+    return nodes
+      .filter((node: Node<ProcessFlowPart>) => node.data.processComponentType === 'water-using-system')
+      .map((node: Node<ProcessFlowPart>) => {
+        const processFlowPart: WaterProcessComponent = node.data as WaterProcessComponent;
+        return getWaterUsingSystem(processFlowPart);
+      });
+  }
+);
+
+export const selectWaterTreatmentNodes = createSelector(
+  [selectNodes],
+  (nodes: Node<ProcessFlowPart>[]) => {
+    return nodes
+      .filter((node: Node<ProcessFlowPart>) => node.data.processComponentType === 'water-treatment')
+  }
+);
+
+export const selectWasteTreatmentNodes = createSelector(
+  [selectNodes],
+  (nodes: Node<ProcessFlowPart>[]) => {
+    return nodes
+      .filter((node: Node<ProcessFlowPart>) => node.data.processComponentType === 'waste-water-treatment')
+  }
+);

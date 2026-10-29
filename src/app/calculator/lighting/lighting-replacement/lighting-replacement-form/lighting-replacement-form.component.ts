@@ -1,0 +1,258 @@
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, SimpleChanges, HostListener, ChangeDetectorRef } from '@angular/core';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { LightingReplacementData } from '../../../../shared/models/lighting';
+import { UntypedFormGroup } from '@angular/forms';
+import { LightingReplacementService } from '../lighting-replacement.service';
+import { OperatingHours } from '../../../../shared/models/operations';
+import { LightingFixtureData } from '../../../../tools-suite-api/lighting-suite-api.service';
+import { LightingFixtureCategory } from '../../../../tools-suite-api/lighting-suite-api.service';
+import { LightingFixtureMaterial } from '../../../../shared/models/materials';
+import { Settings } from '../../../../shared/models/settings';
+import { Subscription } from 'rxjs';
+@Component({
+    selector: 'app-lighting-replacement-form',
+    templateUrl: './lighting-replacement-form.component.html',
+    styleUrls: ['./lighting-replacement-form.component.css'],
+    standalone: false
+})
+export class LightingReplacementFormComponent implements OnInit, OnDestroy {
+  @Input()
+  data: LightingReplacementData;
+  @Output('emitCalculate')
+  emitCalculate = new EventEmitter<LightingReplacementData>();
+  @Output('emitRemoveFixture')
+  emitRemoveFixture = new EventEmitter<number>();
+  @Input()
+  index: number;
+  @Output('emitFocusField')
+  emitFocusField = new EventEmitter<string>();
+  @Input()
+  isBaseline: boolean;
+  @Input()
+  selected: boolean;
+  @Input()
+  settings: Settings
+  @Input()
+  baselineSelected: boolean;
+
+  @ViewChild('formElement', { static: false }) formElement: ElementRef;
+  @ViewChild('materialModal', { static: false }) public materialModal: ModalDirective;
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.setOpHoursModalWidth();
+  }
+
+  formWidth: number;
+
+  idString: string;
+  isEditingName: boolean = false;
+  existingMaterial: LightingFixtureMaterial;
+  showModal: boolean = false;
+  editExistingMaterial: boolean;
+  form: UntypedFormGroup;
+
+  showOperatingHoursModal: boolean;
+
+  lightingFixtureCategories: Array<LightingFixtureCategory>;
+  fixtureTypes: Array<LightingFixtureData>;
+  displayDetails: boolean = false;
+
+  indicateLampsPerFixtureDiff: boolean = false;
+  indicateWattsPerLampDiff: boolean = false;
+  indicateLumensPerLampDiff: boolean = false;
+  indicateCoefficientOfUtilizationDiff: boolean = false;
+  indicateBallastFactorDiff: boolean = false;
+  indicateLumenDegradationFactorDiff: boolean = false;
+  indicateFixtureTypeDiff: boolean = false;
+
+  lightingFixtureCategoriesSub: Subscription;
+
+  constructor(private lightingReplacementService: LightingReplacementService, private cd: ChangeDetectorRef) {}
+
+  ngOnInit() {
+    this.displayDetails = this.lightingReplacementService.showAdditionalDetails;
+    if (this.isBaseline) {
+      this.idString = 'baseline_' + this.index;
+    }
+    else {
+      this.idString = 'modification_' + this.index;
+    }
+
+    this.form = this.lightingReplacementService.getFormFromObj(this.data);
+    this.lightingReplacementService.loadLightingFixtureCategories();
+    this.lightingFixtureCategoriesSub = this.lightingReplacementService.lightingFixtureCategories$.subscribe(categories => {
+      if (!categories) {
+        return;
+      }
+      this.lightingFixtureCategories = categories;
+      this.fixtureTypes = categories.find(fixtureCategory => fixtureCategory.category == this.form.controls.category.value).fixturesData;
+      this.checkSelectFixtureDiff();
+      this.lightingReplacementService.selectedFixtureTypes.next(this.fixtureTypes);
+    });
+    if (this.selected == false) {
+      this.form.disable();
+    }
+  }
+
+  ngOnDestroy() {
+    this.lightingFixtureCategoriesSub?.unsubscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.selected && !changes.selected.firstChange) {
+      if (this.selected == false) {
+        this.form.disable();
+      } else {
+        this.form.enable();
+      }
+    }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.setOpHoursModalWidth();
+    }, 100)
+  }
+
+  calculate() {
+    let tmpObj: LightingReplacementData = this.lightingReplacementService.getObjFromForm(this.form);
+    this.checkSelectFixtureDiff();
+    this.emitCalculate.emit(tmpObj);
+  }
+
+  focusField(str: string) {
+    this.lightingReplacementService.selectedFixtureTypes.next(this.fixtureTypes);
+    this.emitFocusField.emit(str);
+  }
+
+  removeFixture() {
+    this.emitRemoveFixture.emit(this.index);
+  }
+
+  editFixtureName() {
+    this.isEditingName = true;
+  }
+
+  doneEditingName() {
+    this.isEditingName = false;
+  }
+
+  focusOut() {
+  }
+
+  closeOperatingHoursModal() {
+    this.showOperatingHoursModal = false;
+  }
+
+  openOperatingHoursModal() {
+    this.showOperatingHoursModal = true;
+  }
+
+  updateOperatingHours(oppHours: OperatingHours) {
+    this.lightingReplacementService.operatingHours = oppHours;
+    this.form.controls.hoursPerYear.patchValue(oppHours.hoursPerYear);
+    this.calculate();
+    this.closeOperatingHoursModal();
+  }
+
+  setOpHoursModalWidth() {
+    if (this.formElement.nativeElement.clientWidth) {
+      this.formWidth = this.formElement.nativeElement.clientWidth;
+    }
+  }
+
+  setCategory() {
+    this.fixtureTypes = this.lightingFixtureCategories.find(fixtureCategory => { return fixtureCategory.category == this.form.controls.category.value }).fixturesData;
+    this.lightingReplacementService.selectedFixtureTypes.next(this.fixtureTypes);
+    this.clearProperties();
+  }
+
+  setProperties() {
+    let fixtureData: LightingFixtureData = this.fixtureTypes.find(fixtureType => { return fixtureType.type == this.form.controls.type.value });
+    if (fixtureData != undefined) {
+      this.form.patchValue({
+        lampsPerFixture: fixtureData.lampsPerFixture,
+        wattsPerLamp: fixtureData.wattsPerLamp,
+        lumensPerLamp: fixtureData.lumensPerLamp,
+        lampLife: fixtureData.lampLife,
+        coefficientOfUtilization: fixtureData.coefficientOfUtilization,
+        ballastFactor: fixtureData.ballastFactor,
+        lumenDegradationFactor: fixtureData.lumenDegradationFactor
+      });
+    }
+    this.calculate();
+  }
+
+  clearProperties() {
+    this.form.patchValue({
+      type: '',
+      lampsPerFixture: undefined,
+      wattsPerLamp: undefined,
+      lumensPerLamp: 1,
+      lampLife: undefined,
+      coefficientOfUtilization: 1,
+      ballastFactor: undefined,
+      lumenDegradationFactor: 1
+    });
+    this.calculate();
+  }
+
+  showDetails() {
+    this.displayDetails = true;
+  }
+
+  hideDetails() {
+    this.displayDetails = false;
+  }
+
+  checkSelectFixtureDiff() {
+    this.computeFixtureDiff();
+    this.cd.detectChanges();
+  }
+
+  computeFixtureDiff() {
+    if (this.form.controls.category.value != 0) {
+      let fixtureData: LightingFixtureData = this.fixtureTypes.find(fixtureType => { return fixtureType.type == this.form.controls.type.value });
+      if (fixtureData != undefined && fixtureData.type != "") {
+        this.indicateLampsPerFixtureDiff = fixtureData.lampsPerFixture != this.form.controls.lampsPerFixture.value;
+        this.indicateWattsPerLampDiff = fixtureData.wattsPerLamp != this.form.controls.wattsPerLamp.value;
+        this.indicateLumensPerLampDiff = fixtureData.lumensPerLamp != this.form.controls.lumensPerLamp.value;
+        this.indicateCoefficientOfUtilizationDiff = fixtureData.coefficientOfUtilization != this.form.controls.coefficientOfUtilization.value;
+        this.indicateBallastFactorDiff = fixtureData.ballastFactor != this.form.controls.ballastFactor.value;
+        this.indicateLumenDegradationFactorDiff = fixtureData.lumenDegradationFactor != this.form.controls.lumenDegradationFactor.value;
+      } else {
+        this.setNotDiff();
+      }
+    } else {
+      this.setNotDiff();
+    }
+    this.indicateFixtureTypeDiff = this.indicateLampsPerFixtureDiff || this.indicateWattsPerLampDiff || this.indicateLumensPerLampDiff || this.indicateCoefficientOfUtilizationDiff || this.indicateBallastFactorDiff || this.indicateLumenDegradationFactorDiff;
+  }
+
+  showMaterialModal(editExistingMaterial: boolean) {
+    this.editExistingMaterial = editExistingMaterial;
+    this.showModal = true;
+    this.materialModal.show();
+  }
+
+  hideMaterialModal(result?: LightingFixtureMaterial) {
+    if (result) {
+      this.form.controls.category.setValue(0);
+      this.fixtureTypes = this.lightingFixtureCategories.find(fixtureCategory => fixtureCategory.category === 0).fixturesData;
+      this.lightingReplacementService.selectedFixtureTypes.next(this.fixtureTypes);
+      this.form.controls.type.setValue(result.type && result.type.trim() !== '' ? result.type : result.name);
+      this.setProperties();
+    }
+    this.showModal = false;
+    this.materialModal.hide();
+  }
+
+  setNotDiff() {
+    this.indicateLampsPerFixtureDiff = false;
+    this.indicateWattsPerLampDiff = false;
+    this.indicateLumensPerLampDiff = false;
+    this.indicateCoefficientOfUtilizationDiff = false;
+    this.indicateBallastFactorDiff = false;
+    this.indicateLumenDegradationFactorDiff = false;
+  }
+}

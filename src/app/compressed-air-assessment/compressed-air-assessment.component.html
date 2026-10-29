@@ -1,0 +1,11 @@
+<div #content class="compressed-air-container compressed-air" *ngIf="!initializingAssessment && settings">
+  <div #header class="w-100 hide-print sticky-top" id="compressedAirBanner" [ngClass]="{'modal-open': isModalOpen == true}">
+    <app-compressed-air-banner [assessment]="assessment"></app-compressed-air-banner>
+  </div>
+  <div class="tab-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<app-welcome-screen *ngIf="showWelcomeScreen" (emitClose)="closeWelcomeScreen()"></app-welcome-screen>
+<app-export-modal *ngIf="showExportModal" [inAssessment]="true" [assessment]="assessment" (close)="closeExportModal($event)"></app-export-modal>

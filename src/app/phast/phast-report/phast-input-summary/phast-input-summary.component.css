@@ -1,0 +1,8 @@
+@media print {
+    .print-section-header {
+        font-size: 30px;
+    }
+}
+.pad {
+    padding-bottom:20px;
+}

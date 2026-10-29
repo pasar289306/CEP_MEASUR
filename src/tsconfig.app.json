@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
+    "outDir": "../out-tsc/app",
+    "target": "ES2022",
+    "module": "ES2022",
+    "baseUrl": "",
+    "types": [
+      "node",
+      "jasmine"
+    ],
+    "useDefineForClassFields": false
+  },
+  "files": [ 
+    "./main.ts", 
+    "./polyfills.ts" 
+  ], 
+  "include": [ 
+    "./**/*.d.ts" 
+  ],
+  "exclude": [
+    "test.ts",
+    "**/*.spec.ts"
+  ]
+}

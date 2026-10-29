@@ -1,0 +1,7 @@
+    <!-- * Native web component built from /process-flow-diagram-component React -->
+    <process-flow-diagram-component 
+    class="pfd-wrapper"
+    #pfdComponent 
+    (updateDiagramDetailEvent)="onUpdateDiagramState($event)"
+    (diagramReadyEvent)="diagramReady.emit()"
+    ></process-flow-diagram-component>

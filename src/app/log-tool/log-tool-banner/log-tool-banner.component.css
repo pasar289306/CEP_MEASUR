@@ -1,0 +1,60 @@
+.h2-name{
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.hidden{
+    display: none;
+}
+
+.hidden.show{
+    display: inherit;
+}
+
+
+.nav-item{
+    color: white;
+}
+
+.banner .nav-link:not(.disabled):not(.active), .home-nav-item a.user-manual{
+    color: white;
+}
+
+.img-icon{
+    width: 45px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.download-nav-item .fa.fa-download{
+    border: none !important;
+    background-color: inherit !important;
+    opacity: 1;
+}
+
+.download-nav-item.active{
+    border: none !important;
+    background-color: #117A65 !important;
+}
+
+.disabled.download-nav-item{
+    cursor: inherit;
+    opacity: .6;
+}
+
+.disabled.download-nav-item:hover{
+    opacity: .6;
+    cursor: inherit;
+}
+
+span.fa.fa-download{
+    padding: 0px !important;
+}
+
+.btn.chevron-btn{
+    border: none !important;
+    width: 20px;
+    height: 28px;
+    color: white;
+    box-shadow: none !important;
+}

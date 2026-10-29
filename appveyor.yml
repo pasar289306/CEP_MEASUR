@@ -1,0 +1,12 @@
+version: 0.2.{build}-{branch}
+branches:
+  only:
+  - develop
+image: Visual Studio 2017
+install:
+- ps: Install-Product node 24
+build_script:
+- cmd: >-
+    npm ci
+    npm run build
+test: off

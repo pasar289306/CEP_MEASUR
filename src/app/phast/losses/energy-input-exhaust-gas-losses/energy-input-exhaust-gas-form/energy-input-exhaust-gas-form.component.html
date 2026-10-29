@@ -1,0 +1,73 @@
+<form [formGroup]="exhaustGasForm">
+  <div class="form-group">
+    <label class="small" for="{{'electricalHeaterEfficiency'+idString}}">
+      <span>
+        Electrical Heater Efficiency
+      </span>
+    </label>
+    <div class="input-group">
+      <input [readonly]="!baselineSelected" name="{{'electricalHeaterEfficiency'+idString}}" type="number" step="any"
+        min="0" class="form-control" formControlName="electricalHeaterEfficiency"
+        id="{{'electricalHeaterEfficiency'+idString}}" onfocus="this.select();" (input)="save()"
+        (focus)="focusField('electricalHeaterEfficiency')">
+      <span class="input-group-addon units">%</span>
+    </div>
+    <span class="alert-danger pull-right small"
+      *ngIf="exhaustGasForm.controls.electricalHeaterEfficiency.invalid && !exhaustGasForm.controls.electricalHeaterEfficiency.pristine">
+      <span *ngIf="exhaustGasForm.controls.electricalHeaterEfficiency.errors.required">Value Required</span>
+      <span *ngIf="exhaustGasForm.controls.electricalHeaterEfficiency.errors.greaterThan == 0">Value must be greater
+        than than
+        0.</span>
+      <span *ngIf="exhaustGasForm.controls.electricalHeaterEfficiency.errors.max">Value can't be greater than
+        100%.</span>
+    </span>
+  </div>
+
+  <div class="form-section">
+    <div class="form-group">
+      <label class="small" for="{{'totalHeatInput_'+idString}}">Total Additional Fuel Heat</label>
+      <div class="input-group"
+        [ngClass]="{'indicate-different': compareTotalHeatInput(), 'invalid': exhaustGasForm.controls.totalHeatInput.invalid}">
+        <input [readonly]="!baselineSelected" name="{{'totalHeatInput_'+lossIndex}}" type="number" step="100" min="0"
+          class="form-control" formControlName="totalHeatInput" id="{{'totalHeatInput_'+idString}}"
+          onfocus="this.select();" (input)="save()" (focus)="focusField('totalHeatInput')">
+        <span *ngIf="settings.unitsOfMeasure == 'Imperial'" class="input-group-addon units">MMBtu/hr</span>
+        <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">GJ/hr</span>
+      </div>
+    </div>
+    <div *ngIf="exhaustGasForm.controls.totalHeatInput.value > 0" class="form-group">
+      <label class="small" for="{{'availableHeat'+idString}}">
+        <span>
+          Available Heat of Fuel
+        </span>
+        <a id="materialHelp" class="form-text small click-link" (click)="initFlueGasModal()">Calculate</a>
+      </label>
+      <div class="input-group">
+        <input [readonly]="!baselineSelected" name="{{'availableHeat'+idString}}" type="number" step="any" min="0"
+          class="form-control" formControlName="availableHeat" id="{{'availableHeat'+idString}}"
+          onfocus="this.select();" (input)="save()" (focus)="focusField('availableHeat')">
+        <span class="input-group-addon units">%</span>
+      </div>
+      <span class="alert-danger pull-right small"
+        *ngIf="exhaustGasForm.controls.availableHeat.invalid && !exhaustGasForm.controls.availableHeat.pristine">
+        <span *ngIf="exhaustGasForm.controls.availableHeat.errors.required">Value Required</span>
+        <span *ngIf="exhaustGasForm.controls.availableHeat.errors.greaterThan == 0">Value must be greater than than
+          0.</span>
+        <span *ngIf="exhaustGasForm.controls.availableHeat.errors.max">Value can't be greater than 100%.</span>
+      </span>
+    </div>
+  </div>
+
+</form>
+
+<div bsModal #flueGasModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="flueGasModalLabel"
+  aria-hidden="true" [config]="{backdrop: 'static'}">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div>
+        <app-flue-gas-modal *ngIf="showFlueGasModal" (closeModal)="hideFlueGasModal($event)"
+          (hideModal)="hideFlueGasModal($event)" [settings]="settings"></app-flue-gas-modal>
+      </div>
+    </div>
+  </div>
+</div>

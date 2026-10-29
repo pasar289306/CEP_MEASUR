@@ -1,0 +1,105 @@
+<table class="table table-hover table-striped">
+  <thead>
+    <tr>
+      <th>
+        Furnace Name
+      </th>
+      <th *ngIf="showFuel">
+        Fuel Energy Used
+        <br> ({{settings.phastRollupUnit}}/yr)
+      </th>
+      <th *ngIf="showFuel">
+        Annual Cost
+        <br> ({{currencyUnit}})
+      </th>
+      <th *ngIf="showElectricity">
+        Electrical Energy Use
+        <br> ({{settings.phastRollupUnit}}/yr)
+      </th>
+      <th *ngIf="showElectricity">
+        Annual Cost
+        <br> ({{currencyUnit}})
+      </th>
+      <th *ngIf="showSteam">
+        Steam Energy Use
+        <br> ({{settings.phastRollupUnit}}/yr)
+      </th>
+      <th *ngIf="showSteam">
+        Annual Cost
+        <br> ({{currencyUnit}})
+      </th>
+      <th *ngIf="showTotal">
+        Total Annual Cost
+        <br> ({{currencyUnit}})
+      </th>
+      <th>
+        % of Total Cost
+      </th>
+      <th>
+        % of Total Energy Used
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of tableData">
+
+      <!-- Fuel -->
+      <td class="name" [ngStyle]="{'border-left-color': data.color}">
+        {{data.equipmentName}}
+      </td>
+      <td *ngIf="data.furnaceType == 'Fuel' && showFuel">
+        {{data.energyUsed | sigFigs:'5'}}
+      </td>
+      <td *ngIf="data.furnaceType == 'Fuel' && showFuel">
+        ${{data.annualCost | sigFigs:'4'}}
+      </td>
+      <td *ngIf="data.furnaceType == 'Steam' && showFuel">&mdash;</td>
+      <td *ngIf="data.furnaceType == 'Steam' && showFuel">&mdash;</td>
+      
+
+     <!-- Electrotech -->
+      <td *ngIf="data.furnaceType == 'Electricity' && showFuel">
+        {{data.electrotechFuelEnergyUsed | sigFigs:'5'}}
+      </td>
+      <td *ngIf="data.furnaceType == 'Electricity' && showFuel">
+        ${{data.electrotechFuelEnergyCost | sigFigs:'4'}}
+      </td>
+      <td *ngIf="data.furnaceType == 'Electricity' && showElectricity">
+        {{data.electrotechElectricityEnergyUsed | sigFigs:'5'}}
+      </td>
+      <td *ngIf="data.furnaceType == 'Electricity' && showElectricity">
+        ${{data.electrotechElectricityEnergyCost | sigFigs:'4'}}
+      </td>
+      <td *ngIf="data.furnaceType != 'Electricity' && showElectricity">&mdash;</td>
+      <td *ngIf="data.furnaceType != 'Electricity' && showElectricity">&mdash;</td>
+
+
+      <!-- Steam -->
+      <td *ngIf="data.furnaceType == 'Steam' && showSteam">
+        {{data.energyUsed | sigFigs:'5'}}
+      </td>
+      <td *ngIf="data.furnaceType == 'Steam' && showSteam">
+        ${{data.annualCost | sigFigs:'4'}}
+      </td>
+      <td *ngIf="data.furnaceType != 'Steam' && showSteam">&mdash;</td>
+      <td *ngIf="data.furnaceType != 'Steam' && showSteam">&mdash;</td>
+      <td *ngIf="showTotal">${{data.annualCost | sigFigs:'4'}}</td>
+      <td>{{data.percentCost | number:'1.0-1'}}</td>
+      <td>{{data.percentEnergy | number:'1.0-1'}}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>
+        Totals
+      </td>
+      <td *ngIf="showFuel">{{totalFuelUsage | sigFigs:'5'}}</td>
+      <td *ngIf="showFuel">${{totalFuelCost | sigFigs:'4'}}</td>
+      <td *ngIf="showElectricity">{{totalElectricityUsage | sigFigs:'5'}}</td>
+      <td *ngIf="showElectricity">${{totalElectricityCost | sigFigs:'4'}}</td>
+      <td *ngIf="showSteam">{{totalSteamUsage  | sigFigs:'5'}}</td>
+      <td *ngIf="showSteam">${{totalSteamCost | sigFigs:'4'}}</td>
+      <td *ngIf="showTotal">${{totalFuelCost + totalElectricityCost + totalSteamCost| sigFigs:'4'}}</td>
+    </tr>
+  </tfoot>
+</table>

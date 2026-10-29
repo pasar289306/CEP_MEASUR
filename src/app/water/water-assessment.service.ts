@@ -1,0 +1,381 @@
+import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { WATER_MAIN_VIEWS } from './routing/water-main-views';
+import { getSteppedView } from '../shared/main-tab-routing/main-tab-routing';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Observable } from 'rxjs';
+import { Settings } from '../shared/models/settings';
+import { WaterSystemComponentService } from './water-system-component.service';
+import { DiagramWaterSystemFlows, DischargeOutlet, EdgeFlowData, getComponentNameFromType, getDischargeOutlet, getIntakeSource, getIsDiagramValid, getNewWaterTreatmentComponent, getWasteWaterTreatmentComponent, getWaterUsingSystem, IntakeSource, DiagramFlowErrors, WasteWaterTreatment, WaterAssessment, WaterProcessComponent, WaterProcessComponentType, WaterTreatment, WaterUsingSystem } from 'process-flow-lib';
+import { Assessment } from '../shared/models/assessment';
+import { Diagram } from '../shared/models/diagram';
+import { UpdateDiagramFromAssessmentService } from '../water-process-diagram/update-diagram-from-assessment.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class WaterAssessmentService {
+  private readonly updateDiagramFromAssessmentService = inject(UpdateDiagramFromAssessmentService);
+  private readonly router = inject(Router);
+
+  waterAssessment: BehaviorSubject<WaterAssessment>;
+
+  private readonly assessment = new BehaviorSubject<Assessment>(undefined);
+  readonly assessment$: Observable<Assessment> = this.assessment.asObservable();
+  
+  settings: BehaviorSubject<Settings> = new BehaviorSubject<Settings>(undefined);
+  readonly settings$: Observable<Settings> = this.settings.asObservable();
+
+
+  readonly isDiagramValid$: Observable<boolean> = this.assessment$.pipe(
+    filter((assessment) => assessment !== undefined),
+    map((assessment) => {
+      let diagram: Diagram = this.updateDiagramFromAssessmentService.getDiagramFromAssessment(assessment);
+      let diagramFlowErrors: DiagramFlowErrors = diagram.waterDiagram.flowDiagramData.diagramFlowErrors;
+      const isDiagramValid = getIsDiagramValid(diagramFlowErrors);
+      return isDiagramValid;
+    })
+  );
+
+  assessmentId: number;
+  mainTab: BehaviorSubject<WaterMainTabString>;
+  setupTab: BehaviorSubject<WaterSetupTabString>;
+  waterUsingSystemTab: BehaviorSubject<WaterUsingSystemTabString>;
+  intakeSourceTab: BehaviorSubject<PlantIntakeDischargeTab>;
+  dischargeOutletTab: BehaviorSubject<PlantIntakeDischargeTab>;
+  focusedField: BehaviorSubject<string>;
+  helpTextField: BehaviorSubject<string>;
+  calcTab: BehaviorSubject<string>;
+  assessmentTab: BehaviorSubject<string>;
+  secondaryAssessmentTab: BehaviorSubject<string>;
+  modalOpen: BehaviorSubject<boolean>;
+  selectedModificationId: BehaviorSubject<string>;
+  showModificationListModal: BehaviorSubject<boolean>;
+  showAddModificationModal: BehaviorSubject<boolean>;
+  showExportModal: BehaviorSubject<boolean>;
+  setupTabs: Array<WaterSetupTabString> = [
+    'system-basics',
+    'water-intake',
+    'water-discharge',
+    'water-treatment',
+    'water-using-system',
+    'waste-water-treatment'
+  ];
+
+  constructor(
+    private waterSystemComponentService: WaterSystemComponentService) {
+    this.waterAssessment = new BehaviorSubject<WaterAssessment>(undefined);
+    this.mainTab = new BehaviorSubject<WaterMainTabString>('baseline');
+    this.setupTab = new BehaviorSubject<WaterSetupTabString>('system-basics');
+    this.waterUsingSystemTab = new BehaviorSubject<WaterUsingSystemTabString>('system');
+    this.intakeSourceTab = new BehaviorSubject<PlantIntakeDischargeTab>('data');
+    this.dischargeOutletTab = new BehaviorSubject<PlantIntakeDischargeTab>('data');
+    this.focusedField = new BehaviorSubject<string>('default');
+    this.helpTextField = new BehaviorSubject<string>('default');
+    // this.calcTab = new BehaviorSubject<string>('air-flow-conversion');
+    this.assessmentTab = new BehaviorSubject<string>('explore-opportunities');
+    this.secondaryAssessmentTab = new BehaviorSubject<string>('modifications');
+    this.modalOpen = new BehaviorSubject<boolean>(false);
+    this.selectedModificationId = new BehaviorSubject<string>(undefined);
+    this.showModificationListModal = new BehaviorSubject<boolean>(false);
+    this.showAddModificationModal = new BehaviorSubject<boolean>(false);
+    this.showExportModal = new BehaviorSubject<boolean>(false);
+  }
+
+  setAssessment(assessment: Assessment) {
+    this.assessment.next(assessment);
+  }
+
+  get assessmentValue(): Assessment {
+    return this.assessment.getValue();
+  }
+
+  updateWaterAssessment(waterAssessment: WaterAssessment) {
+    this.waterAssessment.next(waterAssessment);
+  }
+
+  setWaterProcessComponentTitle(componentType: WaterProcessComponentType) {
+    return getComponentNameFromType(componentType);
+  }
+
+  setIntakeSourceTabTitle(tabString: PlantIntakeDischargeTab) {
+    switch (tabString) {
+      case 'data':
+        return 'Intake Data'
+      case 'added-energy':
+        return 'Added Pump Energy'
+      default:
+         return 'Intake Data'
+    }
+  }
+
+  
+  setDischargeOutletTabTitle(tabString: PlantIntakeDischargeTab) {
+    switch (tabString) {
+      case 'data':
+        return 'Discharge Data'
+      case 'added-energy':
+        return 'Added Pump Energy'
+      default:
+         return 'Discharge Data'
+    }
+  }
+
+  setWaterSystemTabTitle(tabString: WaterUsingSystemTabString) {
+    switch (tabString) {
+      case 'system':
+        return 'Water System Data'
+      case 'added-energy':
+        return 'Added Heat and Pump Energy'
+      case 'water-treatment':
+        return 'Water Treatment'
+      default:
+         return 'Water System Data'
+    }
+  }
+
+  addNewWaterComponent(componentType: WaterProcessComponentType) {
+    let waterAssessment: WaterAssessment = this.waterAssessment.getValue();
+    let newComponent: WaterProcessComponent;
+    if (componentType === 'water-intake') {
+      let newIntakeSource = getIntakeSource();
+      waterAssessment.intakeSources? waterAssessment.intakeSources.push(newIntakeSource) : waterAssessment.intakeSources = [newIntakeSource];
+      newComponent = newIntakeSource;
+    } else if (componentType === 'water-discharge') {
+      let newDischargeOutlet = getDischargeOutlet();
+      waterAssessment.dischargeOutlets? waterAssessment.dischargeOutlets.push(newDischargeOutlet) : waterAssessment.dischargeOutlets = [newDischargeOutlet];
+      newComponent = newDischargeOutlet;
+    } else if (componentType === 'water-using-system') {
+      let newWaterUsingSystem = getWaterUsingSystem();
+      waterAssessment.waterUsingSystems? waterAssessment.waterUsingSystems.push(newWaterUsingSystem) : waterAssessment.waterUsingSystems = [newWaterUsingSystem];
+      let componentWaterFlows = this.getDefaultDiagramWaterFlows();
+      componentWaterFlows.id = newWaterUsingSystem.diagramNodeId;
+      waterAssessment.diagramWaterSystemFlows.push(componentWaterFlows);
+      newComponent = newWaterUsingSystem;
+    } else if (componentType === 'water-treatment') {
+      let newWaterTreatment = getNewWaterTreatmentComponent(false, true);
+      waterAssessment.waterTreatments? waterAssessment.waterTreatments.push(newWaterTreatment) : waterAssessment.waterTreatments = [newWaterTreatment];
+      newComponent = newWaterTreatment;
+    } else if (componentType === 'waste-water-treatment') {
+      let newWasteTreatment = getWasteWaterTreatmentComponent();
+      waterAssessment.wasteWaterTreatments? waterAssessment.wasteWaterTreatments.push(newWasteTreatment) : waterAssessment.wasteWaterTreatments = [newWasteTreatment];
+      newComponent = newWasteTreatment;
+    }
+
+    this.updateWaterAssessment(waterAssessment);
+    this.waterSystemComponentService.selectedComponent.next(newComponent);
+  }
+
+  copyWaterComponent(componentType: WaterProcessComponentType, copiedComponent: WaterProcessComponent) {
+    let waterAssessment: WaterAssessment = this.waterAssessment.getValue();
+
+    if (componentType === 'water-intake') {
+      copiedComponent = copiedComponent as IntakeSource;
+      waterAssessment.intakeSources? waterAssessment.intakeSources.push(copiedComponent) : waterAssessment.intakeSources = [copiedComponent];
+    } else if (componentType === 'water-discharge') {
+      copiedComponent = copiedComponent as DischargeOutlet;
+      waterAssessment.dischargeOutlets? waterAssessment.dischargeOutlets.push(copiedComponent) : waterAssessment.dischargeOutlets = [copiedComponent];
+    } else if (componentType === 'water-using-system') {
+      copiedComponent = copiedComponent as WaterUsingSystem;
+      waterAssessment.waterUsingSystems? waterAssessment.waterUsingSystems.push(copiedComponent) : waterAssessment.waterUsingSystems = [copiedComponent];
+    } else if (componentType === 'water-treatment') {
+      copiedComponent = copiedComponent as WaterTreatment;
+      waterAssessment.waterTreatments? waterAssessment.waterTreatments.push(copiedComponent) : waterAssessment.waterTreatments = [copiedComponent];
+    } else if (componentType === 'waste-water-treatment') {
+      copiedComponent = copiedComponent as WasteWaterTreatment;
+      waterAssessment.wasteWaterTreatments? waterAssessment.wasteWaterTreatments.push(copiedComponent) : waterAssessment.wasteWaterTreatments = [copiedComponent];
+    } 
+
+    this.updateWaterAssessment(waterAssessment);
+    this.waterSystemComponentService.selectedComponent.next(copiedComponent);
+  }
+
+
+  deleteWaterComponent(componentType: WaterProcessComponentType, deleteId: string, isSelectedComponent?: boolean) {
+    let waterAssessment: WaterAssessment = this.waterAssessment.getValue();
+    let updatedViewComponents: WaterProcessComponent[];
+    let deleteIndex: number;
+
+    if (componentType === 'water-intake') {
+      deleteIndex = waterAssessment.intakeSources.findIndex(component => component.diagramNodeId === deleteId);
+      waterAssessment.intakeSources.splice(deleteIndex, 1);
+      updatedViewComponents = waterAssessment.intakeSources;
+    } else if (componentType === 'water-discharge') {
+      deleteIndex = waterAssessment.dischargeOutlets.findIndex(component => component.diagramNodeId === deleteId);
+      waterAssessment.dischargeOutlets.splice(deleteIndex, 1);
+      updatedViewComponents = waterAssessment.dischargeOutlets;
+    } else if (componentType === 'water-treatment') {
+      deleteIndex = waterAssessment.waterTreatments.findIndex(component => component.diagramNodeId === deleteId);
+      waterAssessment.waterTreatments.splice(deleteIndex, 1);
+      updatedViewComponents = waterAssessment.waterTreatments;
+    } else if (componentType === 'water-using-system') {
+      deleteIndex = waterAssessment.waterUsingSystems.findIndex(component => component.diagramNodeId === deleteId);
+      waterAssessment.waterUsingSystems.splice(deleteIndex, 1);
+      updatedViewComponents = waterAssessment.waterUsingSystems;
+    } else if (componentType === 'waste-water-treatment') {
+      deleteIndex = waterAssessment.wasteWaterTreatments.findIndex(component => component.diagramNodeId === deleteId);
+      waterAssessment.wasteWaterTreatments.splice(deleteIndex, 1);
+      updatedViewComponents = waterAssessment.wasteWaterTreatments;
+    }
+    
+    this.updateWaterAssessment(waterAssessment);
+    this.waterSystemComponentService.selectedViewComponents.next(updatedViewComponents);
+    if (isSelectedComponent) {
+      this.waterSystemComponentService.selectedComponent.next(updatedViewComponents[0]);
+    }
+  }
+
+  /**
+   * @param view one of `WATER_MAIN_VIEWS`
+   */
+  goToMainTab(view: WaterMainTabString) {
+    if (!this.assessmentId) {
+      return;
+    }
+    const diagramId: number = this.assessment.getValue()?.diagramId;
+    if (view === 'diagram' && diagramId) {
+      this.router.navigate(['/water', this.assessmentId, 'diagram', diagramId]);
+    } else {
+      this.router.navigate(['/water', this.assessmentId, view]);
+    }
+  }
+
+  continueMainTab() {
+    this.stepMainTab(1);
+  }
+
+  backMainTab() {
+    this.stepMainTab(-1);
+  }
+
+  private stepMainTab(offset: number) {
+    const view: WaterMainTabString = getSteppedView(WATER_MAIN_VIEWS, this.mainTab.getValue(), offset);
+    if (view) {
+      this.goToMainTab(view);
+    }
+  }
+
+  continueSetupTab() {
+    let tmpSetupTab: WaterSetupTabString = this.setupTab.getValue();
+    if (tmpSetupTab !== 'waste-water-treatment' && this.mainTab.getValue() == 'baseline') {
+      const nextTab: WaterSetupTabString = getSteppedView(this.setupTabs, tmpSetupTab, 1);
+      if (nextTab) {
+        this.setupTab.next(nextTab);
+      }
+    }
+  }
+
+  backSetupTab() {
+    let tmpSetupTab: WaterSetupTabString = this.setupTab.getValue();
+    if (tmpSetupTab !== 'system-basics' && this.mainTab.getValue() == 'baseline') {
+      const previousTab: WaterSetupTabString = getSteppedView(this.setupTabs, tmpSetupTab, -1);
+      if (previousTab) {
+        this.setupTab.next(previousTab);
+      }
+    }
+  }
+
+  getHasWaterTreatments(waterAssessment?: WaterAssessment) {
+    // todo and valid
+    if (!waterAssessment) {
+      waterAssessment = this.waterAssessment.getValue();
+    }
+    return waterAssessment.waterTreatments && waterAssessment.waterTreatments.length > 0;
+  }
+
+  getHasWasteWaterTreatments(waterAssessment?: WaterAssessment) {
+    // todo and valid
+    if (!waterAssessment) {
+      waterAssessment = this.waterAssessment.getValue();
+    }
+    return waterAssessment.wasteWaterTreatments && waterAssessment.wasteWaterTreatments.length > 0;
+  }
+
+  // todo 6927 this will need work to check which treatment is requesting options
+  getAvailableTreatmentOptions(treatments: WaterTreatment[] | WasteWaterTreatment[], treatmentOptions: {display: string, value: number}[]) {
+    // let existingTreatmentTypes = treatments.filter(treatment => treatment.customTreatmentType !== 15).map((treatment: WaterTreatment | WasteWaterTreatment) => treatment.treatmentType);
+    // treatmentOptions = treatmentOptions.filter(option => !existingTreatmentTypes.includes(option.value));
+    return treatmentOptions;
+  }
+
+  getDefaultDiagramWaterFlows(): DiagramWaterSystemFlows {
+    return {
+      id: undefined,
+      componentName: undefined,
+      sourceWater: {
+        total: undefined,
+        flows: []
+      },
+      recirculatedWater: {
+        total: undefined,
+        flows: []
+      },
+      dischargeWater: {
+        total: undefined,
+        flows: []
+      },
+      knownLosses: {
+        total: undefined,
+        flows: []
+      },
+      waterInProduct: {
+        total: undefined,
+        flows: []
+      },
+    }
+  }
+
+  // todo rename diagramWaterSystemFlows
+  getSourceConnectionOptions(waterAssessment: WaterAssessment, diagramNodeId: string): {value: string, display: string}[] {
+    // find all components not already listed as a connected source in FlowData of diagramWaterSystemFlow
+    let connectionOptions = [].concat(
+      waterAssessment.intakeSources,
+      waterAssessment.waterUsingSystems,
+      waterAssessment.waterTreatments,
+    ).filter(component => component.diagramNodeId !== diagramNodeId).map(component => {
+      return {
+        value: component.diagramNodeId,
+        display: component.name,
+      };
+    });
+
+    return connectionOptions;
+  }
+
+  getSystemSourceFlows(waterAssessment: WaterAssessment, diagramNodeId: string): EdgeFlowData[] {
+    let componentWaterFlows: DiagramWaterSystemFlows = waterAssessment.diagramWaterSystemFlows?.find(componentFlows => componentFlows.id === diagramNodeId);
+    if (!componentWaterFlows) {
+      return [];
+    }
+    return componentWaterFlows.sourceWater.flows.map(flow => flow);
+  }
+
+  updateSystemSourceFlowData(waterAssessment: WaterAssessment, flowData: EdgeFlowData): void {
+    // todo if is connected to water system need to also add to discharge of that system 
+    waterAssessment.diagramWaterSystemFlows = waterAssessment.diagramWaterSystemFlows.map(componentFlows => {
+      if (componentFlows.id === flowData.target) {
+        let existingFlowIndex = componentFlows.sourceWater.flows.findIndex(flow => flow.source !== undefined && flow.source === flowData.source);
+        if (existingFlowIndex >= 0) {
+          componentFlows.sourceWater.flows[existingFlowIndex] = flowData;
+        } else {
+          // todo map discharge also
+          // waterAssessment.connectedNodesMap[flowData.source] = flowData.target;
+          componentFlows.sourceWater.flows.push(flowData);
+        }
+      }
+      return componentFlows;
+    });
+  }
+
+  getAvailableConnectionOptions(existingFlows: EdgeFlowData[], connectionOptions:{value: string, display: string}[]): {value: string, display: string}[] {
+    const existingFlowIds: string[] = existingFlows.map(flow => flow.source);
+    connectionOptions = connectionOptions.filter(option => !existingFlowIds.includes(option.value));
+    return connectionOptions;
+  }
+  
+
+}
+
+export type WaterMainTabString = 'baseline' | 'assessment' | 'report' | 'diagram';
+export type WaterSetupTabString = WaterProcessComponentType | 'system-basics' | 'system-balance-results';
+export type WaterUsingSystemTabString = 'system' | 'added-energy' | 'water-treatment';
+export type PlantIntakeDischargeTab = 'data' | 'added-energy';

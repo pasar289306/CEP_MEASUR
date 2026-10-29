@@ -1,0 +1,319 @@
+<div class="row phast align-items-top">
+  <div class="col-12">
+    <div class="header card-header">
+      <h3>Help</h3>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center data-row align-items-center">
+  <div class="col-11">
+
+    <div class="p-2 pt-3 d-flex flex-column help-info">
+      <h5>
+        Custom Solid/Liquid Fuels Help
+        <br>
+        <small class="text-muted">
+        </small>
+      </h5>
+      <hr class="my-1 hr-spacer">
+
+
+      <div class="my-2" *ngIf="currentField == 'selectedMaterial'">
+        <h6>
+          Start With Existing
+          <br>
+          <small class="text-muted">
+            Use an existing fuel's properties to get started.
+          </small>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'substance'">
+        <h6>
+          Name of New Substance
+          <br>
+          <small class="text-muted">
+            Use a unique name for your new substance. Duplicates will not be saved.
+          </small>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'carbon'">
+        <h6>
+          Carbon (C)
+          <br>
+          <small class="text-muted">
+            Carbon composition of solid fuel by mass.
+            <hr>
+          </small>
+        </h6>
+        <div class="w-100 justify-content-center">
+          <table class="table table-hover table-striped">
+            <tbody>
+              <tr>
+                <th class="text-center">Minimum</th>
+                <th class="text-center">Maximum</th>
+              </tr>
+              <tr>
+                <td class="text-center">0%</td>
+                <td class="text-center">100%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h6>
+          <small class="text-muted">
+            <hr>
+          </small>
+          <div class="alert alert-info">
+            <small class="text-muted">
+              Note: The fuel analysis will be adjusted to make the total composition equal to 100% for calculations.
+            </small>
+          </div>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'hydrogen'">
+        <h6>
+          Hydrogen (H
+          <sub>2</sub>)
+          <br>
+          <small class="text-muted">
+            Hydrogen composition of solid fuel by mass.
+            <hr>
+          </small>
+        </h6>
+        <div class="w-100 justify-content-center">
+          <table class="table table-hover table-striped">
+            <tbody>
+              <tr>
+                <th class="text-center">Minimum</th>
+                <th class="text-center">Maximum</th>
+              </tr>
+              <tr>
+                <td class="text-center">0%</td>
+                <td class="text-center">100%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h6>
+          <small class="text-muted">
+            <hr>
+          </small>
+          <div class="alert alert-info">
+            <small class="text-muted">
+              Note: The fuel analysis will be adjusted to make the total composition equal to 100% for calculations.
+            </small>
+          </div>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'inertAsh'">
+        <h6>
+          Inert Ash
+          <br>
+          <small class="text-muted">
+            Inert ash composition of solid fuel by mass.
+            <hr>
+          </small>
+        </h6>
+        <div class="w-100 justify-content-center">
+          <table class="table table-hover table-striped">
+            <tbody>
+              <tr>
+                <th class="text-center">Minimum</th>
+                <th class="text-center">Maximum</th>
+              </tr>
+              <tr>
+                <td class="text-center">0%</td>
+                <td class="text-center">100%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h6>
+          <small class="text-muted">
+            <hr>
+          </small>
+          <div class="alert alert-info">
+            <small class="text-muted">
+              Note: The fuel analysis will be adjusted to make the total composition equal to 100% for calculations.
+            </small>
+          </div>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'moisture'">
+        <h6>
+          Moisture
+          <br>
+          <small class="text-muted">
+            Moisture composition of solid fuel by mass.
+            <hr>
+          </small>
+        </h6>
+        <div class="w-100 justify-content-center">
+          <table class="table table-hover table-striped">
+            <tbody>
+              <tr>
+                <th class="text-center">Minimum</th>
+                <th class="text-center">Maximum</th>
+              </tr>
+              <tr>
+                <td class="text-center">0%</td>
+                <td class="text-center">100%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h6>
+          <small class="text-muted">
+            <hr>
+          </small>
+          <div class="alert alert-info">
+            <small class="text-muted">
+              Note: The fuel analysis will be adjusted to make the total composition equal to 100% for calculations.
+            </small>
+          </div>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'nitrogen'">
+        <h6>
+          Nitrogen (N)
+          <br>
+          <small class="text-muted">
+            Nitrogen composition of solid fuel by mass.
+            <hr>
+          </small>
+        </h6>
+        <div class="w-100 justify-content-center">
+          <table class="table table-hover table-striped">
+            <tbody>
+              <tr>
+                <th class="text-center">Minimum</th>
+                <th class="text-center">Maximum</th>
+              </tr>
+              <tr>
+                <td class="text-center">0%</td>
+                <td class="text-center">100%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h6>
+          <small class="text-muted">
+            <hr>
+          </small>
+          <div class="alert alert-info">
+            <small class="text-muted">
+              Note: The fuel analysis will be adjusted to make the total composition equal to 100% for calculations.
+            </small>
+          </div>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'o2'">
+        <h6>
+          Oxygen (O
+          <sub>2</sub>)
+          <br>
+          <small class="text-muted">
+            Oxygen composition of solid fuel by mass.
+            <hr>
+          </small>
+        </h6>
+        <div class="w-100 justify-content-center">
+          <table class="table table-hover table-striped">
+            <tbody>
+              <tr>
+                <th class="text-center">Minimum</th>
+                <th class="text-center">Maximum</th>
+              </tr>
+              <tr>
+                <td class="text-center">0%</td>
+                <td class="text-center">100%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h6>
+          <small class="text-muted">
+            <hr>
+          </small>
+          <div class="alert alert-info">
+            <small class="text-muted">
+              Note: The fuel analysis will be adjusted to make the total composition equal to 100% for calculations.
+            </small>
+          </div>
+        </h6>
+      </div>
+
+
+      <div class="my-2" *ngIf="currentField == 'sulphur'">
+        <h6>
+          Sulphur (S)
+          <br>
+          <small class="text-muted">
+            Oxygen composition of solid fuel by mass.
+            <hr>
+          </small>
+        </h6>
+        <div class="w-100 justify-content-center">
+          <table class="table table-hover table-striped">
+            <tbody>
+              <tr>
+                <th class="text-center">Minimum</th>
+                <th class="text-center">Maximum</th>
+              </tr>
+              <tr>
+                <td class="text-center">0%</td>
+                <td class="text-center">100%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h6>
+          <small class="text-muted">
+            <hr>
+          </small>
+          <div class="alert alert-info">
+            <small class="text-muted">
+              Note: The fuel analysis will be adjusted to make the total composition equal to 100% for calculations.
+            </small>
+          </div>
+        </h6>
+      </div>
+
+      <div class="my-2" *ngIf="currentField == 'ambientAirTempF' && settings.unitsOfMeasure == 'Imperial'">
+        <h6>
+          Ambient Air Temperature
+          <br>
+          <small class="text-muted">
+            Temperature of the air near the process heating unit. This is very likely to be less than 150&#8457;.
+          </small>
+        </h6>
+      </div>
+    
+      <div class="my-2" *ngIf="currentField == 'ambientAirTempF' && settings.unitsOfMeasure == 'Metric'">
+        <h6>
+          Ambient Air Temperature
+          <br>
+          <small class="text-muted">
+            Temperature of the air near the process heating unit. This is very likely to be less than 65&#8451;.
+          </small>
+        </h6>
+      </div>
+
+
+    </div>
+  </div>
+</div>

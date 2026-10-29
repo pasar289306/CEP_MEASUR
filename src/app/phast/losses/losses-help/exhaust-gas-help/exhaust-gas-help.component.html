@@ -1,0 +1,162 @@
+<div class="p-2 pt-3 d-flex flex-column help-info">
+  <h5>
+    Exhaust Gas Help
+    <br>
+    <small class="text-muted">
+      Enter measured data to calculate your system's annual savings potential. This loss is optional. If no data,
+      exhaust gas losses will be calculated from the difference between Gross Heat Input and Total Available Heat Required
+    </small>
+  </h5>
+  <label class="p-1" (click)="toggleSuggestions()">
+    <span class="fa fa-chevron-down" *ngIf="displaySuggestions"></span>
+    <span class="fa fa-chevron-right" *ngIf="!displaySuggestions"></span>
+    <span class="h6 pl-1">
+      Savings Suggestions
+    </span>
+  </label>
+  <div class="my-2" *ngIf="displaySuggestions">
+    <h6>
+      <small class="text-muted">
+        <ul>
+          <li>Minimize volume by controlling make up air and air leaks in the oven</li>
+          <li>Use preheated combustion air</li>
+          <li>Reduce exhaust gas temperature by using one or more heat recovery methods</li>
+        </ul>
+      </small>
+    </h6>
+  </div>
+  <hr class="my-1 hr-spacer">
+
+
+  <div class="my-2" *ngIf="currentField == 'offGasTemp'">
+    <h6>
+      Off (Exhaust) Gas Temperature
+      <br>
+      <small class="text-muted">
+        Temperature of exhaust gases from the EAF (sometimes referred to as fourth hole). This is measured or estimated
+        before the
+        gases are mixed with outside air.
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'CO'">
+    <h6>
+      CO
+      <br>
+      <small class="text-muted">
+        Average value of CO percentage in exhaust gases. Note that the values vary with time during the cycle and this
+        is average
+        over the cycle time.
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="text-center">Minimum</th>
+            <th class="text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="text-center">0%</td>
+            <td class="text-center">100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'H2'">
+    <h6>
+      H
+      <sub>2</sub>
+      <br>
+      <small class="text-muted">
+        Average value of H
+        <sub>2</sub> percentage in exhaust gases. Note that the values vary with time during the cycle and this is
+        average over
+        the cycle time.
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="text-center">Minimum</th>
+            <th class="text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="text-center">0%</td>
+            <td class="text-center">100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'combustibleGases'">
+    <h6>
+      Combustible Gas as CH
+      <sub>4</sub>
+      <br>
+      <small class="text-muted">
+        Average value of combustible gases percentage in exhaust gases. Note that the values vary with time during the
+        cycle and
+        this is average over the cycle time.
+        <hr>
+      </small>
+    </h6>
+    <div class="w-100 justify-content-center">
+      <table class="table table-hover table-striped">
+        <tbody>
+          <tr>
+            <th class="text-center">Minimum</th>
+            <th class="text-center">Maximum</th>
+          </tr>
+          <tr>
+            <td class="text-center">0%</td>
+            <td class="text-center">100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'vfr'">
+    <h6>
+      Total Volumetric Flow Rate
+      <br>
+      <small class="text-muted">
+        Total volume of exhaust gases (use average value).
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+
+  <div class="my-2" *ngIf="currentField == 'dustLoading'">
+    <h6>
+      Dust Loading
+      <br>
+      <small class="text-muted">
+        Dust loading for exhaust gases in terms of weight/scf.
+        <hr>
+      </small>
+    </h6>
+  </div>
+
+  <div class="my-2">
+    <a class="click-link">
+      <span class="fa fa-external-link"></span>
+      <a class="pl-1" [href]="docsLink + 'group__exhaust__gas__heat__loss__electric__arc__furnace__calculator'" target="_blank">How is exhaust gas loss
+        calculated?</a>
+    </a>
+  </div>
+
+</div>

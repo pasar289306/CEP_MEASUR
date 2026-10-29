@@ -1,0 +1,177 @@
+{
+  "name": "amo-tools-desktop",
+  "version": "1.10.0",
+  "main": "main.js",
+  "license": "MIT",
+  "description": "MEASUR",
+  "author": "Advanced Manufacturing Office",
+  "repository": "https://github.com/ORNL-AMO/AMO-Tools-Desktop.git",
+  "angular-cli": {},
+  "engines": {
+    "node": "24.11.0",
+    "npm": "11.5.1"
+  },
+  "scripts": {
+    "install-packages": "node scripts/install-all-node-dependencies.js",
+    "reset": "node scripts/reset-build-and-dependency-artifacts.js",
+    "build-diagram": "webpack build --config ./process-flow-diagram-component/webpack-build-mfe.config.js --mode=development --watch",
+    "build": "webpack build --config ./process-flow-diagram-component/webpack-build-mfe.config.js --mode=development && node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href .",
+    "start": "concurrently --kill-others \"npm run build-diagram\" \"node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng serve --live-reload\"",
+    "build:process-flow-lib": "tsc -p src/process-flow-lib/tsconfig.json",
+    "build-watch": "concurrently --kill-others \"npm run build-diagram\" \"node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href . --watch\"",
+    "build-prod-desktop": "webpack build --config ./process-flow-diagram-component/webpack-build-mfe.config.js --mode=production && node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href . --configuration desktop",
+    "build-prod-web": "webpack build --config ./process-flow-diagram-component/webpack-build-mfe.config.js --mode=production && node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href / --configuration production-web",
+    "build-prod-desktop-ci": "node --max_old_space_size=16000 ./node_modules/webpack/bin/webpack.js build --config ./process-flow-diagram-component/webpack-build-mfe.config.js --mode=production && node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href . --configuration desktop",
+    "build-dev-web": "webpack build --config ./process-flow-diagram-component/webpack-build-mfe.config.js --mode=production && node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href / --configuration development-web",
+    "electron": "electron .",
+    "lint": "ng lint",
+    "test": "ng test",
+    "test:ca-regression-tests:fixtures": "node --test scripts/compressed-air-regression-tests/fixture-tools.test.mjs",
+    "ca:regression-tests:add-fixture": "node scripts/compressed-air-regression-tests/add-fixture.mjs",
+    "test:ca-regression-tests:core": "node scripts/compressed-air-regression-tests/run-regression-tests.mjs compare --scope core",
+    "test:ca-regression-tests:full": "node scripts/compressed-air-regression-tests/run-regression-tests.mjs compare --scope full",
+    "ca:regression-tests:record": "node scripts/compressed-air-regression-tests/run-regression-tests.mjs record --scope full",
+    "ca:regression-tests:report": "node scripts/compressed-air-regression-tests/run-regression-tests.mjs report --scope full",
+    "dist": "electron-builder",
+    "build:stats": "webpack build --config ./process-flow-diagram-component/webpack-build-mfe.config.js --mode=development && node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --stats-json",
+    "analyze": "webpack-bundle-analyzer dist/stats.json"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "20.3.17",
+    "@angular/cdk": "20.2.14",
+    "@angular/common": "20.3.17",
+    "@angular/compiler": "20.3.17",
+    "@angular/core": "20.3.17",
+    "@angular/forms": "20.3.17",
+    "@angular/localize": "20.3.17",
+    "@angular/platform-browser": "20.3.17",
+    "@angular/platform-browser-dynamic": "20.3.17",
+    "@angular/platform-server": "20.3.17",
+    "@angular/router": "20.3.17",
+    "@angular/service-worker": "20.3.17",
+    "@ng-bootstrap/ng-bootstrap": "19.0.1",
+    "@popperjs/core": "2.11.8",
+    "angular-plotly.js": "5.2.1",
+    "billboard.js": "3.17.0",
+    "bootstrap": "4.3.1",
+    "core-js": "3.21.1",
+    "electron-log": "5.4.3",
+    "electron-updater": "6.8.3",
+    "exceljs": "4.3.0",
+    "file-saver": "2.0.5",
+    "font-awesome": "4.7.0",
+    "fs-jetpack": "5.1.0",
+    "jspdf": "4.2.1",
+    "jspdf-autotable": "5.0.7",
+    "lodash.foreach": "4.5.0",
+    "measur-tools-suite": "1.2.6",
+    "ngx-bootstrap": "20.0.2",
+    "ngx-indexed-db": "16.0.0",
+    "ngx-webstorage": "20.0.0",
+    "pako": "2.1.0",
+    "papaparse": "5.2.0",
+    "plotly.js-dist": "2.9.0",
+    "pptxgenjs": "3.10.0",
+    "process-flow-diagram-component": "file:process-flow-diagram-component",
+    "process-flow-lib": "file:src/process-flow-lib",
+    "regression": "2.0.0",
+    "rxjs": "7.5.5",
+    "rxjs-compat": "6.6.3",
+    "stream-browserify": "3.0.0",
+    "uuid": "9.0.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zone.js": "0.15.0"
+  },
+  "build": {
+    "appId": "com.electron.amo-tools-desktop",
+    "copyright": "Copyright 2017 ORNL. All rights reserved.",
+    "productName": "MEASUR",
+    "directories": {
+      "output": "output/"
+    },
+    "files": [
+      "!**/.angular",
+      "!.travis.yml",
+      "!./process-flow-diagram-component"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/icons/win/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "src/favicon.ico",
+      "installerHeaderIcon": "src/favicon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.gz"
+      ],
+      "icon": "src/assets/icons/png/",
+      "executableName": "MEASUR",
+      "maintainer": "Advanced Manufacturing Office",
+      "artifactName": "${productName}-${version}.${ext}",
+      "category": "Science"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "icon": "src/assets/icons/mac/icon.icns",
+      "hardenedRuntime": true,
+      "entitlements": "entitlements.mac.inherit.plist",
+      "entitlementsInherit": "entitlements.mac.inherit.plist",
+      "gatekeeperAssess": false,
+      "artifactName": "${productName}-${version}.${ext}",
+      "provisioningProfile": "embedded.provisionprofile"
+    }
+  },
+  "devDependencies": {
+    "@angular-builders/custom-esbuild": "20.0.0",
+    "@angular-builders/custom-webpack": "20.0.0",
+    "@angular-devkit/build-angular": "20.3.18",
+    "@angular-devkit/core": "20.3.18",
+    "@angular-devkit/schematics": "20.3.18",
+    "@angular/cli": "20.3.18",
+    "@angular/compiler-cli": "20.3.17",
+    "@types/jasmine": "3.6.0",
+    "@types/lodash": "4.14.100",
+    "@types/node": "24.5.0",
+    "@typescript-eslint/eslint-plugin": "8.44.0",
+    "@typescript-eslint/parser": "8.44.0",
+    "concurrently": "8.2.2",
+    "electron": "41.1.0",
+    "electron-builder": "26.8.2",
+    "eslint": "9.29.0",
+    "jasmine-core": "5.3.0",
+    "jasmine-spec-reporter": "5.0.0",
+    "karma": "6.4.4",
+    "karma-chrome-launcher": "3.2.0",
+    "karma-coverage": "2.2.0",
+    "karma-jasmine": "5.1.0",
+    "karma-jasmine-html-reporter": "2.1.0",
+    "karma-spec-reporter": "0.0.36",
+    "moment": "2.30.1",
+    "ngx-clipboard": "15.0.1",
+    "puppeteer": "24.42.0",
+    "tslint": "6.1.3",
+    "typescript": "5.8.2",
+    "webpack-bundle-analyzer": "4.4.2"
+  }
+}

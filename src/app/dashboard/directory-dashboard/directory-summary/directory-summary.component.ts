@@ -1,0 +1,352 @@
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DirectoryDashboardService } from '../directory-dashboard.service';
+import { DirectoryDbService } from '../../../indexedDb/directory-db.service';
+import { UntypedFormGroup } from '@angular/forms';
+import { DashboardService } from '../../dashboard.service';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { Directory } from '../../../shared/models/directory';
+import { Settings, FacilityInfo, Contact } from '../../../shared/models/settings';
+import { SettingsDbService } from '../../../indexedDb/settings-db.service';
+import { PsatService } from '../../../psat/psat.service';
+import * as _ from 'lodash';
+import { Assessment } from '../../../shared/models/assessment';
+import { ExecutiveSummaryService } from '../../../phast/phast-report/executive-summary.service';
+import { ExecutiveSummary } from '../../../shared/models/phast/phast';
+import { PsatOutputs } from '../../../shared/models/psat';
+import { ConvertUnitsService } from '../../../shared/convert-units/convert-units.service';
+import { FsatService } from '../../../fsat/fsat.service';
+import { FsatOutput } from '../../../shared/models/fans';
+import { SSMTInputs } from '../../../shared/models/steam/ssmt';
+import { SSMTOutput } from '../../../shared/models/steam/steam-outputs';
+import { SsmtService } from '../../../ssmt/ssmt.service';
+import { SettingsService } from '../../../settings/settings.service';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+
+import { WasteWaterService } from '../../../waste-water/waste-water.service';
+import { WasteWaterResults } from '../../../shared/models/waste-water';
+import { CompressedAirAssessmentResultsService } from '../../../compressed-air-assessment/compressed-air-assessment-results.service';
+import { BaselineResults } from '../../../compressed-air-assessment/calculations/caCalculationModels';
+import { CompressedAirAssessmentBaselineResults } from '../../../compressed-air-assessment/calculations/CompressedAirAssessmentBaselineResults';
+import { CompressedAirCalculationService } from '../../../compressed-air-assessment/compressed-air-calculation.service';
+import { AssessmentCo2SavingsService } from '../../../shared/assessment-co2-savings/assessment-co2-savings.service';
+import { ContactDbService, SavedContact } from '../../../indexedDb/contact-db.service';
+import { ConfirmDeleteData } from '../../../shared/confirm-delete-modal/confirmDeleteData';
+import { EditContactModalData } from '../../../shared/edit-contact-modal/editContactModalData';
+import { EditContactModalComponent } from '../../../shared/edit-contact-modal/edit-contact-modal.component';
+import { ModalDialogService } from '../../../shared/modal-dialog.service';
+
+@Component({
+  selector: 'app-directory-summary',
+  templateUrl: './directory-summary.component.html',
+  styleUrls: ['./directory-summary.component.css'],
+  standalone: false
+})
+export class DirectorySummaryComponent implements OnInit {
+
+
+  @ViewChild('settingsModal', { static: false }) public settingsModal: ModalDirective;
+
+  directory: Directory;
+  directorySettings: Settings;
+  totalSummary: AssessmentTypeSummary;
+  phastSummary: AssessmentTypeSummary;
+  psatSummary: AssessmentTypeSummary;
+  fsatSummary: AssessmentTypeSummary;
+  ssmtSummary: AssessmentTypeSummary;
+  wasteWaterSummary: AssessmentTypeSummary;
+  compressedAirSummary: AssessmentTypeSummary;
+
+  settingsForm: UntypedFormGroup;
+  updateDashboardDataSub: Subscription;
+  directoryIdSub: Subscription;
+  contactModalSub: Subscription;
+  counter: any;
+  savedContacts: Array<SavedContact>;
+  selectedContact: SavedContact;
+  showConfirmDeleteContactModal: boolean = false;
+  confirmDeleteContactData: ConfirmDeleteData;
+  constructor(private directoryDashboardService: DirectoryDashboardService, private directoryDbService: DirectoryDbService,
+    private dashboardService: DashboardService, private settingsDbService: SettingsDbService, private psatService: PsatService,
+    private executiveSummaryService: ExecutiveSummaryService, private convertUnitsService: ConvertUnitsService, private fsatService: FsatService,
+    private ssmtService: SsmtService, private settingsService: SettingsService,
+    private wasteWaterService: WasteWaterService,
+    private compressedAirCalculationService: CompressedAirCalculationService,
+    private assessmentCo2SavingsService: AssessmentCo2SavingsService,
+    private contactDbService: ContactDbService,
+    private modalDialogService: ModalDialogService
+  ) { }
+
+  ngOnInit() {
+    this.directoryIdSub = this.directoryDashboardService.selectedDirectoryId.subscribe(idVal => {
+      this.directory = this.directoryDbService.getById(idVal);
+      this.directorySettings = this.settingsDbService.getByDirectoryId(idVal);
+      this.savedContacts = this.contactDbService.allContacts;
+      this.calculateSummary();
+    })
+
+    this.updateDashboardDataSub = this.dashboardService.updateDashboardData.subscribe(val => {
+      this.directory = this.directoryDbService.getById(this.directory.id);
+      this.directorySettings = this.settingsDbService.getByDirectoryId(this.directory.id);
+      this.savedContacts = this.contactDbService.allContacts;
+      this.calculateSummary();
+    });
+  }
+
+  ngOnDestroy() {
+    this.updateDashboardDataSub.unsubscribe();
+    this.directoryIdSub.unsubscribe();
+    this.contactModalSub?.unsubscribe();
+  }
+
+  selectContact(contact: SavedContact) {
+    this.selectedContact = (this.selectedContact?.id === contact.id) ? undefined : contact;
+  }
+
+  async setPrimaryContact(contact: SavedContact, event: MouseEvent) {
+    event.stopPropagation();
+    const isPrimary: boolean = !contact.isPrimary;
+    const contactsToUpdate: Array<SavedContact> = this.savedContacts
+      .filter(existingContact => existingContact.isPrimary || existingContact.id === contact.id)
+      .map(existingContact => ({ ...existingContact, isPrimary: existingContact.id === contact.id ? isPrimary : false }));
+    await Promise.all(contactsToUpdate.map(updatedContact => firstValueFrom(this.contactDbService.updateWithObservable(updatedContact))));
+    await this.contactDbService.setAll();
+    this.savedContacts = this.contactDbService.allContacts;
+  }
+
+  openConfirmDeleteContactModal() {
+    if (!this.selectedContact) return;
+    this.confirmDeleteContactData = {
+      modalTitle: 'Delete Contact',
+      confirmMessage: `Are you sure you want to delete '${this.selectedContact.contactName}'?`
+    };
+    this.showConfirmDeleteContactModal = true;
+  }
+
+  async onConfirmDeleteContactClose(shouldDelete: boolean) {
+    if (shouldDelete) {
+      await firstValueFrom(this.contactDbService.deleteByIdWithObservable(this.selectedContact.id));
+      await this.contactDbService.setAll();
+      this.savedContacts = this.contactDbService.allContacts;
+      this.selectedContact = undefined;
+    }
+    this.showConfirmDeleteContactModal = false;
+  }
+
+  openContactModal(editContactModalData: EditContactModalData, onClose: (contact: Contact) => void) {
+    this.contactModalSub?.unsubscribe();
+    this.contactModalSub = this.modalDialogService.openModal<Contact, EditContactModalData, EditContactModalComponent>(
+      EditContactModalComponent,
+      {
+        width: '500px',
+        data: editContactModalData,
+      },
+    ).closed.subscribe(onClose);
+  }
+
+  showAddContactModal() {
+    let editContactModalData: EditContactModalData = {
+      modalTitle: 'Add Contact',
+    };
+    this.openContactModal(editContactModalData, (contact) => this.onAddContactClose(contact));
+  }
+
+  async onAddContactClose(contact: Contact) {
+    if (contact) {
+      await this.contactDbService.saveIfNew(contact);
+      this.savedContacts = this.contactDbService.allContacts;
+    }
+  }
+
+  showEditContactInfoModal() {
+    if (!this.selectedContact) return;
+    let editContactModalData: EditContactModalData = {
+      modalTitle: 'Edit Contact Info',
+      contact: this.selectedContact
+    };
+    this.openContactModal(editContactModalData, (contact) => this.onEditContactClose(contact));
+  }
+
+  async onEditContactClose(contact: Contact) {
+    if (contact) {
+      let updatedContact: SavedContact = { ...contact, id: this.selectedContact.id };
+      await firstValueFrom(this.contactDbService.updateWithObservable(updatedContact));
+      await this.contactDbService.setAll();
+      this.savedContacts = this.contactDbService.allContacts;
+      this.selectedContact = updatedContact;
+    }
+  }
+
+  calculateSummary() {
+    if (this.counter) {
+      clearTimeout(this.counter)
+    }
+    this.counter = setTimeout(() => {
+      this.calculatePsatSummary();
+      this.calculatePhastSummary();
+      this.calculateFsatSummary();
+      this.calculateSsmtSummary();
+      this.calculateWasteWaterSummary();
+      this.calculateCompressedAirSummary();
+      let convertedFsatEnergy: number = this.convertUnitsService.value(this.fsatSummary.totalEnergyUsed).from('MWh').to(this.directorySettings.energyResultUnit);
+      let convertedPsatEnergy: number = this.convertUnitsService.value(this.psatSummary.totalEnergyUsed).from('MWh').to(this.directorySettings.energyResultUnit);
+      let convertedWasteWaterEnergy: number = this.convertUnitsService.value(this.wasteWaterSummary.totalEnergyUsed).from('MWh').to(this.directorySettings.energyResultUnit);
+      let convertedCompressedAirEnergy: number = this.convertUnitsService.value(this.compressedAirSummary.totalEnergyUsed).from('MWh').to(this.directorySettings.energyResultUnit);
+      this.totalSummary = {
+        totalAssessments: this.psatSummary.totalAssessments + this.phastSummary.totalAssessments + this.fsatSummary.totalAssessments + this.ssmtSummary.totalAssessments + this.wasteWaterSummary.totalAssessments + this.compressedAirSummary.totalAssessments,
+        totalCost: this.psatSummary.totalCost + this.phastSummary.totalCost + this.fsatSummary.totalCost + this.ssmtSummary.totalCost + this.wasteWaterSummary.totalCost + this.compressedAirSummary.totalCost,
+        totalEnergyUsed: convertedPsatEnergy + this.phastSummary.totalEnergyUsed + convertedFsatEnergy + this.ssmtSummary.totalEnergyUsed + convertedWasteWaterEnergy + convertedCompressedAirEnergy
+      }
+    }, 150);
+  }
+
+  calculatePsatSummary() {
+    let psatAssessments: Array<Assessment> = _.filter(this.directory.assessments, (assessment) => { return assessment.type == 'PSAT' });
+    let totalEnergyUsed: number = 0;
+    let totalCost: number = 0;
+    psatAssessments.forEach(assessment => {
+      if (assessment.psat.setupDone) {
+        let assessmentSettings: Settings = this.settingsDbService.getByAssessmentId(assessment);
+        let result: PsatOutputs = this.psatService.resultsExisting(assessment.psat.inputs, assessmentSettings);
+        totalEnergyUsed = result.annual_energy + totalEnergyUsed;
+        totalCost = result.annual_cost + totalCost;
+      }
+    });
+    this.psatSummary = {
+      totalAssessments: psatAssessments.length,
+      totalCost: totalCost,
+      totalEnergyUsed: totalEnergyUsed
+    }
+  }
+
+  calculatePhastSummary() {
+    let phastAssessments: Array<Assessment> = _.filter(this.directory.assessments, (assessment) => { return assessment.type == 'PHAST' });
+    let totalEnergyUsed: number = 0;
+    let totalCost: number = 0;
+    phastAssessments.forEach(assessment => {
+      if (assessment.phast.setupDone) {
+        let assessmentSettings: Settings = this.settingsDbService.getByAssessmentId(assessment);
+        let result: ExecutiveSummary = this.executiveSummaryService.getSummary(assessment.phast, false, assessmentSettings, assessment.phast);
+        result.annualEnergyUsed = this.convertUnitsService.value(result.annualEnergyUsed).from(assessmentSettings.energyResultUnit).to(this.directorySettings.energyResultUnit);
+        totalEnergyUsed = totalEnergyUsed + result.annualEnergyUsed;
+        totalCost = totalCost + result.annualCost;
+      }
+    });
+    this.phastSummary = {
+      totalAssessments: phastAssessments.length,
+      totalCost: totalCost,
+      totalEnergyUsed: totalEnergyUsed
+    }
+  }
+
+  calculateFsatSummary() {
+    let fsatAssessments: Array<Assessment> = _.filter(this.directory.assessments, (assessment) => { return assessment.type == 'FSAT' });
+    let totalEnergyUsed: number = 0;
+    let totalCost: number = 0;
+    fsatAssessments.forEach(assessment => {
+      if (assessment.fsat.setupDone) {
+        let assessmentSettings: Settings = this.settingsDbService.getByAssessmentId(assessment);
+        let result: FsatOutput = this.fsatService.getResults(assessment.fsat, true, assessmentSettings);
+        totalEnergyUsed = totalEnergyUsed + result.annualEnergy;
+        totalCost = totalCost + result.annualCost;
+      }
+    });
+    this.fsatSummary = {
+      totalAssessments: fsatAssessments.length,
+      totalCost: totalCost,
+      totalEnergyUsed: totalEnergyUsed
+    }
+  }
+
+  calculateSsmtSummary() {
+    let ssmtAssessments: Array<Assessment> = _.filter(this.directory.assessments, (assessment) => { return assessment.type == 'SSMT' });
+    let totalEnergyUsed: number = 0;
+    let totalCost: number = 0;
+    ssmtAssessments.forEach(assessment => {
+      if (assessment.ssmt.setupDone) {
+        let settings: Settings = this.settingsDbService.getByAssessmentId(assessment);
+        let results: { inputData: SSMTInputs, outputData: SSMTOutput } = this.ssmtService.calculateBaselineModel(assessment.ssmt, settings);
+        if (results.outputData.boilerOutput != undefined) {
+          results.outputData.operationsOutput.boilerFuelUsage = this.convertUnitsService.value(results.outputData.operationsOutput.boilerFuelUsage).from(settings.steamEnergyMeasurement).to(this.directorySettings.energyResultUnit)
+          totalEnergyUsed = results.outputData.operationsOutput.boilerFuelUsage + totalEnergyUsed;
+          totalCost = results.outputData.operationsOutput.boilerFuelCost + results.outputData.operationsOutput.makeupWaterCost;
+        }
+      }
+    });
+    this.ssmtSummary = {
+      totalAssessments: ssmtAssessments.length,
+      totalCost: totalCost,
+      totalEnergyUsed: totalEnergyUsed
+    }
+  }
+
+  calculateWasteWaterSummary() {
+    let wasteWaterAssessments: Array<Assessment> = _.filter(this.directory.assessments, (assessment) => { return assessment.type == 'WasteWater' });
+    let totalEnergyUsed: number = 0;
+    let totalCost: number = 0;
+    wasteWaterAssessments.forEach(assessment => {
+      if (assessment.wasteWater.setupDone) {
+        let settings: Settings = this.settingsDbService.getByAssessmentId(assessment);
+        let results: WasteWaterResults = this.wasteWaterService.calculateResults(assessment.wasteWater.baselineData.activatedSludgeData, assessment.wasteWater.baselineData.aeratorPerformanceData, assessment.wasteWater.baselineData.operations, assessment.wasteWater.baselineData.co2SavingsData, settings, false);
+        if (results.AeEnergyAnnual != undefined) {
+          totalEnergyUsed = results.AeEnergyAnnual + totalEnergyUsed;
+          totalCost = results.AeCost + totalCost;
+        }
+      }
+    });
+    this.wasteWaterSummary = {
+      totalAssessments: wasteWaterAssessments.length,
+      totalCost: totalCost,
+      totalEnergyUsed: totalEnergyUsed
+    }
+  }
+
+  calculateCompressedAirSummary() {
+    let compressedAirAssessments: Array<Assessment> = _.filter(this.directory.assessments, (assessment) => { return assessment.type == 'CompressedAir' });
+    let totalEnergyUsed: number = 0;
+    let totalCost: number = 0;
+    compressedAirAssessments.forEach(assessment => {
+      if (assessment.compressedAirAssessment.setupDone) {
+        let assessmentSettings: Settings = this.settingsDbService.getByAssessmentId(assessment);
+        let compressedAirAssessmentBaselineResults: CompressedAirAssessmentBaselineResults = new CompressedAirAssessmentBaselineResults(assessment.compressedAirAssessment, assessmentSettings, this.compressedAirCalculationService, this.assessmentCo2SavingsService);
+        totalCost += compressedAirAssessmentBaselineResults.baselineResults.total.totalAnnualOperatingCost;
+        totalEnergyUsed += (compressedAirAssessmentBaselineResults.baselineResults.total.energyUse / 1000);
+      }
+    });
+    this.compressedAirSummary = {
+      totalAssessments: compressedAirAssessments.length,
+      totalEnergyUsed: totalEnergyUsed,
+      totalCost: totalCost
+    }
+  }
+
+
+  showSettingsModal() {
+    this.settingsForm = this.settingsService.getFormFromSettings(this.directorySettings);
+    this.settingsModal.show();
+  }
+
+  hideSettingsModal() {
+    this.settingsModal.hide();
+  }
+
+  async updateSettings() {
+    let id = this.directorySettings.id;
+    let facilityInfo: FacilityInfo = this.directorySettings.facilityInfo;
+    this.directorySettings = this.settingsService.getSettingsFromForm(this.settingsForm);
+    this.directorySettings.directoryId = this.directory.id;
+    this.directorySettings.id = id;
+    this.directorySettings.facilityInfo = facilityInfo;
+    await firstValueFrom(this.settingsDbService.updateWithObservable(this.directorySettings));
+    let updatedSettings: Settings[] = await firstValueFrom(this.settingsDbService.getAllSettings());
+    this.settingsDbService.setAll(updatedSettings);
+    this.calculateSummary();
+    this.settingsModal.hide();
+  }
+}
+
+
+export interface AssessmentTypeSummary {
+  totalAssessments: number;
+  totalEnergyUsed: number;
+  totalCost: number;
+}

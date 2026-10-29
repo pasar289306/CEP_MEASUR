@@ -1,0 +1,70 @@
+<div class="tab-content">
+  <form>
+    <div class="form-section">
+      <div class="form-group">
+        <label for="tankSize">Receiver Tank Size</label>
+        <div class="input-group">
+          <input name="tankSize" class="form-control" type="number" step="any" [(ngModel)]="inputs.tankSize" id="tankSize" (input)="getAirCapacity()"
+            onfocus="this.select();" (focus)="changeField('tankSize')">
+          <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">gal</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">m<sup>3</sup></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="airPressureIn">Air Pressure - High</label>
+        <div class="input-group">
+          <input name="airPressureIn" class="form-control" type="number" step="any" [(ngModel)]="inputs.airPressureIn" id="airPressureIn"
+            (input)="getAirCapacity()" onfocus="this.select();" (focus)="changeField('airPressureIn')">
+          <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">psig</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kPag</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="airPressureOut">Air Pressure - Low</label>
+        <div class="input-group">
+          <input name="airPressureOut" class="form-control" type="number" step="any" [(ngModel)]="inputs.airPressureOut" id="airPressureOut"
+            (input)="getAirCapacity()" onfocus="this.select();" (focus)="changeField('airPressureOut')">
+          <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">psig</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kPag</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="atmosphericPressure">Atmospheric Pressure</label>
+        <div class="input-group">
+          <input name="atmosphericPressure" [(ngModel)]="inputs.leakRateInput.atmosphericPressure" class="form-control" type="number" step="any" id="atmosphericPressure"
+            onfocus="this.select();" (focus)="changeField('atmosphericPressure')">
+        <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">psia</span>
+        <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">kPaa</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-group">
+        <label class="bold">Tank Volume</label>
+        <div class="text-center small">
+          <span *ngIf="tankCubicFoot">
+            <strong>{{tankCubicFoot | number:'1.0-2'}} </strong>
+            <strong *ngIf="settings.unitsOfMeasure != 'Metric'">ft<sup>3</sup></strong>
+            <strong *ngIf="settings.unitsOfMeasure == 'Metric'">m<sup>3</sup></strong>
+          </span>
+          <span *ngIf="!tankCubicFoot">
+            <strong>&mdash; &mdash;</strong>
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="bold">Air Capacity</label>
+        <div class="text-center small">
+          <span *ngIf="airCapacity">
+            <strong>{{airCapacity | number:'1.0-2'}} </strong>
+            <strong *ngIf="settings.unitsOfMeasure != 'Metric'">ft<sup>3</sup></strong>
+            <strong *ngIf="settings.unitsOfMeasure == 'Metric'">m<sup>3</sup></strong>
+          </span>
+          <span *ngIf="!airCapacity">
+            <strong>&mdash; &mdash;</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

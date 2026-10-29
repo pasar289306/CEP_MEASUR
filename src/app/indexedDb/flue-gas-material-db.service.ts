@@ -1,0 +1,92 @@
+import { Injectable } from '@angular/core';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
+import { BehaviorSubject, firstValueFrom, map, Observable } from 'rxjs';
+import { FlueGasMaterial } from '../shared/models/materials';
+import { FlueGasMaterialStoreMeta } from './dbConfig';
+
+@Injectable()
+export class FlueGasMaterialDbService {
+  storeName: string = FlueGasMaterialStoreMeta.store;
+  dbFlueGasMaterials: BehaviorSubject<Array<FlueGasMaterial>>;
+
+  constructor(private dbService: NgxIndexedDBService
+  ) {
+    this.dbFlueGasMaterials = new BehaviorSubject<Array<FlueGasMaterial>>([]);
+
+  }
+  async insertDefaultMaterials(defaultMaterials: Array<FlueGasMaterial>): Promise<void> {
+    await firstValueFrom(this.dbService.bulkAdd(this.storeName, defaultMaterials));
+    await this.setAllMaterialsFromDb();
+  }
+
+
+  private getAllWithObservable(): Observable<Array<FlueGasMaterial>> {
+    return this.dbService.getAll(this.storeName);
+  }
+
+  private getByIdWithObservable(materialId: number): Observable<FlueGasMaterial> {
+    return this.dbService.getByKey(this.storeName, materialId);
+  }
+
+  private addWithObservable(material: FlueGasMaterial): Observable<FlueGasMaterial> {
+    return this.dbService.add(this.storeName, material);
+  }
+
+  private deleteByIdWithObservable(materialId: number): Observable<Array<FlueGasMaterial>> {
+    return this.dbService.delete(this.storeName, materialId);
+  }
+
+  private updateWithObservable(material: FlueGasMaterial): Observable<FlueGasMaterial> {
+    return this.dbService.update(this.storeName, material);
+  }
+
+  clearFlueGasMaterials(): Observable<boolean> {
+    //this clears the suite db items as well
+    return this.dbService.clear(this.storeName);
+  }
+
+  getById(id: number): FlueGasMaterial {
+    let allMaterials: Array<FlueGasMaterial> = this.dbFlueGasMaterials.getValue();
+    return allMaterials.find(material => material.id === id);
+  }
+
+  getAllMaterials(): Array<FlueGasMaterial> {
+    return this.dbFlueGasMaterials.getValue();
+  }
+
+  getAllCustomMaterials(): Array<FlueGasMaterial> {
+    let allMaterials: Array<FlueGasMaterial> = this.dbFlueGasMaterials.getValue();
+    return allMaterials.filter(material => !material.isDefault);
+  }
+
+  async setAllMaterialsFromDb(): Promise<void> {
+    let allMaterials: Array<FlueGasMaterial> = await firstValueFrom(this.getAllWithObservable());
+    this.dbFlueGasMaterials.next(allMaterials);
+  }
+
+  async updateMaterial(material: FlueGasMaterial): Promise<void> {
+    await firstValueFrom(this.updateWithObservable(material));
+    await this.setAllMaterialsFromDb();
+  }
+
+  async deleteMaterial(materialId: number): Promise<void> {
+    await firstValueFrom(this.deleteByIdWithObservable(materialId));
+    await this.setAllMaterialsFromDb();
+  }
+
+  async addMaterial(material: FlueGasMaterial): Promise<number> {
+    material = await firstValueFrom(this.addWithObservable(material));
+    await this.setAllMaterialsFromDb();
+    return material.id;
+  }
+
+  async deleteAllCustomMaterials(): Promise<boolean> {
+    const materials: Array<FlueGasMaterial> = await firstValueFrom(this.dbService.getAll(this.storeName));
+    const customMaterials: Array<FlueGasMaterial> = materials.filter((material: FlueGasMaterial) => !material.isDefault);
+    for (const material of customMaterials) {
+      await firstValueFrom(this.deleteByIdWithObservable(material.id));
+    }
+    await this.setAllMaterialsFromDb();
+    return true;
+  }
+}

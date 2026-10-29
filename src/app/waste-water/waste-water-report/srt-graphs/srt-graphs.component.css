@@ -1,0 +1,4 @@
+.print-break-before {
+    break-before: always;
+    page-break-inside: avoid;
+}

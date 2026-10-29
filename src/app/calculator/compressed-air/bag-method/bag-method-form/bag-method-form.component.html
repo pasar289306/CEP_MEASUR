@@ -1,0 +1,58 @@
+<div class="tab-content">
+  <form>
+
+    <div class="row pt-1">
+      <div class="col-12 text-center">
+        <label class="bold">Leak {{index + 1}}</label>
+      </div>
+    </div>
+
+    <div class="form-section pt-1">
+
+      <div class="form-group">
+        <label for="fillTime">Bag Fill Time</label>
+        <div class="input-group">
+          <input name="fillTime" class="form-control" type="number" step="any" [(ngModel)]="inputs.bagFillTime" id="fillTime" (input)="emitChange()"
+            onfocus="this.select();" (focus)="changeField('fillTime')">
+          <span class="input-group-addon units">s</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="bagVolume">Bag Volume</label>
+        <div class="input-group">
+          <input name="bagVolume" class="form-control" type="number" step="any" [(ngModel)]="inputs.bagVolume" id="bagVolume" (input)="emitChange()"
+            onfocus="this.select();" (focus)="changeField('bagVolume')">
+          <span *ngIf="settings.unitsOfMeasure != 'Metric'" class="input-group-addon units">gal</span>
+          <span *ngIf="settings.unitsOfMeasure == 'Metric'" class="input-group-addon units">L</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="bold">Flow Rate</label>
+        <div class="text-center small">
+          <strong>{{outputs.flowRate | number:'1.0-2'}} </strong>
+          <strong *ngIf="settings.unitsOfMeasure != 'Metric'">scfm</strong>
+          <strong *ngIf="settings.unitsOfMeasure == 'Metric'">m<sup>3</sup>/min</strong>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="bold">Annual Consumption</label>
+        <div class="text-center small">
+          <strong>{{outputs.annualConsumption | number:'1.0-2'}} </strong>
+          <strong *ngIf="settings.unitsOfMeasure != 'Metric'">scf</strong>
+          <strong *ngIf="settings.unitsOfMeasure == 'Metric'">Nm<sup>3</sup></strong>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row btn-delete-leak-container">
+      <div class="col-12 text-center">
+        <span class="small btn-delete-leak" (click)="emitDeleteLeakage()">Delete Leak</span>
+      </div>
+    </div>
+
+  </form>
+</div>

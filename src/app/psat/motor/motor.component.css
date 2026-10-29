@@ -1,0 +1,15 @@
+.invalid{
+    border-color: red;
+}
+
+.valid{
+    border-color: green;
+}
+
+.warning{
+  border-color:darkorange;
+}
+
+.click-link{
+    white-space: nowrap;
+}
