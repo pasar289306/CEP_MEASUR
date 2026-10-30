@@ -27,7 +27,7 @@ export class LanguageService {
     @Inject(DOCUMENT) private document: Document
   ) {
     this.translateService.addLangs(['en', 'fa']);
-    this.translateService.setDefaultLang('en');
+    this.translateService.setFallbackLang('en');
   }
 
   init(): void {
@@ -36,7 +36,7 @@ export class LanguageService {
   }
 
   setLanguage(language: MeasurLanguage): void {
-    this.translateService.use(language);
+    this.translateService.use(language).subscribe();
     this.activeLanguage.next(language);
     this.applyDocumentDirection(language);
     try {

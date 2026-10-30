@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule, inject, provideAppInitializer } from '@angular/core';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AppComponent } from './app.component';
 
 import { CoreModule } from './core/core.module';
@@ -13,14 +13,9 @@ import { ElectronService } from './electron/electron.service';
 import { BrowserStorageAvailable, BrowserStorageService } from './shared/browser-storage.service';
 import { CORE_DATA_WARNING } from './shared/snackbar-notification/snackbar.service';
 import { filter, take } from 'rxjs/operators';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { LanguageService } from './shared/i18n/language.service';
-
-export function createTranslateLoader(http: HttpClient) {
-  // src/assets/i18n/{en|fa}.json — bundled with the app, no network needed offline.
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
 
 @NgModule({
   declarations: [
@@ -31,14 +26,6 @@ export function createTranslateLoader(http: HttpClient) {
     AppErrorModule,
     CoreModule,
     AppRoutingModule,
-    TranslateModule.forRoot({
-      defaultLanguage: 'en',
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
-    }),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production && environment.useServiceWorker,
       registrationStrategy: 'registerWhenStable:30000'
@@ -47,6 +34,11 @@ export function createTranslateLoader(http: HttpClient) {
   bootstrap: [AppComponent],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
+    // src/assets/i18n/{en|fa}.json — bundled with the app, no network needed offline.
+    provideTranslateService({
+      fallbackLang: 'en',
+      loader: provideTranslateHttpLoader({ prefix: './assets/i18n/', suffix: '.json' })
+    }),
     { provide: ErrorHandler, useClass: MeasurErrorHandler },
     provideAppInitializer(() => {
       const initializerFn = (initializeAppFactory)(inject(ElectronService), inject(SwUpdate), inject(BrowserStorageService), inject(LanguageService));

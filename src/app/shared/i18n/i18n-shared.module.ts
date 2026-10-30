@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from './language-switcher/language-switcher.component';
 
 /**
  * Shared module for the bilingual (English/Persian) UI.
- * Import TranslateModule (no forRoot/forChild args needed beyond app.module's
- * forRoot) wherever a feature module's templates use the `translate` pipe,
- * and import this module specifically wherever <app-language-switcher> is
+ * @ngx-translate/core v18 dropped TranslateModule — TranslatePipe is a
+ * standalone pipe now, so it's imported directly (standalone
+ * pipes/directives/components can be listed in an NgModule's `imports`).
+ * Import I18nSharedModule wherever a feature module's templates use the
+ * `translate` pipe, and specifically wherever <app-language-switcher> is
  * placed.
  */
 @NgModule({
@@ -16,10 +18,10 @@ import { LanguageSwitcherComponent } from './language-switcher/language-switcher
   ],
   imports: [
     CommonModule,
-    TranslateModule
+    TranslatePipe
   ],
   exports: [
-    TranslateModule,
+    TranslatePipe,
     LanguageSwitcherComponent
   ]
 })
