@@ -1,0 +1,73 @@
+{
+  "SSMT": {
+    "SHELL": {
+      "ASSESSMENT_SETTINGS": "تنظیمات ارزیابی",
+      "OPERATIONS": "عملیات",
+      "BOILER": "دیگ بخار",
+      "HEADER": "هدر",
+      "TURBINE": "توربین",
+      "HELP": "راهنما",
+      "LOSS_PERCENT": "درصد تلفات",
+      "LOSS_ENERGY": "انرژی تلفات",
+      "BOTH": "هر دو",
+      "BACK": "بازگشت",
+      "NEXT": "بعدی",
+      "VIEW_REPORT": "مشاهده گزارش",
+      "ADD_NEW_SCENARIO": "افزودن سناریوی جدید",
+      "SELECT_SCENARIO": "انتخاب سناریو",
+      "EXPLORE_OPPORTUNITIES": "بررسی فرصت‌ها",
+      "EXPERT_VIEW": "نمای تخصصی",
+      "SELECTED_SCENARIO": "سناریوی انتخاب‌شده",
+      "VIEW_ADD_SCENARIOS": "مشاهده / افزودن سناریو",
+      "MENU": "منو",
+      "BASELINE": "وضعیت پایه",
+      "ASSESSMENT": "ارزیابی",
+      "DIAGRAM": "نمودار",
+      "REPORT_TAB": "گزارش",
+      "SANKEY": "نمودار سنکی",
+      "CALCULATORS": "محاسبه‌گرها",
+      "SHARE": "اشتراک‌گذاری",
+      "SECURITY_PRIVACY": "امنیت و حریم خصوصی",
+      "EXPORT": "خروجی",
+      "MANUAL": "راهنمای کاربری",
+      "SETTINGS": "تنظیمات",
+      "ASSESSMENT_DASHBOARD": "داشبورد ارزیابی",
+      "HOME": "خانه",
+      "COLLAPSE": "جمع کردن",
+      "LAST_MODIFIED": "آخرین ویرایش:"
+    },
+    "CALC": {
+      "BOILER": "دیگ بخار",
+      "DEAERATOR": "دی‌ائراتور",
+      "FLASH_TANK": "مخزن فلش",
+      "HEADER": "هدر",
+      "HEAT_LOSS": "تلفات حرارتی",
+      "PRV": "شیر تقلیل فشار (PRV)",
+      "SATURATED_PROPERTIES": "خواص اشباع",
+      "STACK_LOSS": "تلفات دودکش",
+      "STEAM_LEAK": "نشتی بخار",
+      "STEAM_PROPERTIES": "خواص بخار",
+      "TURBINE": "توربین"
+    },
+    "SYSTEM_BASICS": {
+      "SETTINGS": "تنظیمات",
+      "UNITS_CHANGED_WARNING": "واحدهای اندازه‌گیری پس از وارد کردن داده‌های ارزیابی تغییر کرده‌اند.",
+      "UNITS_CHANGED_WARNING_LINE2": "برای نتایج دقیق، لطفاً داده‌های ارزیابی خود را به‌روزرسانی کنید.",
+      "UPDATE_DATA": "به‌روزرسانی داده‌ها",
+      "DATA_UPDATED_SUCCESS": "داده‌ها با موفقیت به‌روزرسانی شد!",
+      "DISMISS": "بستن",
+      "EQUIPMENT_NOTES": "یادداشت‌های تجهیزات",
+      "EQUIPMENT_NOTES_PLACEHOLDER": "اطلاعات تکمیلی تجهیزات خود را وارد کنید",
+      "OPERATING_CONDITIONS": "شرایط بهره‌برداری در زمان ارزیابی",
+      "OPERATING_CONDITIONS_PLACEHOLDER": "یادداشتی برای شرایط بهره‌برداری وارد کنید"
+    },
+    "WELCOME": {
+      "TITLE": "به ماژول ارزیابی سامانه بخار MEASUR خوش آمدید!",
+      "INTRO": "با وارد کردن مشخصات وضعیت پایه‌ی فعلی خود کار را آغاز کنید! پس از تعیین وضعیت پایه، با تغییر شرایط سامانه می‌توانید یک ارزیابی انجام دهید و صرفه‌جویی‌های احتمالی را ببینید!",
+      "HELP_PREFIX": "اگر در هر مرحله به راهنما نیاز داشتید، روی نماد",
+      "USER_MANUAL": "راهنمای کاربری",
+      "HELP_SUFFIX": "در گوشه‌ی بالا سمت راست کلیک کنید تا دستورالعمل کامل تکمیل ارزیابی سامانه بخار را ببینید!",
+      "GET_STARTED": "شروع کنید!"
+    }
+  }
+}

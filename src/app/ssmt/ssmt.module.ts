@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { I18nSharedModule } from '../shared/i18n/i18n-shared.module';
 import { SsmtComponent } from './ssmt.component';
 import { SsmtBannerComponent } from './ssmt-banner/ssmt-banner.component';
 import { SystemBasicsComponent } from './system-basics/system-basics.component';
@@ -55,6 +56,7 @@ import { BannerTooltipsModule } from '../shared/app-banner-tooltips/app-banner-t
 @NgModule({
   imports: [
     CommonModule,
+    I18nSharedModule,
     SettingsModule,
     FormsModule,
     ReactiveFormsModule,

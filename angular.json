@@ -11,7 +11,9 @@
         "build": {
           "builder": "@angular-builders/custom-esbuild:application",
           "options": {
-            "plugins": ["./esbuild.plugins.js"],
+            "plugins": [
+              "./esbuild.plugins.js"
+            ],
             "allowedCommonJsDependencies": [
               "lodash",
               "regression",
@@ -73,7 +75,8 @@
               "src/assets/styles/pagination.css",
               "src/assets/styles/welcome-screen.css",
               "src/assets/styles/process-cooling-assessment-shared.css",
-              "src/assets/styles/compressed-air.css"
+              "src/assets/styles/compressed-air.css",
+              "src/assets/styles/rtl.css"
             ],
             "scripts": [
               "node_modules/plotly.js-dist/plotly.js"

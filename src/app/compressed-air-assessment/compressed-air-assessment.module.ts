@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { I18nSharedModule } from '../shared/i18n/i18n-shared.module';
 import { CompressedAirAssessmentComponent } from './compressed-air-assessment.component';
 import { CompressedAirBannerComponent } from './compressed-air-banner/compressed-air-banner.component';
 import { CompressedAirAssessmentService } from './compressed-air-assessment.service';
@@ -268,6 +269,7 @@ import { AirLeakSurveyModule } from '../calculator/compressed-air/air-leak-surve
   ],
   imports: [
     CommonModule,
+    I18nSharedModule,
     RouterModule,
     SettingsModule,
     ReactiveFormsModule,

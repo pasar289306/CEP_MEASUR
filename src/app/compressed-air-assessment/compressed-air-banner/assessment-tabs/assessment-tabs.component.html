@@ -1,13 +1,13 @@
 <div class="navbar assessment-bar" [routerLinkActive]="'display'">
     <ul class="h-100 tabs subtabs progress-tabs compressed-air d-none d-lg-block mt-auto">
         <li [routerLinkActive]="'active'">
-            <a routerLink="assessment/explore-opportunities">Explore Opportunities</a>
+            <a routerLink="assessment/explore-opportunities">{{ 'CA.SHELL.EXPLORE_OPPORTUNITIES' | translate }}</a>
         </li>
         <li [routerLinkActive]="'active'" [ngClass]="{'disabled': !selectedModification}">
-            <a routerLink="assessment/profile-summary-table">Profile Summary Table</a>
+            <a routerLink="assessment/profile-summary-table">{{ 'CA.SHELL.PROFILE_SUMMARY_TABLE' | translate }}</a>
         </li>
         <li [routerLinkActive]="'active'" [ngClass]="{'disabled': !selectedModification}">
-            <a routerLink="assessment/profile-summary-graphs">Profile Summary Graphs</a>
+            <a routerLink="assessment/profile-summary-graphs">{{ 'CA.SHELL.PROFILE_SUMMARY_GRAPHS' | translate }}</a>
         </li>
     </ul>
 
@@ -16,18 +16,17 @@
         <div class="mod-name active border-right" *ngIf="selectedModification">
             <a>{{selectedModification.name}}
                 <br>
-                <span class="help-text">Selected Scenario</span>
+                <span class="help-text">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
             </a>
         </div>
         <div class="mod-name border-right" *ngIf="!selectedModification">
             <a>&mdash; &mdash;
                 <br>
-                <span class="help-text">Selected Scenario</span>
+                <span class="help-text">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
             </a>
         </div>
         <div class="pl-2 pr-2">
-            <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">View / Add
-                Scenarios</button>
+            <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">{{ 'SSMT.SHELL.VIEW_ADD_SCENARIOS' | translate }}</button>
         </div>
     </div>
 
@@ -37,19 +36,17 @@
             <div class="mod-name active border-right flex-fill" *ngIf="selectedModification">
                 <a>{{selectedModification.name}}
                     <br>
-                    <span class="help-text">Selected Scenario</span>
+                    <span class="help-text">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
                 </a>
             </div>
             <div class="mod-name border-right flex-fill" *ngIf="!selectedModification">
                 <a>&mdash; &mdash;
                     <br>
-                    <span class="help-text">Selected Scenario</span>
+                    <span class="help-text">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
                 </a>
             </div>
             <div class="pl-2 pr-2 flex-fill">
-                <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">View /
-                    Add
-                    Scenarios</button>
+                <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">{{ 'SSMT.SHELL.VIEW_ADD_SCENARIOS' | translate }}</button>
             </div>
         </div>
 
@@ -60,14 +57,13 @@
                     <span class="fa fa-chevron-left"></span></a>
             </li>
             <li class="page-item" [routerLinkActive]="'active'">
-                <a class="nav-link small" routerLink="assessment/explore-opportunities">Explore
-                    Opportunities</a>
+                <a class="nav-link small" routerLink="assessment/explore-opportunities">{{ 'CA.SHELL.EXPLORE_OPPORTUNITIES' | translate }}</a>
             </li>
             <li class="page-item" [routerLinkActive]="'active'">
-                <a class="nav-link small" routerLink="assessment/profile-summary-table">Profile Summary Table</a>
+                <a class="nav-link small" routerLink="assessment/profile-summary-table">{{ 'CA.SHELL.PROFILE_SUMMARY_TABLE' | translate }}</a>
             </li>
             <li class="page-item" [routerLinkActive]="'active'">
-                <a class="nav-link small" routerLink="assessment/profile-summary-graphs">Profile Summary Graphs</a>
+                <a class="nav-link small" routerLink="assessment/profile-summary-graphs">{{ 'CA.SHELL.PROFILE_SUMMARY_GRAPHS' | translate }}</a>
             </li>
             <li class="page-item chevron" (click)="continue()" [ngClass]="{'disabled': !selectedModification}">
                 <a class="nav-link small" [ngClass]="{'disabled': !selectedModification}">
@@ -76,7 +72,7 @@
         </ul>
 
         <div class="alert alert-info d-lg-none p-1 m-1 small">
-            This page is optimized to be viewed on a tablet-sized device or larger.
+            {{ 'CA.SHELL.TABLET_OPTIMIZED_NOTICE' | translate }}
         </div>
     </div>
 

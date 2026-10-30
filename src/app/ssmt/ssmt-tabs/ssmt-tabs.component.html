@@ -2,27 +2,27 @@
   <div class="d-flex tabs subtabs progress-tabs ssmt flex-wrap">
     <div class="fixed-tab-size" [ngClass]="settingsStatus">
       <a (click)="changeStepTab('baseline')">
-        <span (mouseenter)="showTooltip(settingsBadge)" (mouseleave)="hideTooltip(settingsBadge)" class="step-number">1</span> Assessment Settings</a>
+        <span (mouseenter)="showTooltip(settingsBadge)" (mouseleave)="hideTooltip(settingsBadge)" class="step-number">1</span> {{ 'SSMT.SHELL.ASSESSMENT_SETTINGS' | translate }}</a>
         <app-tabs-tooltip [badgeClass]="settingsStatus[0]" [reveal]="settingsBadge.display" [display]="settingsBadge.hover"></app-tabs-tooltip>
     </div>
     <div class="fixed-tab-size" [ngClass]="operationsTabStatus">
       <a (click)="changeStepTab('operations')">
-        <span (mouseenter)="showTooltip(operationsBadge)" (mouseleave)="hideTooltip(operationsBadge)" class="step-number">2</span>Operations</a>
+        <span (mouseenter)="showTooltip(operationsBadge)" (mouseleave)="hideTooltip(operationsBadge)" class="step-number">2</span>{{ 'SSMT.SHELL.OPERATIONS' | translate }}</a>
       <app-tabs-tooltip [badgeClass]="operationsTabStatus[0]" [reveal]="operationsBadge.display" [display]="operationsBadge.hover"></app-tabs-tooltip>
     </div>
     <div class="fixed-tab-size" [ngClass]="boilerTabStatus">
       <a (click)="changeStepTab('boiler')">
-        <span (mouseenter)="showTooltip(boilerBadge)" (mouseleave)="hideTooltip(boilerBadge)" class="step-number">3</span>Boiler</a>
+        <span (mouseenter)="showTooltip(boilerBadge)" (mouseleave)="hideTooltip(boilerBadge)" class="step-number">3</span>{{ 'SSMT.SHELL.BOILER' | translate }}</a>
       <app-tabs-tooltip [badgeClass]="boilerTabStatus[0]" [reveal]="boilerBadge.display" [display]="boilerBadge.hover"></app-tabs-tooltip>
     </div>
     <div class="fixed-tab-size" [ngClass]="headerTabStatus">
       <a (click)="changeStepTab('header')">
-        <span (mouseenter)="showTooltip(headerBadge)" (mouseleave)="hideTooltip(headerBadge)" class="step-number">4</span>Header</a>
+        <span (mouseenter)="showTooltip(headerBadge)" (mouseleave)="hideTooltip(headerBadge)" class="step-number">4</span>{{ 'SSMT.SHELL.HEADER' | translate }}</a>
       <app-tabs-tooltip [badgeClass]="headerTabStatus[0]" [reveal]="headerBadge.display" [display]="headerBadge.hover"></app-tabs-tooltip>
     </div>
     <div class="fixed-tab-size" [ngClass]="turbineTabStatus">
       <a (click)="changeStepTab('turbine')">
-        <span (mouseenter)="showTooltip(turbineBadge)" (mouseleave)="hideTooltip(turbineBadge)" class="step-number">5</span>Turbine</a>
+        <span (mouseenter)="showTooltip(turbineBadge)" (mouseleave)="hideTooltip(turbineBadge)" class="step-number">5</span>{{ 'SSMT.SHELL.TURBINE' | translate }}</a>
       <app-tabs-tooltip [badgeClass]="turbineTabStatus[0]" [reveal]="turbineBadge.display" [display]="turbineBadge.hover"></app-tabs-tooltip>
     </div>
   </div>
@@ -36,23 +36,23 @@
     </li>
     <li class="page-item" [ngClass]="{'active': stepTab == 'baseline'}" *ngIf="stepTab == 'baseline'">
       <a class="nav-link small" (click)="changeStepTab('baseline')" [ngClass]="settingsStatus">
-        <span class="step-number">1</span>Assessment Settings</a>
+        <span class="step-number">1</span>{{ 'SSMT.SHELL.ASSESSMENT_SETTINGS' | translate }}</a>
     </li>
     <li class="page-item" [ngClass]="{'active': stepTab == 'operations'}" *ngIf="stepTab == 'operations'">
       <a class="nav-link small" (click)="changeStepTab('operations')" [ngClass]="operationsTabStatus">
-        <span class="step-number">2</span>Operations</a>
+        <span class="step-number">2</span>{{ 'SSMT.SHELL.OPERATIONS' | translate }}</a>
     </li>
     <li class="page-item" [ngClass]="{'active': stepTab == 'boiler'}" *ngIf="stepTab == 'boiler'">
       <a class="nav-link small" (click)="changeStepTab('boiler')" [ngClass]="boilerTabStatus">
-        <span class="step-number">3</span>Boiler</a>
+        <span class="step-number">3</span>{{ 'SSMT.SHELL.BOILER' | translate }}</a>
     </li>
     <li class="page-item" [ngClass]="{'active': stepTab == 'header'}" *ngIf="stepTab == 'header'">
       <a class="nav-link small" (click)="changeStepTab('header')" [ngClass]="headerTabStatus">
-        <span class="step-number">4</span>Header</a>
+        <span class="step-number">4</span>{{ 'SSMT.SHELL.HEADER' | translate }}</a>
     </li>
     <li class="page-item" [ngClass]="{'active': stepTab == 'turbine'}" *ngIf="stepTab == 'turbine'">
       <a class="nav-link small" (click)="changeStepTab('turbine')" [ngClass]="turbineTabStatus">
-        <span class="step-number">5</span>Turbine</a>
+        <span class="step-number">5</span>{{ 'SSMT.SHELL.TURBINE' | translate }}</a>
     </li>
     <li class="page-item">
       <a class="nav-link small" (click)="continue()" [disabled]="!getCanContinue()">
@@ -67,11 +67,11 @@
 <div class="navbar assessment-bar" *ngIf="mainTab == 'assessment'">
   <div class="d-none d-md-flex tabs subtabs ssmt mr-auto">
     <div class="assessment-tab p-2" [ngClass]="{'active': assessmentTab == 'explore-opportunities'}">
-      <a (click)="changeAssessmentTab('explore-opportunities')">Explore Opportunities
+      <a (click)="changeAssessmentTab('explore-opportunities')">{{ 'SSMT.SHELL.EXPLORE_OPPORTUNITIES' | translate }}
       </a>
     </div>
     <div class="assessment-tab p-2" [ngClass]="{'active': assessmentTab == 'modify-conditions'}">
-      <a (click)="changeAssessmentTab('modify-conditions')">Expert View
+      <a (click)="changeAssessmentTab('modify-conditions')">{{ 'SSMT.SHELL.EXPERT_VIEW' | translate }}
       </a>
     </div>
   </div>
@@ -80,30 +80,29 @@
     <div class="mod-name active border-right" *ngIf="selectedModification">
       <a>{{selectedModification.name}}
         <br>
-        <span class="help-text ssmt-view">Selected Scenario</span>
+        <span class="help-text ssmt-view">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
       </a>
     </div>
     <div class="mod-name border-right" *ngIf="!selectedModification">
       <a>&mdash; &mdash;
         <br>
-        <span class="help-text ssmt-view">Selected Scenario</span>
+        <span class="help-text ssmt-view">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
       </a>
     </div>
     <div class="pl-2 pr-2">
-      <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">View / Add
-        Scenarios</button>
+      <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">{{ 'SSMT.SHELL.VIEW_ADD_SCENARIOS' | translate }}</button>
     </div>
   </div>
 
   <div *ngIf="!tabsCollapsed" class="d-flex d-md-none flex-fill align-items-center justify-content-center tabs subtabs ssmt" [ngClass]="{'collapse': tabsCollapsed}">
     <div class="assessment-tab flex-fill p-2"
       [ngClass]="{'active': assessmentTab == 'explore-opportunities', 'collapse': tabsCollapsed}">
-      <a (click)="changeAssessmentTab('explore-opportunities')">Explore Opportunities
+      <a (click)="changeAssessmentTab('explore-opportunities')">{{ 'SSMT.SHELL.EXPLORE_OPPORTUNITIES' | translate }}
       </a>
     </div>
     <div class="assessment-tab flex-fill p-2"
       [ngClass]="{'active': assessmentTab == 'modify-conditions', 'collapse': tabsCollapsed}">
-      <a (click)="changeAssessmentTab('modify-conditions')">Expert View
+      <a (click)="changeAssessmentTab('modify-conditions')">{{ 'SSMT.SHELL.EXPERT_VIEW' | translate }}
       </a>
     </div>
   </div>
@@ -112,29 +111,28 @@
     <div class="mod-name active border-right" *ngIf="selectedModification" [ngClass]="{'collapse': tabsCollapsed}">
       <a>{{selectedModification.name}}
         <br>
-        <span class="help-text psat-view">Selected Scenario</span>
+        <span class="help-text psat-view">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
       </a>
     </div>
     <div class="mod-name border-right" *ngIf="!selectedModification" [ngClass]="{'collapse': tabsCollapsed}">
       <a>&mdash; &mdash;
         <br>
-        <span class="help-text psat-view">Selected Scenario</span>
+        <span class="help-text psat-view">{{ 'SSMT.SHELL.SELECTED_SCENARIO' | translate }}</span>
       </a>
     </div>
     <div class="pl-2 pr-2" [ngClass]="{'collapse': tabsCollapsed}">
-      <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">View / Add
-        Scenarios</button>
+      <button class="btn btn-primary" (click)="selectModification()" [disabled]="!selectedModification">{{ 'SSMT.SHELL.VIEW_ADD_SCENARIOS' | translate }}</button>
     </div>
     <div *ngIf="tabsCollapsed" class="mx-auto pl-2 align-items-center justify-content-center" (click)="collapseTabs()">
       <span class="fa fa-caret-down pr-2"></span>
-      <span class="small text-uppercase">Menu</span>
-    </div>  
+      <span class="small text-uppercase">{{ 'SSMT.SHELL.MENU' | translate }}</span>
+    </div>
   </div>
   <div *ngIf="!tabsCollapsed" class="d-flex d-md-none flex-fill align-items-center justify-content-center tabs subtabs ssmt" [ngClass]="{'br-color-white': selectedModification}">
     <div class="mx-auto pl-2 align-items-center justify-content-center" (click)="collapseTabs()">
       <span class="fa fa-caret-up pr-2"></span>
-      <span class="small text-uppercase">Menu</span>
-    </div> 
+      <span class="small text-uppercase">{{ 'SSMT.SHELL.MENU' | translate }}</span>
+    </div>
   </div>
 
 
@@ -149,37 +147,37 @@
 <div class="d-none d-lg-block" *ngIf="mainTab == 'calculators'">
   <ul class="tabs subtabs ssmt">
     <li [ngClass]="{'active': calcTab == 'boiler'}">
-      <a (click)="changeCalcTab('boiler')">Boiler</a>
+      <a (click)="changeCalcTab('boiler')">{{ 'SSMT.CALC.BOILER' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'deaerator'}">
-      <a (click)="changeCalcTab('deaerator')">Deaerator</a>
+      <a (click)="changeCalcTab('deaerator')">{{ 'SSMT.CALC.DEAERATOR' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'flash-tank'}">
-      <a (click)="changeCalcTab('flash-tank')">Flash Tank</a>
+      <a (click)="changeCalcTab('flash-tank')">{{ 'SSMT.CALC.FLASH_TANK' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'header'}">
-      <a (click)="changeCalcTab('header')">Header</a>
+      <a (click)="changeCalcTab('header')">{{ 'SSMT.CALC.HEADER' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'heat-loss'}">
-      <a (click)="changeCalcTab('heat-loss')">Heat Loss</a>
+      <a (click)="changeCalcTab('heat-loss')">{{ 'SSMT.CALC.HEAT_LOSS' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'prv'}">
-      <a (click)="changeCalcTab('prv')">Pressure Release Valve</a>
+      <a (click)="changeCalcTab('prv')">{{ 'SSMT.CALC.PRV' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'saturated-properties'}">
-      <a (click)="changeCalcTab('saturated-properties')">Saturated Properties</a>
+      <a (click)="changeCalcTab('saturated-properties')">{{ 'SSMT.CALC.SATURATED_PROPERTIES' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'stack-loss'}">
-      <a (click)="changeCalcTab('stack-loss')">Stack Loss</a>
+      <a (click)="changeCalcTab('stack-loss')">{{ 'SSMT.CALC.STACK_LOSS' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'steam-leak'}">
-      <a (click)="changeCalcTab('steam-leak')">Steam Leak</a>
+      <a (click)="changeCalcTab('steam-leak')">{{ 'SSMT.CALC.STEAM_LEAK' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'steam-properties'}">
-      <a (click)="changeCalcTab('steam-properties')">Steam Properties</a>
+      <a (click)="changeCalcTab('steam-properties')">{{ 'SSMT.CALC.STEAM_PROPERTIES' | translate }}</a>
     </li>
     <li [ngClass]="{'active': calcTab == 'turbine'}">
-      <a (click)="changeCalcTab('turbine')">Turbine</a>
+      <a (click)="changeCalcTab('turbine')">{{ 'SSMT.CALC.TURBINE' | translate }}</a>
     </li>
   </ul>
 </div>
@@ -193,37 +191,37 @@
       <span class="small text-uppercase">Menu</span>
     </div> 
     <div [ngClass]="{'active': calcTab == 'boiler', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('boiler')">Boiler</a>
+      <a (click)="changeCalcTab('boiler')">{{ 'SSMT.CALC.BOILER' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'deaerator', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('deaerator')">Deaerator</a>
+      <a (click)="changeCalcTab('deaerator')">{{ 'SSMT.CALC.DEAERATOR' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'flash-tank', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('flash-tank')">Flash Tank</a>
+      <a (click)="changeCalcTab('flash-tank')">{{ 'SSMT.CALC.FLASH_TANK' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'header', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('header')">Header</a>
+      <a (click)="changeCalcTab('header')">{{ 'SSMT.CALC.HEADER' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'heat-loss', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('heat-loss')">Heat Loss</a>
+      <a (click)="changeCalcTab('heat-loss')">{{ 'SSMT.CALC.HEAT_LOSS' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'prv', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('prv')">Pressure Release Valve</a>
+      <a (click)="changeCalcTab('prv')">{{ 'SSMT.CALC.PRV' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'saturated-properties', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('saturated-properties')">Saturated Properties</a>
+      <a (click)="changeCalcTab('saturated-properties')">{{ 'SSMT.CALC.SATURATED_PROPERTIES' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'stack-loss', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('stack-loss')">Stack Loss</a>
+      <a (click)="changeCalcTab('stack-loss')">{{ 'SSMT.CALC.STACK_LOSS' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'steam-leak', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('steam-leak')">Steam Leak</a>
+      <a (click)="changeCalcTab('steam-leak')">{{ 'SSMT.CALC.STEAM_LEAK' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'steam-properties', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('steam-properties')">Steam Properties</a>
+      <a (click)="changeCalcTab('steam-properties')">{{ 'SSMT.CALC.STEAM_PROPERTIES' | translate }}</a>
     </div>
     <div [ngClass]="{'active': calcTab == 'turbine', 'collapse': calcTabsCollapsed}">
-      <a (click)="changeCalcTab('turbine')">Turbine</a>
+      <a (click)="changeCalcTab('turbine')">{{ 'SSMT.CALC.TURBINE' | translate }}</a>
     </div>
   </div>
 </div>

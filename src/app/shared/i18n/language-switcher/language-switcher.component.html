@@ -1,0 +1,11 @@
+<div class="measur-language-switcher" role="group" aria-label="Language / زبان">
+    <button type="button" class="measur-language-switcher_btn" [class.active]="activeLanguage === 'en'"
+        (click)="setLanguage('en')" title="English">
+        EN
+    </button>
+    <span class="measur-language-switcher_divider">|</span>
+    <button type="button" class="measur-language-switcher_btn" [class.active]="activeLanguage === 'fa'"
+        (click)="setLanguage('fa')" title="فارسی">
+        فا
+    </button>
+</div>

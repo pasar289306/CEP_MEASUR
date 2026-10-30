@@ -1,0 +1,73 @@
+{
+  "SSMT": {
+    "SHELL": {
+      "ASSESSMENT_SETTINGS": "Assessment Settings",
+      "OPERATIONS": "Operations",
+      "BOILER": "Boiler",
+      "HEADER": "Header",
+      "TURBINE": "Turbine",
+      "HELP": "Help",
+      "LOSS_PERCENT": "Loss Percent",
+      "LOSS_ENERGY": "Loss Energy",
+      "BOTH": "Both",
+      "BACK": "Back",
+      "NEXT": "Next",
+      "VIEW_REPORT": "View Report",
+      "ADD_NEW_SCENARIO": "Add New Scenario",
+      "SELECT_SCENARIO": "Select Scenario",
+      "EXPLORE_OPPORTUNITIES": "Explore Opportunities",
+      "EXPERT_VIEW": "Expert View",
+      "SELECTED_SCENARIO": "Selected Scenario",
+      "VIEW_ADD_SCENARIOS": "View / Add Scenarios",
+      "MENU": "Menu",
+      "BASELINE": "Baseline",
+      "ASSESSMENT": "Assessment",
+      "DIAGRAM": "Diagram",
+      "REPORT_TAB": "Report",
+      "SANKEY": "Sankey",
+      "CALCULATORS": "Calculators",
+      "SHARE": "Share",
+      "SECURITY_PRIVACY": "Security & Privacy",
+      "EXPORT": "Export",
+      "MANUAL": "Manual",
+      "SETTINGS": "Settings",
+      "ASSESSMENT_DASHBOARD": "Assessment Dashboard",
+      "HOME": "Home",
+      "COLLAPSE": "Collapse",
+      "LAST_MODIFIED": "Last modified:"
+    },
+    "CALC": {
+      "BOILER": "Boiler",
+      "DEAERATOR": "Deaerator",
+      "FLASH_TANK": "Flash Tank",
+      "HEADER": "Header",
+      "HEAT_LOSS": "Heat Loss",
+      "PRV": "Pressure Release Valve",
+      "SATURATED_PROPERTIES": "Saturated Properties",
+      "STACK_LOSS": "Stack Loss",
+      "STEAM_LEAK": "Steam Leak",
+      "STEAM_PROPERTIES": "Steam Properties",
+      "TURBINE": "Turbine"
+    },
+    "SYSTEM_BASICS": {
+      "SETTINGS": "Settings",
+      "UNITS_CHANGED_WARNING": "Units of measure were changed after assessment data was entered.",
+      "UNITS_CHANGED_WARNING_LINE2": "Please update your assessment data for accurate results.",
+      "UPDATE_DATA": "Update Data",
+      "DATA_UPDATED_SUCCESS": "Data updated successfully!",
+      "DISMISS": "Dismiss",
+      "EQUIPMENT_NOTES": "Equipment Notes",
+      "EQUIPMENT_NOTES_PLACEHOLDER": "Add additional information for your equipment",
+      "OPERATING_CONDITIONS": "Operating Conditions at time of Assessment",
+      "OPERATING_CONDITIONS_PLACEHOLDER": "Add note for operating conditions"
+    },
+    "WELCOME": {
+      "TITLE": "Welcome to MEASUR's Steam System Assessment Module!",
+      "INTRO": "Get started with the Baseline by providing the properties of your current baseline! After you've established your baseline, conduct an Assessment by modifying the conditions of your system to view the potential savings!",
+      "HELP_PREFIX": "If you need help at any point along the way, click the",
+      "USER_MANUAL": "user manual",
+      "HELP_SUFFIX": "icon in the upper right hand corner for detailed instructions on how to complete the steam system assessment!",
+      "GET_STARTED": "Get Started!"
+    }
+  }
+}

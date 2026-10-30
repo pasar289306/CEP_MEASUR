@@ -40,6 +40,8 @@
   "dependencies": {
     "@angular/animations": "20.3.17",
     "@angular/cdk": "20.2.14",
+    "@ngx-translate/core": "^18.0.0",
+    "@ngx-translate/http-loader": "^18.0.0",
     "@angular/common": "20.3.17",
     "@angular/compiler": "20.3.17",
     "@angular/core": "20.3.17",

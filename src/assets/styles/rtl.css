@@ -1,0 +1,96 @@
+/*
+ * Right-to-left overrides for the Persian UI.
+ * Scoped to html[dir="rtl"] (set at runtime by LanguageService) so the
+ * English/LTR layout is completely untouched when Persian isn't active.
+ *
+ * This file covers the app shell and the layout primitives Bootstrap 4 /
+ * ngx-bootstrap use throughout the app (floats, sidebar, forms, tables,
+ * modals). It does not attempt to re-flip every bespoke component; screens
+ * that still look mirrored oddly in Persian should get a small
+ * [dir="rtl"] override added here as they're found.
+ */
+
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+  font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+}
+
+html[dir="rtl"] .measur-language-switcher {
+  inset-inline-end: auto;
+  inset-inline-start: 12px;
+}
+
+/* Bootstrap 4 utility flips */
+html[dir="rtl"] .float-left {
+  float: right !important;
+}
+
+html[dir="rtl"] .float-right {
+  float: left !important;
+}
+
+html[dir="rtl"] .text-left {
+  text-align: right !important;
+}
+
+html[dir="rtl"] .text-right {
+  text-align: left !important;
+}
+
+html[dir="rtl"] .pl-1, html[dir="rtl"] .pl-2, html[dir="rtl"] .pl-3, html[dir="rtl"] .pl-4, html[dir="rtl"] .pl-5 {
+  padding-left: 0 !important;
+}
+
+html[dir="rtl"] .pr-1, html[dir="rtl"] .pr-2, html[dir="rtl"] .pr-3, html[dir="rtl"] .pr-4, html[dir="rtl"] .pr-5 {
+  padding-right: 0 !important;
+}
+
+html[dir="rtl"] .ml-1 { margin-right: 0.25rem !important; margin-left: 0 !important; }
+html[dir="rtl"] .ml-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
+html[dir="rtl"] .ml-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+html[dir="rtl"] .ml-4 { margin-right: 1.5rem !important; margin-left: 0 !important; }
+html[dir="rtl"] .ml-5 { margin-right: 3rem !important; margin-left: 0 !important; }
+
+html[dir="rtl"] .mr-1 { margin-left: 0.25rem !important; margin-right: 0 !important; }
+html[dir="rtl"] .mr-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
+html[dir="rtl"] .mr-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+html[dir="rtl"] .mr-4 { margin-left: 1.5rem !important; margin-right: 0 !important; }
+html[dir="rtl"] .mr-5 { margin-left: 3rem !important; margin-right: 0 !important; }
+
+/* App sidebar / two-panel layout (dashboard, assessment screens) */
+html[dir="rtl"] .sidebar,
+html[dir="rtl"] .main-nav {
+  right: 0;
+  left: auto;
+}
+
+html[dir="rtl"] .two-panel_left {
+  order: 2;
+}
+
+html[dir="rtl"] .two-panel_right {
+  order: 1;
+}
+
+/* Form controls: keep numeric inputs (units, values) left-to-right so
+   numbers and decimal points don't visually reverse, while labels/help
+   text around them stay RTL. */
+html[dir="rtl"] input[type="number"],
+html[dir="rtl"] input.form-control[type="text"].numeric-input {
+  direction: ltr;
+  text-align: right;
+}
+
+html[dir="rtl"] table th,
+html[dir="rtl"] table td {
+  text-align: right;
+}
+
+html[dir="rtl"] .modal-header .close {
+  margin: -1rem auto -1rem -1rem;
+}
+
+html[dir="rtl"] .dropdown-menu {
+  text-align: right;
+}

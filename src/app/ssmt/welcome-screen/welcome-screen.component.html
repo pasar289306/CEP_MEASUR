@@ -31,26 +31,22 @@
                     </button>
                 </div>
             </div>
-            <h1>Welcome to MEASUR's Steam System Assessment Module!
+            <h1>{{ 'SSMT.WELCOME.TITLE' | translate }}
             </h1>
             <br>
             <p>
-                Get started with the Baseline by providing the properties of your
-                current baseline! After you've established
-                your baseline, conduct an Assessment by modifying the conditions of your system to view the potential
-                savings!
+                {{ 'SSMT.WELCOME.INTRO' | translate }}
             </p>
             <hr>
             <p>
-                If you need help at any point along the way, click the
+                {{ 'SSMT.WELCOME.HELP_PREFIX' | translate }}
                 <a class="user-manual" href="https://industrialresources.ornl.gov/measur/user-guides/view-guide/Steam-User-Manual" target="_blank">
-                    user manual (<span class="fa fa-book"></span>)
+                    {{ 'SSMT.WELCOME.USER_MANUAL' | translate }} (<span class="fa fa-book"></span>)
                 </a>
-                icon in the upper right hand corner
-                for detailed instructions on how to complete the steam system assessment!
+                {{ 'SSMT.WELCOME.HELP_SUFFIX' | translate }}
             </p>
             <div class="btn btn-primary" (click)="closePopUp()">
-                Get Started!
+                {{ 'SSMT.WELCOME.GET_STARTED' | translate }}
             </div>
         </div>
     </div>

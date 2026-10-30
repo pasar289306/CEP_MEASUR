@@ -48,6 +48,7 @@ import { EmailListSubscribeService } from '../shared/subscribe-toast/email-list-
 import { SubscribeModalComponent } from '../shared/subscribe-modal/subscribe-modal.component';
 import { ExportToJustifiModalModule } from '../shared/export-to-justifi-modal/export-to-justifi-modal.module';
 import { ShareDataModalModule } from '../shared/share-data-modal/share-data-modal.module';
+import { I18nSharedModule } from '../shared/i18n/i18n-shared.module';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { ShareDataModalModule } from '../shared/share-data-modal/share-data-moda
     IndexedDbModule,
     CommonModule,
     RouterModule,
+    I18nSharedModule,
     PsatModule,
     PhastModule,
     CalculatorModule,

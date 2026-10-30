@@ -7,15 +7,15 @@
   <div class="small-tab-select nav-pills nav-fill" #smallTabSelect *ngIf="mainTab == 'baseline'">
     <div class="nav-item" (click)="setSmallScreenTab('form')"
       [ngClass]="{'small-screen-active': smallScreenTab === 'form'}">
-      <a class="nav-link" *ngIf="stepTab == 'baseline'">Assessment Settings</a>
-      <a class="nav-link" *ngIf="stepTab == 'operations'">Operations</a>
-      <a class="nav-link" *ngIf="stepTab == 'boiler'">Boiler</a>
-      <a class="nav-link" *ngIf="stepTab == 'header'">Header</a>
-      <a class="nav-link" *ngIf="stepTab == 'turbine'">Turbine</a>
+      <a class="nav-link" *ngIf="stepTab == 'baseline'">{{ 'SSMT.SHELL.ASSESSMENT_SETTINGS' | translate }}</a>
+      <a class="nav-link" *ngIf="stepTab == 'operations'">{{ 'SSMT.SHELL.OPERATIONS' | translate }}</a>
+      <a class="nav-link" *ngIf="stepTab == 'boiler'">{{ 'SSMT.SHELL.BOILER' | translate }}</a>
+      <a class="nav-link" *ngIf="stepTab == 'header'">{{ 'SSMT.SHELL.HEADER' | translate }}</a>
+      <a class="nav-link" *ngIf="stepTab == 'turbine'">{{ 'SSMT.SHELL.TURBINE' | translate }}</a>
     </div>
     <div class="nav-item" (click)="setSmallScreenTab('details')"
       [ngClass]="{'small-screen-active': smallScreenTab === 'details'}">
-      <a class="nav-link">Help</a>
+      <a class="nav-link">{{ 'SSMT.SHELL.HELP' | translate }}</a>
     </div>
   </div>
   <!--Setup-->
@@ -104,11 +104,11 @@
         </div>
           <div class="btn-group btn-group-sm align-self-center">
               <button type="button" class="btn btn-sm" (click)="setSankeyLabelStyle('percent')"
-                  [ngClass]="{'active': sankeyLabelStyle == 'percent'}">Loss Percent</button>
+                  [ngClass]="{'active': sankeyLabelStyle == 'percent'}">{{ 'SSMT.SHELL.LOSS_PERCENT' | translate }}</button>
               <button type="button" class="btn btn-sm" (click)="setSankeyLabelStyle('energy')"
-                  [ngClass]="{'active': sankeyLabelStyle == 'energy'}">Loss Energy</button>
+                  [ngClass]="{'active': sankeyLabelStyle == 'energy'}">{{ 'SSMT.SHELL.LOSS_ENERGY' | translate }}</button>
               <button type="button" class="btn btn-sm" (click)="setSankeyLabelStyle('both')"
-                  [ngClass]="{'active': sankeyLabelStyle == 'both'}">Both</button>
+                  [ngClass]="{'active': sankeyLabelStyle == 'both'}">{{ 'SSMT.SHELL.BOTH' | translate }}</button>
           </div>
       </div>
   </nav>
@@ -122,13 +122,13 @@
 
   <div #footer id="ssmtFooter" class="footer hide-print d-none d-lg-block" *ngIf="mainTab == 'assessment' || mainTab == 'baseline'">
     <div class="pull-left" *ngIf="stepTab != 'baseline'">
-      <button class="btn btn-default" (click)="back()">Back</button>
+      <button class="btn btn-default" (click)="back()">{{ 'SSMT.SHELL.BACK' | translate }}</button>
     </div>
     <div class="pull-right" *ngIf="mainTab == 'baseline' && mainTab != 'assessment'">
-      <button class="btn btn-primary" [disabled]="!getCanContinue()" (click)="continue()">Next</button>
+      <button class="btn btn-primary" [disabled]="!getCanContinue()" (click)="continue()">{{ 'SSMT.SHELL.NEXT' | translate }}</button>
     </div>
     <div class="pull-right" *ngIf="mainTab == 'assessment'">
-      <button class="btn btn-primary" (click)="goToReport()">View Report</button>
+      <button class="btn btn-primary" (click)="goToReport()">{{ 'SSMT.SHELL.VIEW_REPORT' | translate }}</button>
     </div>
   </div>
 </div>
@@ -139,7 +139,7 @@
   <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Add New Scenario</h3>
+        <h3>{{ 'SSMT.SHELL.ADD_NEW_SCENARIO' | translate }}</h3>
         <button class="close" (click)="closeAddNewModal()">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -159,7 +159,7 @@
   <div class="modal-dialog modal-lg list-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Select Scenario</h3>
+        <h3>{{ 'SSMT.SHELL.SELECT_SCENARIO' | translate }}</h3>
         <button class="close" (click)="closeSelectModification()">
           <span aria-hidden="true">&times;</span>
         </button>
