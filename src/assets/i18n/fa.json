@@ -69,5 +69,43 @@
       "HELP_SUFFIX": "در گوشه‌ی بالا سمت راست کلیک کنید تا دستورالعمل کامل تکمیل ارزیابی سامانه بخار را ببینید!",
       "GET_STARTED": "شروع کنید!"
     }
+  },
+  "CA": {
+    "SHELL": {
+      "ASSESSMENT_BASICS": "مبانی ارزیابی",
+      "SYSTEM_INFORMATION": "اطلاعات سامانه",
+      "INVENTORY": "فهرست تجهیزات",
+      "DAY_TYPES": "انواع روز",
+      "SYSTEM_PROFILE": "نمایه سامانه",
+      "END_USES": "مصارف نهایی",
+      "BASELINE": "وضعیت پایه",
+      "ASSESSMENT": "ارزیابی",
+      "DIAGRAM": "نمودار",
+      "REPORT_TAB": "گزارش",
+      "SANKEY": "نمودار سنکی",
+      "CALCULATORS": "محاسبه‌گرها",
+      "SHARE": "اشتراک‌گذاری",
+      "SECURITY_PRIVACY": "امنیت و حریم خصوصی",
+      "EXPORT": "خروجی",
+      "MANUAL": "راهنمای کاربری",
+      "SETTINGS": "تنظیمات",
+      "ASSESSMENT_DASHBOARD": "داشبورد ارزیابی",
+      "HOME": "خانه",
+      "COLLAPSE": "جمع کردن",
+      "LAST_MODIFIED": "آخرین ویرایش:",
+      "EXPLORE_OPPORTUNITIES": "بررسی فرصت‌ها",
+      "PROFILE_SUMMARY_TABLE": "جدول خلاصه نمایه",
+      "PROFILE_SUMMARY_GRAPHS": "نمودارهای خلاصه نمایه",
+      "TABLET_OPTIMIZED_NOTICE": "این صفحه برای نمایش روی تبلت یا دستگاه‌های بزرگ‌تر بهینه شده است."
+    },
+    "SYSTEM_BASICS": {
+      "MODELING_CONDITIONS": "شرایط مدل‌سازی",
+      "UTILITY_TYPE": "نوع یوتیلیتی",
+      "ELECTRICITY": "برق",
+      "ELECTRICITY_COST": "هزینه برق",
+      "DEMAND_COST": "هزینه دیماند",
+      "VALUE_REQUIRED": "وارد کردن مقدار الزامی است",
+      "VALUE_MIN": "مقدار نمی‌تواند کمتر از"
+    }
   }
 }

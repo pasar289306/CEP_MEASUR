@@ -69,5 +69,43 @@
       "HELP_SUFFIX": "icon in the upper right hand corner for detailed instructions on how to complete the steam system assessment!",
       "GET_STARTED": "Get Started!"
     }
+  },
+  "CA": {
+    "SHELL": {
+      "ASSESSMENT_BASICS": "Assessment Basics",
+      "SYSTEM_INFORMATION": "System Information",
+      "INVENTORY": "Inventory",
+      "DAY_TYPES": "Day Types",
+      "SYSTEM_PROFILE": "System Profile",
+      "END_USES": "End Uses",
+      "BASELINE": "Baseline",
+      "ASSESSMENT": "Assessment",
+      "DIAGRAM": "Diagram",
+      "REPORT_TAB": "Report",
+      "SANKEY": "Sankey",
+      "CALCULATORS": "Calculators",
+      "SHARE": "Share",
+      "SECURITY_PRIVACY": "Security & Privacy",
+      "EXPORT": "Export",
+      "MANUAL": "Manual",
+      "SETTINGS": "Settings",
+      "ASSESSMENT_DASHBOARD": "Assessment Dashboard",
+      "HOME": "Home",
+      "COLLAPSE": "Collapse",
+      "LAST_MODIFIED": "Last modified:",
+      "EXPLORE_OPPORTUNITIES": "Explore Opportunities",
+      "PROFILE_SUMMARY_TABLE": "Profile Summary Table",
+      "PROFILE_SUMMARY_GRAPHS": "Profile Summary Graphs",
+      "TABLET_OPTIMIZED_NOTICE": "This page is optimized to be viewed on a tablet-sized device or larger."
+    },
+    "SYSTEM_BASICS": {
+      "MODELING_CONDITIONS": "Modeling Conditions",
+      "UTILITY_TYPE": "Utility Type",
+      "ELECTRICITY": "Electricity",
+      "ELECTRICITY_COST": "Electricity Cost",
+      "DEMAND_COST": "Demand Cost",
+      "VALUE_REQUIRED": "Value Required",
+      "VALUE_MIN": "Value can't be less than"
+    }
   }
 }
